@@ -1,0 +1,60 @@
+{
+  "name": "bectec.website",
+  "version": "1.0.0",
+  "description": "Repositório do projeto desenvolvido no curso.dev",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && (trap 'npm run services:stop' INT TERM ; next dev)",
+    "test": "npm run services:up && concurrently --names next,jest --hide next -k --s command-jest \"next dev\" \"NODE_OPTIONS=--experimental-vm-modules jest --runInBand --verbose\"",
+    "posttest": "npm run services:stop",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll --runInBand --verbose",
+    "services:up": "docker compose -f infra/compose.yaml up -d",
+    "services:stop": "docker compose -f infra/compose.yaml stop",
+    "services:down": "docker compose -f infra/compose.yaml down",
+    "services:wait:database": "node infra/scripts/wait-for-postgres.js",
+    "migrations:create": "node-pg-migrate --migrations-dir infra/migrations create",
+    "migrations:up": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.development up",
+    "migrations:down": "node-pg-migrate --migrations-dir infra/migrations down",
+    "lint:prettier:check": "prettier --check .",
+    "lint:prettier:fix": "prettier --write .",
+    "lint:eslint:check": "eslint .",
+    "prepare": "husky",
+    "commit": "cz"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "async-retry": "1.3.3",
+    "bcryptjs": "3.0.3",
+    "dotenv": "18.0.5",
+    "dotenv-expand": "1000.0.0",
+    "next": "16.3.8",
+    "next-connect": "1.0.0",
+    "node-pg-migrate": "9.0.0",
+    "pg": "8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "swr": "2.5.1",
+    "uuid": "11.1.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3",
+    "@faker-js/faker": "10.6.0",
+    "commitizen": "4.3.2",
+    "concurrently": "10.0.5",
+    "cz-conventional-changelog": "3.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.8",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-jest": "29.16.6",
+    "husky": "9.1.7",
+    "jest": "30.5.2",
+    "prettier": "3.9.9"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

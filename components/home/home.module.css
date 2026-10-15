@@ -1,0 +1,265 @@
+/* Página inicial Experiência: áreas de atuação e serviços. */
+
+.experienceServices p {
+  color: var(--muted);
+  font-size: 15px;
+}
+.experienceHero {
+  padding: 65px 5% 60px;
+  max-width: 1440px;
+  margin: auto;
+}
+.experienceHero h1 {
+  font-size: clamp(43px, 5.5vw, 82px);
+  max-width: 1050px;
+  margin-bottom: 35px;
+}
+.experienceHero > div {
+  display: flex;
+  gap: 70px;
+  justify-content: space-between;
+  align-items: center;
+}
+.experienceHero > div p {
+  max-width: 540px;
+  color: var(--muted);
+  margin: 0;
+}
+.experienceHero > div > a {
+  flex-shrink: 0;
+}
+.workSection {
+  padding: 20px 5% 75px;
+  max-width: 1440px;
+  margin: auto;
+  scroll-margin-top: 20px;
+}
+.workHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 20px;
+  gap: 15px;
+}
+.workHeader h2 {
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.workHeader > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.filterButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.filterButtons button {
+  background: var(--filter-background);
+  border: 1px solid var(--filter-border);
+  color: var(--filter-text);
+  padding: 10px 19px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.filterButtons button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--button-text);
+  border-color: var(--accent);
+}
+.filterButtons button:hover {
+  border-color: var(--accent);
+}
+.workPanel {
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  padding: 45px;
+  gap: 35px 7%;
+  border-radius: 6px;
+}
+.workCopy {
+  align-self: center;
+}
+.workCopy h3 {
+  font-size: clamp(30px, 3.4vw, 48px);
+  margin: 20px 0;
+  max-width: 370px;
+}
+.workCopy > p:last-of-type {
+  font-size: 15px;
+  color: var(--muted);
+}
+.technologyList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px 18px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  margin: 25px 0 0;
+  color: var(--accent);
+}
+.workflow {
+  background: #373a86;
+  color: #fff;
+  margin: 0;
+  padding: 25px;
+  border-radius: 5px;
+}
+.workflow figcaption {
+  font-size: 12px;
+  margin-bottom: 25px;
+  color: #e0e1f6;
+}
+.workflowStep {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  padding: 15px;
+  border: 1px solid #777bb3;
+  border-radius: 3px;
+  margin-bottom: 25px;
+  background: #40448f;
+}
+.workflowStep > span {
+  font-size: 11px;
+  color: #e0e1f6;
+}
+.workflowStep strong {
+  font-size: 14px;
+  font-weight: 400;
+}
+.workflowStep i {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  font-style: normal;
+  color: #d1d4f3;
+}
+.workflowStep:last-child {
+  margin-bottom: 0;
+  background: #e5e6f9;
+  color: #252938;
+}
+.workflowStep:last-child > span {
+  color: #373a86;
+}
+.workflow > p {
+  font-size: 10px;
+  color: #e0e1f6;
+  margin: 22px 0 0;
+}
+.workNote {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0;
+  max-width: none !important;
+}
+.experienceServices {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+.experienceServices article {
+  border-top: 1px solid var(--service-border);
+  padding-top: 25px;
+}
+.experienceBio {
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 40px;
+  padding: 55px 5%;
+}
+.bioMonogram {
+  width: 100px;
+  height: 100px;
+  background: #daddf4;
+  color: #373a86;
+  font-family: Georgia, serif;
+  font-size: 52px;
+  letter-spacing: -0.1em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+.experienceBio h2 {
+  font-size: 30px;
+  margin: 10px 0;
+}
+.experienceBio p:last-child {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 0;
+}
+.experienceBio > a {
+  font-size: 12px;
+}
+@media (max-width: 1000px) {
+  .experienceHero > div {
+    gap: 30px;
+  }
+  .experienceBio {
+    grid-template-columns: auto 1fr;
+  }
+  .experienceBio > a {
+    grid-column: 2;
+  }
+}
+@media (max-width: 720px) {
+  .experienceHero {
+    padding: 35px 6% 45px;
+  }
+  .experienceHero > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 25px;
+  }
+  .workSection {
+    padding: 0 6% 35px;
+  }
+  .workHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .filterButtons {
+    gap: 8px;
+  }
+  .filterButtons button {
+    padding: 9px 12px;
+    font-size: 11px;
+  }
+  .workPanel {
+    padding: 25px;
+    grid-template-columns: 1fr;
+  }
+  .workCopy h3 {
+    font-size: 36px;
+  }
+  .experienceServices {
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+  .experienceBio {
+    padding: 40px 6%;
+    gap: 25px;
+    grid-template-columns: 1fr;
+  }
+  .experienceBio > a {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .experienceHero h1 {
+    font-size: clamp(39px, 9vw, 60px);
+  }
+}
