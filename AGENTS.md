@@ -6,36 +6,23 @@ Estas orientações se aplicam a todo o repositório. Respeite as instruções a
 
 - Converse em português brasileiro, explique as decisões e considere que o usuário está aprendendo e retomando a prática.
 - Ao escrever código novo, mantenha os padrões atuais do projeto, incluindo nomes de variáveis, funções e demais identificadores em inglês, a arquitetura e a formatação existentes. Priorize nomes claros, fluxo explícito e soluções que o usuário consiga ler, entender e acompanhar durante o aprendizado. O inglês não é uma dificuldade para o usuário; evite minificações, compactações excessivas e abreviações que dificultem acompanhar a lógica. Expressões curtas em uma linha podem ser usadas quando continuarem claras. Refatorações no estilo preferido do agente devem ser feitas quando o usuário as solicitar explicitamente.
-- O projeto tem dois objetivos: acompanhar o curso.dev e evoluir para o site da empresa do usuário. Preserve o aprendizado e implemente as necessidades empresariais dentro do escopo solicitado.
 - Antes de editar, leia o código envolvido, confira a pasta, a branch e o estado do Git. Preserve alterações existentes do usuário.
 - Faça mudanças focadas. Não introduza frameworks, dependências, refatorações amplas ou atualizações de versão sem necessidade para a tarefa.
 - Quando o pedido for apenas análise, não altere arquivos nem execute operações que modifiquem dados.
 - Trabalhe autonomamente no escopo autorizado. Pergunte quando faltar uma decisão que realmente afete o resultado, sem pedir confirmação para cada passo rotineiro.
 - Ao concluir, explique o que mudou, como foi verificado e o que não foi validado. Não afirme que testes ou deploy passaram sem evidência.
-- O usuário está acompanhando aulas do curso.dev neste projeto. Ao analisar alterações, confira a branch, o estado do Git e os commits para ajudar a identificar o conteúdo estudado.
 - Mensagens de commit deste projeto devem ser escritas em inglês e seguir o padrão definido pelo próprio projeto em commitlint.config.js, que estende @commitlint/config-conventional.
-  - Ao sugerir comandos de commit, apresente o comando completo no formato git commit -m ..., com a mensagem entre aspas simples; mantenha crases em torno dos nomes de ferramentas quando esse for o estilo escolhido pelo usuário.
+- Ao sugerir comandos de commit, apresente o comando completo no formato git commit -m ..., com a mensagem entre aspas simples; mantenha crases em torno dos nomes de ferramentas quando esse for o estilo escolhido pelo usuário.
 - Quando o acesso ao projeto exigir permissões adicionais, solicite acesso de leitura ou escrita conforme necessário, informando ao usuário o motivo e mantendo o escopo limitado à tarefa.
-- O usuário deseja registrar no Notion os aprendizados, decisões e pontos relevantes do desenvolvimento. Ajude a organizar essas anotações quando solicitado, sem alterar o Notion automaticamente sem autorização explícita.
-- O usuário autorizou commits e push quando solicitar diretamente essa ação para a branch em trabalho. Antes do push, confira o diff, a mensagem do commit, a branch e o remoto; nunca faça push para `master` sem autorização específica.
-
-## Projeto e fonte de referência
-
-Aplicação web full stack em JavaScript, originada no curso.dev como exercício inspirado no TabNews. O objetivo empresarial foi informado pelo usuário; não invente requisitos, identidade visual ou regras de negócio.
-
-Anotações de estudo: https://app.notion.com/p/3053c875bd9180659148d53614e9a513
-
-O Notion registra conceitos e etapas anteriores, não necessariamente o comportamento atual. Use o código e as configurações atuais para confirmar a implementação. Não altere as anotações sem que isso esteja no escopo solicitado.
+- O usuário autorizou commits e push quando solicitar diretamente essa ação para a branch em trabalho. Antes do push, confira o diff, a mensagem do commit, a branch e o remoto; nunca faça push para `main` sem autorização específica.
 
 ## Ambiente de trabalho
 
 A cópia escolhida neste notebook está no Ubuntu/WSL:
 
 ```text
-/home/bectec-laptop/projects/Curso.Dev
+/home/bectec-laptop/projects/Trama
 ```
-
-Existe outra cópia em `D:\Projects\Curso.Dev`, acessível no Ubuntu por `/mnt/d/Projects/Curso.Dev`. Não confunda as duas nem replique mudanças entre elas automaticamente. Se a ferramenta estiver na pasta do Windows, use explicitamente o diretório do Ubuntu para este projeto.
 
 - Se o acesso normal à cópia Ubuntu/WSL for negado, tente novamente com permissões elevadas e limitadas ao diretório deste projeto antes de concluir que o repositório está inacessível. Não substitua essa cópia pela cópia do Windows. Para inspeções, prefira comandos somente de leitura; para edições autorizadas, use o acesso elevado sem modificar arquivos fora do repositório.
 
@@ -48,14 +35,14 @@ wsl -d Ubuntu
 Depois, no Ubuntu:
 
 ```bash
-cd ~/projects/Curso.Dev
+cd ~/projects/Trama
 code .
 nvm use
 npm run dev
 ```
 
 - Execute Node, npm, Git e Docker pelo Ubuntu para esta cópia.
-- O `.nvmrc` define `lts/hydrogen` (Node 18). Confira-o antes de selecionar a versão; trate uma atualização como uma mudança própria.
+- O `.nvmrc` define `24.21.0`. Confira-o antes de selecionar a versão; trate uma atualização como uma mudança própria.
 - Use `npm install` para instalar dependências conforme as anotações do usuário. `npm ci` é uma alternativa para instalação fiel ao lockfile compatível; explique a diferença quando relevante.
 - Preserve o `package-lock.json`; não o regenere sem necessidade. Confira seu diff após instalar dependências.
 - `npm run dev` inicia o banco com Docker Compose, aguarda a disponibilidade, aplica migrations e inicia o Next.js; não instala dependências.
@@ -100,11 +87,8 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 ## Estado inicial conhecido — verificar antes de assumir
 
 - A página inicial usa a direção Experiência, com serviços, trajetória de Igor Becker e áreas de atuação interativas. O conteúdo fica em `components/home/HomePage.js`, o layout em `HomeLayout.js` e os estilos em dois CSS Modules separados. As propostas descartadas e a rota `/exemplos` foram removidas.
-- Os arquivos de `models` ainda não implementam funcionalidades. Não há cadastro, login ou publicações implementados.
 - `/api/v1/status` consulta versão do PostgreSQL, limite de conexões e conexões abertas, retornando também um horário.
 - `GET /api/v1/migrations` consulta migrations pendentes; `POST` as aplica e retorna 201 se executou alguma, ou 200 quando não há pendências. Outros métodos retornam 405.
-- A única migration inicial tem `up` e `down` vazios, sem tabelas de negócio.
-- Não há pastas de provisionamento implementadas, embora sejam mencionadas no Notion.
 
 ## Banco, configurações e migrations
 
@@ -129,8 +113,8 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 
 ## Git, CI/CD e publicação
 
-- O usuário informou que merges na `master` publicam automaticamente na Vercel. Trate essa branch como caminho para produção.
-- Não faça push, merge na master ou deploy sem autorização que cubra essa ação. Criar ou editar arquivos localmente não é publicar.
+- O usuário informou que merges na `main` irão publicar automaticamente na Vercel. Trate essa branch como caminho para produção.
+- Não faça push, merge na main sem autorização que cubra essa ação. Criar ou editar arquivos localmente não é publicar.
 - Use a branch de trabalho apropriada; não troque de branch nem descarte mudanças do usuário automaticamente. Para novas branches criadas pelo agente, use `codex/`, salvo orientação diferente.
 - Referências `origin/*` locais podem estar desatualizadas. Diferencie comparação local de consulta recente ao remoto.
 - Na análise inicial, não havia workflows GitHub Actions nem `vercel.json` versionados. Não presuma que testes, proteção de branch ou configuração de deploy estejam confirmados sem consultar evidências.
