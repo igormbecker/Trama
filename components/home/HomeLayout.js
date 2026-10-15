@@ -3,22 +3,11 @@ import Link from "next/link";
 import { useState } from "react";
 import styles from "./homeLayout.module.css";
 
-export const contactEmail = "imbjr.work@gmail.com";
-export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20sobre%20um%20projeto`;
 export const systemStatusLink = "/status";
-
-export function ContactButton({ children = "Conversar sobre meu projeto" }) {
-  return (
-    <a className={styles.button} href={contactLink}>
-      {children}
-      <span aria-hidden="true">↗</span>
-    </a>
-  );
-}
 
 export function Brand() {
   return (
-    <span className={styles.brand}>
+    <span className={styles.companyBrand}>
       <strong>
         <span aria-hidden="true">&gt;_</span>bectec
         <span aria-hidden="true">.</span>
@@ -32,20 +21,29 @@ export function Brand() {
   );
 }
 
-// Estrutura compartilhada da página: navegação, conteúdo e contato.
-export default function HomeLayout({ title, children }) {
-  const [theme, setTheme] = useState("light");
+export function TramaMark() {
   return (
-    <div
-      className={`${styles.site} ${styles.experience}`}
-      lang="pt-BR"
-      data-theme={theme}
-    >
+    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path
+        d="M5 7h22M5 16h22M5 25h22M10 3v26M22 3v26"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <path d="M10 7h12v9H10z" fill="currentColor" />
+    </svg>
+  );
+}
+
+export default function HomeLayout({ children }) {
+  const [theme, setTheme] = useState("light");
+
+  return (
+    <div className={styles.site} lang="pt-BR" data-theme={theme}>
       <Head>
-        <title>{title} | Bectec</title>
+        <title>Trama — Gestão editorial colaborativa</title>
         <meta
           name="description"
-          content="Desenvolvimento de software, integrações e automação de processos com Igor Becker."
+          content="Conheça o Trama: uma proposta para conectar pessoas, capítulos e etapas da produção editorial, da organização da obra à aprovação."
         />
       </Head>
       <style jsx global>{`
@@ -57,18 +55,20 @@ export default function HomeLayout({ title, children }) {
         Pular para o conteúdo
       </a>
       <header className={styles.header}>
-        <Link href="/" aria-label="Bectec — página inicial">
-          <Brand />
+        <Link
+          className={styles.productBrand}
+          href="/"
+          aria-label="Trama — página inicial"
+        >
+          <TramaMark />
+          <span>trama</span>
         </Link>
         <nav aria-label="Navegação principal">
-          <a href="#servicos">Serviços</a>
-          <a href="#experiencia">Experiência</a>
-          <a href="#contato">
-            Vamos conversar <span aria-hidden="true">↗</span>
-          </a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#para-quem">Para quem</a>
         </nav>
         <label className={styles.themeControl}>
-          Tema
+          <span>Tema</span>
           <select
             value={theme}
             onChange={(event) => setTheme(event.target.value)}
@@ -79,24 +79,30 @@ export default function HomeLayout({ title, children }) {
         </label>
       </header>
       <main id="conteudo">{children}</main>
-      <footer className={styles.footer} id="contato">
-        <div>
-          <span className={styles.sectionLabel}>Vamos trabalhar juntos?</span>
-          <h2>
-            Conte o que você
+      <footer className={styles.footer}>
+        <div className={styles.footerTop}>
+          <Link
+            className={styles.productBrand}
+            href="/"
+            aria-label="Trama — página inicial"
+          >
+            <TramaMark />
+            <span>trama</span>
+          </Link>
+          <p>
+            Pessoas, ideias e capítulos.
             <br />
-            precisa resolver.
-          </h2>
-        </div>
-        <div>
-          <a className={styles.email} href={contactLink}>
-            {contactEmail}
-          </a>
-          <p>Porto Alegre, RS · Atendimento remoto</p>
+            Uma obra construída em conjunto.
+          </p>
         </div>
         <div className={styles.footerBottom}>
-          <Brand />
-          <Link href={systemStatusLink}>Status do sistema</Link>
+          <div className={styles.signature}>
+            <span>Desenvolvido por</span>
+            <Brand />
+          </div>
+          <Link className={styles.statusLink} href={systemStatusLink}>
+            Status do sistema <span aria-hidden="true">↗</span>
+          </Link>
         </div>
       </footer>
     </div>

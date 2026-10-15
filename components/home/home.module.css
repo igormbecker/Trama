@@ -1,265 +1,477 @@
-/* Página inicial Experiência: áreas de atuação e serviços. */
-
-.experienceServices p {
-  color: var(--muted);
-  font-size: 15px;
-}
-.experienceHero {
-  padding: 65px 5% 60px;
-  max-width: 1440px;
+.hero {
+  max-width: 1360px;
   margin: auto;
-}
-.experienceHero h1 {
-  font-size: clamp(43px, 5.5vw, 82px);
-  max-width: 1050px;
-  margin-bottom: 35px;
-}
-.experienceHero > div {
-  display: flex;
-  gap: 70px;
-  justify-content: space-between;
-  align-items: center;
-}
-.experienceHero > div p {
-  max-width: 540px;
-  color: var(--muted);
-  margin: 0;
-}
-.experienceHero > div > a {
-  flex-shrink: 0;
-}
-.workSection {
-  padding: 20px 5% 75px;
-  max-width: 1440px;
-  margin: auto;
-  scroll-margin-top: 20px;
-}
-.workHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 0 20px;
-  gap: 15px;
-}
-.workHeader h2 {
-  font-size: 18px;
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-.workHeader > span {
-  font-size: 12px;
-  color: var(--muted);
-}
-.filterButtons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-.filterButtons button {
-  background: var(--filter-background);
-  border: 1px solid var(--filter-border);
-  color: var(--filter-text);
-  padding: 10px 19px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 13px;
-}
-.filterButtons button[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--button-text);
-  border-color: var(--accent);
-}
-.filterButtons button:hover {
-  border-color: var(--accent);
-}
-.workPanel {
-  background: var(--surface);
+  padding: 76px 5% 96px;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  padding: 45px;
-  gap: 35px 7%;
-  border-radius: 6px;
+  grid-template-columns: 1fr 1.08fr;
+  gap: 6%;
+  align-items: center;
 }
-.workCopy {
-  align-self: center;
+.intro {
+  font-size: 16px;
+  color: var(--accent);
+  margin-bottom: 26px;
 }
-.workCopy h3 {
-  font-size: clamp(30px, 3.4vw, 48px);
-  margin: 20px 0;
-  max-width: 370px;
+.hero h1 {
+  font-size: clamp(40px, 4.4vw, 65px);
+  font-weight: 600;
+  margin-bottom: 24px;
 }
-.workCopy > p:last-of-type {
-  font-size: 15px;
-  color: var(--muted);
-}
-.technologyList {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px 18px;
-  flex-wrap: wrap;
-  font-size: 11px;
-  margin: 25px 0 0;
+.hero h1 span {
   color: var(--accent);
 }
-.workflow {
-  background: #373a86;
-  color: #fff;
+.description {
+  font-size: 18px;
+  max-width: 39ch;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+.primaryLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  padding: 14px 21px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--paper) !important;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+}
+.primaryLink:hover {
+  opacity: 0.88;
+}
+.primaryLink span {
+  font-size: 19px;
+}
+.heroCopy .developmentNote {
+  font-size: 16px;
+  color: var(--muted);
+  margin: 20px 0 0;
+}
+.preview {
   margin: 0;
-  padding: 25px;
-  border-radius: 5px;
+  padding: 24px;
+  background: var(--preview-paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 22px 65px -32px #25293840;
 }
-.workflow figcaption {
-  font-size: 12px;
-  margin-bottom: 25px;
-  color: #e0e1f6;
+.previewTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 28px;
 }
-.workflowStep {
+.exampleLabel {
+  font-size: 14px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border-radius: 4px;
+}
+.bookHeading {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+.bookSpine {
+  align-self: stretch;
+  width: 72px;
+  min-height: 100px;
+  flex-shrink: 0;
+  border-left: 5px solid #6569ab;
+  padding: 10px;
+  background: #373a86;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.bookSpine > span {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+}
+.bookSpine i {
+  font-style: normal;
+  font-size: 13px;
+}
+.bookHeading p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.bookHeading h2 {
+  font-size: 29px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.bookHeading > div:last-child > span {
+  font-size: 14px;
+  color: var(--muted);
+}
+.chapterHeading {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.chapterList {
+  display: grid;
+  margin: 0 -10px;
+  padding-top: 7px;
+}
+.chapter {
+  width: 100%;
+  padding: 15px 10px;
   display: flex;
   align-items: center;
-  gap: 18px;
-  position: relative;
-  padding: 15px;
-  border: 1px solid #777bb3;
-  border-radius: 3px;
-  margin-bottom: 25px;
-  background: #40448f;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
 }
-.workflowStep > span {
-  font-size: 11px;
-  color: #e0e1f6;
+.chapter[aria-pressed="true"] {
+  background: var(--selected);
+  border-color: var(--line);
 }
-.workflowStep strong {
-  font-size: 14px;
-  font-weight: 400;
-}
-.workflowStep i {
-  position: absolute;
-  bottom: -24px;
-  left: 50%;
-  font-style: normal;
-  color: #d1d4f3;
-}
-.workflowStep:last-child {
-  margin-bottom: 0;
-  background: #e5e6f9;
-  color: #252938;
-}
-.workflowStep:last-child > span {
-  color: #373a86;
-}
-.workflow > p {
-  font-size: 10px;
-  color: #e0e1f6;
-  margin: 22px 0 0;
-}
-.workNote {
-  grid-column: 1 / -1;
-  font-size: 11px;
-  color: var(--muted);
-  margin: 0;
-  max-width: none !important;
-}
-.experienceServices {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-}
-.experienceServices article {
-  border-top: 1px solid var(--service-border);
-  padding-top: 25px;
-}
-.experienceBio {
+.chapter:hover {
   background: var(--surface);
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 40px;
-  padding: 55px 5%;
 }
-.bioMonogram {
-  width: 100px;
-  height: 100px;
-  background: #daddf4;
-  color: #373a86;
-  font-family: Georgia, serif;
-  font-size: 52px;
-  letter-spacing: -0.1em;
+.chapterNumber {
+  font-size: 14px;
+  color: var(--muted);
+}
+.chapterInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+}
+.chapterInfo strong {
+  font-size: 16px;
+  font-weight: 600;
+}
+.chapterInfo > span {
+  font-size: 14px;
+  color: var(--muted);
+}
+.approved,
+.review,
+.writing {
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.approved {
+  color: var(--approved-ink);
+  background: var(--approved-bg);
+}
+.review {
+  color: var(--review-ink);
+  background: var(--review-bg);
+}
+.writing {
+  color: var(--writing-ink);
+  background: var(--writing-bg);
+}
+.chapterDetail {
+  display: flex;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  min-height: 112px;
+}
+.avatar {
+  background: var(--surface);
+  color: var(--accent);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 600;
 }
-.experienceBio h2 {
-  font-size: 30px;
-  margin: 10px 0;
+.chapterDetail strong {
+  font-size: 16px;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
 }
-.experienceBio p:last-child {
+.chapterDetail p {
   font-size: 14px;
   color: var(--muted);
   margin-bottom: 0;
 }
-.experienceBio > a {
-  font-size: 12px;
+.preview figcaption {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 18px;
+  text-align: center;
+}
+.workflowSection,
+.participantsSection {
+  padding: 72px max(5%, calc((100vw - 1224px) / 2));
+  scroll-margin-top: 30px;
+}
+.workflowSection {
+  background: var(--surface);
+}
+.sectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: 48px;
+}
+.sectionHeading > div > p {
+  color: var(--accent);
+  font-size: 16px;
+  margin-bottom: 18px;
+}
+.sectionHeading h2 {
+  font-size: clamp(30px, 3.3vw, 43px);
+  font-weight: 500;
+  margin-bottom: 0;
+}
+.sectionHeading > p {
+  max-width: 34ch;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+.workflow {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 26px;
+}
+.workflow li {
+  position: relative;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--accent);
+  background: var(--paper);
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+.workflow h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.workflow li > p {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 0;
+}
+.participantsSection {
+  padding-top: 90px;
+  padding-bottom: 90px;
+}
+.participants {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 45px;
+}
+.participants article {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+.roleName {
+  color: var(--accent);
+  font-size: 16px;
+  margin-bottom: 22px;
+}
+.participants h3 {
+  font-size: 25px;
+  font-weight: 500;
+  max-width: 19ch;
+  margin-bottom: 18px;
+}
+.participants article > p:last-child {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 38ch;
+  margin-bottom: 0;
+}
+.closing {
+  background: var(--surface);
+  text-align: center;
+  padding: 62px 6%;
+}
+.thread {
+  display: block;
+  margin: 0 auto 24px;
+  width: 45px;
+  height: 25px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  transform: rotate(-25deg);
+  position: relative;
+}
+.thread::after {
+  content: "";
+  position: absolute;
+  width: 45px;
+  height: 25px;
+  top: 8px;
+  left: 12px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+}
+.closing > p {
+  margin: 0 0 15px;
+  color: var(--muted);
+  font-size: 16px;
+}
+.closing h2 {
+  font-size: clamp(32px, 3.8vw, 49px);
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+.closing a {
+  font-size: 16px;
+}
+.closing a > span {
+  margin-left: 12px;
 }
 @media (max-width: 1000px) {
-  .experienceHero > div {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding-top: 45px;
+  }
+  .heroCopy {
+    max-width: 650px;
+  }
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 65px);
+  }
+  .description {
+    max-width: 48ch;
+  }
+  .preview {
+    width: 100%;
+    max-width: 620px;
+    justify-self: center;
+  }
+  .workflow {
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
   }
-  .experienceBio {
-    grid-template-columns: auto 1fr;
-  }
-  .experienceBio > a {
-    grid-column: 2;
+  .participants {
+    gap: 26px;
   }
 }
 @media (max-width: 720px) {
-  .experienceHero {
-    padding: 35px 6% 45px;
+  .hero {
+    padding: 36px 6% 55px;
+    gap: 36px;
   }
-  .experienceHero > div {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 25px;
+  .hero h1 {
+    font-size: clamp(34px, 8.5vw, 52px);
   }
-  .workSection {
-    padding: 0 6% 35px;
+  .intro {
+    font-size: 16px;
+    margin-bottom: 18px;
   }
-  .workHeader {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
+  .description {
+    font-size: 18px;
   }
-  .filterButtons {
+  .preview {
+    padding: 18px;
+  }
+  .previewTop {
+    font-size: 14px;
     gap: 8px;
   }
-  .filterButtons button {
-    padding: 9px 12px;
-    font-size: 11px;
+  .exampleLabel {
+    font-size: 13px;
   }
-  .workPanel {
-    padding: 25px;
+  .chapter {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .chapterInfo strong {
+    font-size: 16px;
+  }
+  .approved,
+  .review,
+  .writing {
+    grid-column: 2;
+    justify-self: start;
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+  .chapterDetail {
+    min-height: 115px;
+  }
+  .workflowSection,
+  .participantsSection {
+    padding: 50px 6%;
+  }
+  .sectionHeading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .sectionHeading > p {
+    max-width: 45ch;
+  }
+  .workflow {
     grid-template-columns: 1fr;
+    gap: 22px;
   }
-  .workCopy h3 {
-    font-size: 36px;
+  .workflow li {
+    padding: 18px 0 0 48px;
+    min-height: 80px;
   }
-  .experienceServices {
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
+  .stepNumber {
+    position: absolute;
+    left: 0;
+    top: 18px;
+    margin: 0;
   }
-  .experienceBio {
-    padding: 40px 6%;
-    gap: 25px;
+  .workflow h3 {
+    margin-bottom: 9px;
+  }
+  .participants {
     grid-template-columns: 1fr;
+    gap: 30px;
   }
-  .experienceBio > a {
-    grid-column: auto;
+  .participants h3 {
+    max-width: 25ch;
   }
-}
-
-@media (max-width: 720px) {
-  .experienceHero h1 {
-    font-size: clamp(39px, 9vw, 60px);
+  .closing {
+    padding: 48px 6%;
   }
 }

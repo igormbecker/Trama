@@ -1,223 +1,250 @@
 import { useState } from "react";
-import HomeLayout, { ContactButton } from "./HomeLayout";
-import shared from "./homeLayout.module.css";
+import HomeLayout from "./HomeLayout";
 import styles from "./home.module.css";
 
-// Experiências de Igor Becker; a origem de cada projeto aparece na descrição.
-const experiences = [
+const chapters = [
   {
-    id: "sistemas",
-    name: "Sistemas de negócio",
-    title: "Regras complexas. Uso mais simples.",
-    description:
-      "Desenvolvimento e evolução de sistemas web para gestão de garantias, com regras de negócio, integração com APIs e processamento de XMLs de NF-e.",
-    technologies: ["C# / .NET", "SQL Server", "JavaScript"],
-    stages: ["Solicitação", "Regras de negócio", "Acompanhamento"],
-    note: "Experiência em gestão de processos de garantia.",
+    number: "01",
+    title: "O começo de uma ideia",
+    author: "Marina Costa",
+    initials: "MC",
+    status: "Aprovado",
+    stage: "approved",
+    detail: "Revisão concluída. O capítulo está aprovado para seguir na obra.",
+    action: "Uma etapa concluída, com todos na mesma página.",
   },
   {
-    id: "processos",
-    name: "Automação de processos",
-    title: "Cada etapa conectada à próxima.",
-    description:
-      "Atuação com Orquestra BPM e Zeev, modelagem BPMN e integrações para implementar fluxos e processos corporativos.",
-    technologies: ["BPMN", "Zeev / Orquestra", "APIs REST"],
-    stages: ["Entrada", "Fluxo de aprovação", "Próxima ação"],
-    note: "Experiência profissional em automação corporativa.",
+    number: "02",
+    title: "Perspectivas que se encontram",
+    author: "Rafael Lima",
+    initials: "RL",
+    status: "Em revisão",
+    stage: "review",
+    detail:
+      "A entrega de Rafael está em revisão. O próximo passo é reunir os apontamentos e devolver ao autor.",
+    action: "Da entrega à revisão, cada passagem fica clara.",
   },
   {
-    id: "documentos",
-    name: "Documentos com IA",
-    title: "Documentos analisados dentro do processo.",
+    number: "03",
+    title: "Novos caminhos possíveis",
+    author: "Ana Martins",
+    initials: "AM",
+    status: "Em escrita",
+    stage: "writing",
+    detail: "Ana está preparando a primeira entrega deste capítulo.",
+    action: "Cada pessoa entende sua participação na obra.",
+  },
+];
+
+const workflow = [
+  {
+    title: "Organize a obra",
     description:
-      "Participei do desenvolvimento e da melhoria contínua de uma solução de classificação de documentos com IA. Uma API lia o documento, comparava as informações com os dados do formulário e retornava o resultado para o fluxo: aprovação automática ou encaminhamento para análise da operação.",
-    technologies: ["APIs REST", "OpenAI", "Automação de processos"],
-    stages: [
-      "Documento e formulário",
-      "Análise e classificação",
-      "Aprovação ou análise humana",
-    ],
-    note: "Participação de Igor Becker em projeto durante sua atuação na Zeev.",
+      "Dê estrutura às ideias, dividindo a obra em partes e capítulos.",
   },
   {
-    id: "code-review",
-    name: "Code review com IA",
-    title: "Uma primeira análise, direto no pull request.",
-    description:
-      "Colaborei em um projeto de revisão de código com IA, integrando OpenAI e Gemini para realizar uma análise inicial e publicar comentários diretamente nos pull requests. A iniciativa apoiava a qualidade do código e o trabalho dos responsáveis técnicos na revisão.",
-    technologies: ["APIs REST", "OpenAI", "Gemini"],
-    stages: [
-      "Pull request",
-      "Análise inicial com IA",
-      "Comentários para revisão",
-    ],
-    note: "Participação de Igor Becker em projeto durante sua atuação na Zeev.",
+    title: "Convide as pessoas",
+    description: "Conecte autores e equipe aos capítulos em que vão colaborar.",
   },
   {
-    id: "framework",
-    name: "Framework JavaScript",
-    title: "Uma base comum para construir melhor.",
-    description:
-      "Participei da criação de um framework JavaScript para padronizar a estrutura dos projetos, boas práticas e reutilização de código. O trabalho buscava reduzir retrabalho e facilitar a entrada de novos desenvolvedores nos projetos.",
-    technologies: ["JavaScript", "jQuery", "Reutilização de código"],
-    stages: [
-      "Padrões de projeto",
-      "Estrutura reutilizável",
-      "Aplicação nos projetos",
-    ],
-    note: "Participação de Igor Becker em projeto durante sua atuação na Zeev.",
+    title: "Reúna as entregas",
+    description: "Acompanhe os arquivos e as versões que fazem a obra avançar.",
   },
   {
-    id: "migracao",
-    name: "Migração de BPM",
-    title: "Evoluir o sistema sem perder o processo.",
+    title: "Revise em conjunto",
+    description: "Troque apontamentos e acompanhe o que precisa de ajustes.",
+  },
+  {
+    title: "Aprove cada capítulo",
+    description: "Conclua as etapas com clareza sobre o que foi aprovado.",
+  },
+];
+
+const participants = [
+  {
+    name: "Organização editorial",
+    title: "O todo, sem perder os detalhes.",
     description:
-      "Atuei na migração de um sistema BPM da versão 2 para a 3, em um contexto de mudança de banco de dados e de infraestrutura local para a nuvem. Minha participação envolveu processos complexos com integrações, refatoração de código legado e análise da modelagem para adaptar os fluxos aos padrões da nova versão.",
-    technologies: ["APIs REST", "jQuery", "BPM"],
-    stages: [
-      "Processos e integrações",
-      "Refatoração e adaptação",
-      "Compatibilidade com a nova versão",
-    ],
-    note: "Participação de Igor Becker em projeto durante sua atuação na Zeev.",
+      "Uma visão da obra para acompanhar capítulos, pessoas e os próximos passos.",
+  },
+  {
+    name: "Autores e organizadores",
+    title: "Espaço para construir juntos.",
+    description:
+      "Clareza sobre a participação de cada pessoa e sobre o caminho das entregas.",
+  },
+  {
+    name: "Revisores",
+    title: "Cada leitura faz a obra avançar.",
+    description:
+      "Um lugar para acompanhar revisões e conectar os apontamentos ao capítulo.",
   },
 ];
 
 export default function HomePage() {
-  const [selectedId, setSelectedId] = useState("sistemas");
-  const selectedExperience = experiences.find(
-    (experience) => experience.id === selectedId,
-  );
+  const [selectedChapter, setSelectedChapter] = useState(chapters[1]);
 
   return (
-    <HomeLayout title="Tecnologia e Desenvolvimento de Software">
-      <section className={styles.experienceHero}>
-        <p className={shared.sectionLabel}>
-          Desenvolvimento · Integração · Automação
-        </p>
-        <h1>
-          Por trás de cada sistema,
-          <br />
-          um problema <em>resolvido.</em>
-        </h1>
-        <div>
-          <p>
-            Experiência em transformar processos de negócio em software. Conheça
-            algumas das frentes de atuação de Igor Becker, à frente da Bectec.
+    <HomeLayout>
+      <section className={styles.hero} aria-labelledby="hero-title">
+        <div className={styles.heroCopy}>
+          <p className={styles.intro}>Gestão editorial colaborativa</p>
+          <h1 id="hero-title">
+            Boas obras são
+            <br />
+            feitas <span>em conjunto.</span>
+          </h1>
+          <p className={styles.description}>
+            Do primeiro convite ao capítulo aprovado, o Trama conecta as pessoas
+            e as etapas que dão forma à sua obra.
           </p>
-          <ContactButton />
+          <a className={styles.primaryLink} href="#como-funciona">
+            Conhecer o fluxo <span aria-hidden="true">↓</span>
+          </a>
+          <p className={styles.developmentNote}>
+            Um novo espaço para a produção editorial.
+            <br />
+            Produto em desenvolvimento.
+          </p>
         </div>
+        <figure className={styles.preview}>
+          <div className={styles.previewTop}>
+            <span>Uma obra em construção</span>
+            <span className={styles.exampleLabel}>Exemplo ilustrativo</span>
+          </div>
+          <div className={styles.bookHeading}>
+            <div className={styles.bookSpine} aria-hidden="true">
+              <span>
+                entre
+                <br />
+                ideias
+              </span>
+              <i>trama</i>
+            </div>
+            <div>
+              <p>Obra coletiva</p>
+              <h2>Entre ideias</h2>
+              <span>Três olhares. Uma história em comum.</span>
+            </div>
+          </div>
+          <div className={styles.chapterHeading}>
+            <span>Capítulos</span>
+            <span>Etapa atual</span>
+          </div>
+          <div
+            className={styles.chapterList}
+            role="group"
+            aria-label="Explore os capítulos da obra de exemplo"
+          >
+            {chapters.map((chapter) => (
+              <button
+                key={chapter.number}
+                className={styles.chapter}
+                type="button"
+                aria-pressed={selectedChapter.number === chapter.number}
+                aria-controls="chapter-detail"
+                onClick={() => setSelectedChapter(chapter)}
+              >
+                <span className={styles.chapterNumber}>{chapter.number}</span>
+                <span className={styles.chapterInfo}>
+                  <strong>{chapter.title}</strong>
+                  <span>{chapter.author}</span>
+                </span>
+                <span className={styles[chapter.stage]}>{chapter.status}</span>
+              </button>
+            ))}
+          </div>
+          <div
+            className={styles.chapterDetail}
+            id="chapter-detail"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <span className={styles.avatar} aria-hidden="true">
+              {selectedChapter.initials}
+            </span>
+            <div>
+              <strong>{selectedChapter.action}</strong>
+              <p>{selectedChapter.detail}</p>
+            </div>
+          </div>
+          <figcaption>
+            Selecione um capítulo para explorar esta prévia.
+          </figcaption>
+        </figure>
       </section>
+
       <section
-        className={styles.workSection}
-        id="experiencia"
-        aria-labelledby="work-title"
+        className={styles.workflowSection}
+        id="como-funciona"
+        aria-labelledby="workflow-title"
       >
-        <div className={styles.workHeader}>
-          <h2 id="work-title">Experiência aplicada</h2>
-          <span>Explore as áreas de atuação</span>
+        <div className={styles.sectionHeading}>
+          <div>
+            <p>Como funciona</p>
+            <h2 id="workflow-title">
+              Da ideia à aprovação.
+              <br />
+              Um capítulo de cada vez.
+            </h2>
+          </div>
+          <p>
+            Este é o caminho que estamos construindo para acompanhar a produção
+            de uma obra no Trama.
+          </p>
         </div>
-        <div
-          className={styles.filterButtons}
-          role="group"
-          aria-label="Escolha uma área de experiência"
-        >
-          {experiences.map((experience) => (
-            <button
-              key={experience.id}
-              type="button"
-              aria-pressed={selectedId === experience.id}
-              aria-controls="experience-detail"
-              onClick={() => setSelectedId(experience.id)}
-            >
-              {experience.name}
-            </button>
+        <ol className={styles.workflow}>
+          {workflow.map((step, index) => (
+            <li key={step.title}>
+              <span className={styles.stepNumber}>
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section
+        className={styles.participantsSection}
+        id="para-quem"
+        aria-labelledby="participants-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <p>Para quem</p>
+            <h2 id="participants-title">
+              Diferentes olhares.
+              <br />A mesma obra.
+            </h2>
+          </div>
+          <p>
+            Uma produção editorial reúne pessoas com contribuições diferentes. O
+            Trama nasce para aproximar esse trabalho.
+          </p>
+        </div>
+        <div className={styles.participants}>
+          {participants.map((participant) => (
+            <article key={participant.name}>
+              <p className={styles.roleName}>{participant.name}</p>
+              <h3>{participant.title}</h3>
+              <p>{participant.description}</p>
+            </article>
           ))}
         </div>
-        <div
-          className={styles.workPanel}
-          id="experience-detail"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <div className={styles.workCopy}>
-            <p className={shared.sectionLabel}>{selectedExperience.name}</p>
-            <h3>{selectedExperience.title}</h3>
-            <p>{selectedExperience.description}</p>
-            <ul className={styles.technologyList}>
-              {selectedExperience.technologies.map((technology) => (
-                <li key={technology}>{technology}</li>
-              ))}
-            </ul>
-          </div>
-          <figure className={styles.workflow}>
-            <figcaption>Do contexto à solução</figcaption>
-            <div>
-              {selectedExperience.stages.map((stage, index) => (
-                <div className={styles.workflowStep} key={stage}>
-                  <span aria-hidden="true">
-                    {index === 2 ? "✓" : `0${index + 1}`}
-                  </span>
-                  <strong>{stage}</strong>
-                  {index < 2 && <i aria-hidden="true">↓</i>}
-                </div>
-              ))}
-            </div>
-            <p>Representação ilustrativa do fluxo</p>
-          </figure>
-          <p className={styles.workNote}>
-            {selectedExperience.note} Os exemplos descrevem a trajetória do
-            profissional, incluindo trabalhos anteriores à Bectec.
-          </p>
-        </div>
       </section>
-      <section className={shared.section} id="servicos">
-        <div className={shared.sectionHeading}>
-          <h2>
-            Da experiência
-            <br />
-            ao seu próximo projeto.
-          </h2>
-          <p>
-            Cada contexto pede uma solução.
-            <br />
-            Estes são os caminhos em que posso ajudar.
-          </p>
-        </div>
-        <div className={styles.experienceServices}>
-          <article>
-            <h3>Construir</h3>
-            <p>Sistemas sob medida e sites para necessidades reais.</p>
-          </article>
-          <article>
-            <h3>Conectar</h3>
-            <p>Integrações entre aplicações, serviços e bancos de dados.</p>
-          </article>
-          <article>
-            <h3>Simplificar</h3>
-            <p>Automação de processos e tarefas da operação.</p>
-          </article>
-          <article>
-            <h3>Orientar</h3>
-            <p>Consultoria técnica para tomar decisões de software.</p>
-          </article>
-        </div>
-      </section>
-      <section className={styles.experienceBio}>
-        <span className={styles.bioMonogram} aria-hidden="true">
-          ib.
-        </span>
-        <div>
-          <p className={shared.sectionLabel}>Igor Becker · Bectec</p>
-          <h2>Do entendimento à entrega.</h2>
-          <p>
-            Atuação em tecnologia desde 2010, em colaboração com clientes e
-            times multidisciplinares. Experiência com C#/.NET, JavaScript, SQL
-            Server, Oracle e processos corporativos.
-          </p>
-        </div>
-        <a href="https://www.linkedin.com/in/igor-mauricio-becker-junior-7ba7ab57/">
-          Ver trajetória no LinkedIn
+
+      <section className={styles.closing} aria-labelledby="closing-title">
+        <span className={styles.thread} aria-hidden="true"></span>
+        <p>O próximo capítulo é coletivo.</p>
+        <h2 id="closing-title">
+          Cada contribuição
+          <br />
+          faz parte da trama.
+        </h2>
+        <a href="#hero-title">
+          Voltar ao início <span aria-hidden="true">↑</span>
         </a>
       </section>
     </HomeLayout>

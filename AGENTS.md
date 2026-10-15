@@ -86,7 +86,7 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 
 ## Estado inicial conhecido — verificar antes de assumir
 
-- A página inicial usa a direção Experiência, com serviços, trajetória de Igor Becker e áreas de atuação interativas. O conteúdo fica em `components/home/HomePage.js`, o layout em `HomeLayout.js` e os estilos em dois CSS Modules separados. As propostas descartadas e a rota `/exemplos` foram removidas.
+- A página inicial apresenta o produto Trama, com uma prévia ilustrativa de capítulos, fluxo editorial proposto e participantes. O conteúdo fica em `components/home/HomePage.js`, o layout em `HomeLayout.js` e os estilos em dois CSS Modules separados. Preserve a fonte Inter, a seleção de tema claro/escuro e a assinatura completa da Bectec junto ao link de status no rodapé. A preferência de tema usa estado local; sua persistência por usuário no banco é uma intenção futura, ainda não implementada.
 - `/api/v1/status` consulta versão do PostgreSQL, limite de conexões e conexões abertas, retornando também um horário.
 - `GET /api/v1/migrations` consulta migrations pendentes; `POST` as aplica e retorna 201 se executou alguma, ou 200 quando não há pendências. Outros métodos retornam 405.
 
