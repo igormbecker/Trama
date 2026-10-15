@@ -23,7 +23,7 @@ Consulte package.json e package-lock.json para a lista completa e as versões in
 
 ## Banco de dados local
 
-O PostgreSQL de desenvolvimento é iniciado pelo Docker Compose definido em infra/compose.yaml. As variáveis são lidas de .env.development.
+O PostgreSQL de desenvolvimento é iniciado pelo Docker Compose definido em infra/compose.yaml. As variáveis são lidas de .env.development. A aplicação usa as variáveis `POSTGRES_*`; o CLI de migrations usa `DATABASE_URL`, composta a partir dessas mesmas variáveis para manter o destino consistente. Os comandos `migrations:up` e `migrations:down` carregam esse arquivo.
 
 O Trama usa o projeto Compose `trama`, com rede e volume próprios, separados do Curso.Dev. O PostgreSQL atende em `127.0.0.1:5433` no computador e mantém a porta `5432` dentro do container. O banco é `trama_dev`, com usuário `trama_user`. A aplicação e os testes HTTP usam a porta `3001`; o Curso.Dev pode continuar nas portas `5432` e `3000`.
 

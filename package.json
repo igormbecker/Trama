@@ -14,7 +14,7 @@
     "services:wait:database": "node infra/scripts/wait-for-postgres.js",
     "migrations:create": "node-pg-migrate --migrations-dir infra/migrations create",
     "migrations:up": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.development up",
-    "migrations:down": "node-pg-migrate --migrations-dir infra/migrations down",
+    "migrations:down": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.development down",
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
     "lint:eslint:check": "eslint .",
