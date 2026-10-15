@@ -58,8 +58,8 @@ npm run dev
 - O `.nvmrc` define `lts/hydrogen` (Node 18). Confira-o antes de selecionar a versão; trate uma atualização como uma mudança própria.
 - Use `npm install` para instalar dependências conforme as anotações do usuário. `npm ci` é uma alternativa para instalação fiel ao lockfile compatível; explique a diferença quando relevante.
 - Preserve o `package-lock.json`; não o regenere sem necessidade. Confira seu diff após instalar dependências.
-- `npm run dev` inicia o banco com Docker Compose e depois o Next.js; não instala dependências nem aplica migrations.
-- O site normalmente abre em http://localhost:3000. Ctrl+C encerra o servidor; `npm run services:stop` para o banco.
+- `npm run dev` inicia o banco com Docker Compose, aguarda a disponibilidade, aplica migrations e inicia o Next.js; não instala dependências.
+- O site normalmente abre em http://localhost:3001. Ctrl+C encerra o servidor; `npm run services:stop` para o banco.
 - Preserve finais de linha LF e evite alterações em massa por diferenças CRLF/LF entre Windows e Linux.
 
 ## Tecnologias e arquitetura
@@ -109,18 +109,18 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 ## Banco, configurações e migrations
 
 - O Compose roda apenas o PostgreSQL; o Next.js executa no Ubuntu.
-- O banco local usa a porta 5432 e o arquivo `.env.development`.
+- O banco local do Trama usa `127.0.0.1:5433`, banco `trama_dev`, usuário `trama_user` e o arquivo `.env.development`. A porta interna do PostgreSQL continua sendo `5432`.
 - Centralize o acesso ao banco em `infra/database.js` e use consultas parametrizadas para valores externos.
 - A implementação abre clientes individuais; não há pool de conexões na base analisada.
 - Preserve a separação entre desenvolvimento e produção. O código usa SSL em produção e admite certificado por `POSTGRES_CA`.
 - Nunca exponha credenciais em respostas, logs ou commits. O `.env.development` está versionado: mantenha nele apenas configurações locais apropriadas, nunca segredos de produção.
 - Antes de aplicar migrations ou executar operações destrutivas, confirme o banco de destino e o escopo autorizado.
-- O Compose inicial não declara volume nomeado. Não suponha que recriar ou remover contêineres preserve automaticamente os dados. Prefira `services:stop` para encerrar o uso diário.
+- O Compose define o projeto `trama` e o volume próprio `trama_database_data`. Não reutilize containers, volumes ou o projeto Compose `infra` do Curso.Dev. `services:down` preserva o volume; `down --volumes` apaga seus dados. Prefira `services:stop` para encerrar o uso diário.
 
 ## Testes e validação
 
 - `npm test` executa Jest em sequência; `npm run test:watch` acompanha mudanças.
-- Os testes de integração fazem chamadas a `http://localhost:3000` e precisam da aplicação e do banco disponíveis. O comando de teste não os inicia.
+- Os testes de integração fazem chamadas a `http://localhost:3001`. `npm test` inicia o banco e o Next.js; `test:watch` depende desses serviços disponíveis. A limpeza exige a configuração local do Trama e `NODE_ENV=test` antes de apagar dados.
 - ATENÇÃO: os testes de migrations executam `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`. Só execute após confirmar que o banco é local, descartável e adequado ao teste; não use banco de produção ou com dados que devam ser preservados.
 - O Jest carrega `.env.development`. Considere também variáveis já presentes no processo ao confirmar o destino efetivo.
 - O teste de status depende de valores específicos de versão, limite e quantidade de conexões; considere isso ao diagnosticar falhas.

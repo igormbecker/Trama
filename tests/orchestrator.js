@@ -14,7 +14,7 @@ async function waitForAllServices() {
     });
 
     async function fetchStatusPage() {
-      const response = await fetch("http://localhost:3000/api/v1/status");
+      const response = await fetch("http://localhost:3001/api/v1/status");
 
       if (response.status !== 200) {
         throw new Error();
@@ -24,6 +24,19 @@ async function waitForAllServices() {
 }
 
 async function clearDataBase() {
+  const isTramaTestDatabase =
+    process.env.NODE_ENV === "test" &&
+    process.env.POSTGRES_HOST === "127.0.0.1" &&
+    process.env.POSTGRES_PORT === "5433" &&
+    process.env.POSTGRES_USER === "trama_user" &&
+    process.env.POSTGRES_DB === "trama_dev";
+
+  if (!isTramaTestDatabase) {
+    throw new Error(
+      "Database cleanup requires the local Trama test configuration (127.0.0.1:5433/trama_dev).",
+    );
+  }
+
   await database.query(`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`);
 }
 

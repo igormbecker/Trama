@@ -14,7 +14,7 @@ describe("POST /api/v1/sessions", () => {
         password: "senha-correta",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch("http://localhost:3001/api/v1/sessions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +41,7 @@ describe("POST /api/v1/sessions", () => {
         email: "email.correto@bectec.com.br",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch("http://localhost:3001/api/v1/sessions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +66,7 @@ describe("POST /api/v1/sessions", () => {
     test("With incorrect `email` and incorrect `password`", async () => {
       await orchestrator.createUser({});
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch("http://localhost:3001/api/v1/sessions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ describe("POST /api/v1/sessions", () => {
         password: "senha-correta",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch("http://localhost:3001/api/v1/sessions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

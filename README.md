@@ -25,6 +25,12 @@ Consulte package.json e package-lock.json para a lista completa e as versões in
 
 O PostgreSQL de desenvolvimento é iniciado pelo Docker Compose definido em infra/compose.yaml. As variáveis são lidas de .env.development.
 
+O Trama usa o projeto Compose `trama`, com rede e volume próprios, separados do Curso.Dev. O PostgreSQL atende em `127.0.0.1:5433` no computador e mantém a porta `5432` dentro do container. O banco é `trama_dev`, com usuário `trama_user`. A aplicação e os testes HTTP usam a porta `3001`; o Curso.Dev pode continuar nas portas `5432` e `3000`.
+
+Execute os scripts a partir desta pasta. Não sobrescreva o nome do projeto Compose com `-p` ou `COMPOSE_PROJECT_NAME`, nem reutilize as variáveis de banco do Curso.Dev. Variáveis já exportadas no terminal podem prevalecer sobre o arquivo de ambiente.
+
+Os testes ainda compartilham o banco local de desenvolvimento do Trama e apagam seus dados. A limpeza recusa configurações diferentes de `127.0.0.1:5433/trama_dev`, usuário `trama_user` e ambiente de teste. Esse banco deve conter apenas dados descartáveis.
+
 ```bash
 docker ps -a
 ```
@@ -47,7 +53,7 @@ Para parar e remover os containers do Compose:
 npm run services:down
 ```
 
-O Compose não declara um volume nomeado. Não remova o container se precisar preservar os dados locais.
+O volume nomeado `trama_database_data` preserva os dados quando o container é removido com `services:down`. Não use `docker compose down --volumes` se precisar preservar esses dados.
 
 Para instalar o cliente psql no Ubuntu:
 
@@ -58,7 +64,7 @@ sudo apt install postgresql-client
 Para conectar ao banco local:
 
 ```bash
-psql --host=localhost --username=postgres --port=5432
+psql --host=127.0.0.1 --username=trama_user --port=5433 --dbname=trama_dev
 ```
 
 ## Ambiente de desenvolvimento
@@ -89,7 +95,7 @@ Inicie a aplicação:
 npm run dev
 ```
 
-Esse script inicia o banco, aguarda o PostgreSQL, aplica as migrações pendentes e inicia o Next.js. A aplicação fica disponível em http://localhost:3000.
+Esse script inicia o banco, aguarda o PostgreSQL, aplica as migrações pendentes e inicia o Next.js. A aplicação fica disponível em http://localhost:3001.
 
 ## Scripts disponíveis
 
