@@ -39,7 +39,7 @@ describe("Authentication pages", () => {
   ])(
     "Redirects visitors with %s away from the protected page",
     async (_description, cookie) => {
-      const response = await fetch("http://127.0.0.1:3002/obras", {
+      const response = await fetch("http://127.0.0.1:3002/works", {
         redirect: "manual",
         headers: cookie ? { Cookie: cookie } : {},
       });
@@ -59,7 +59,7 @@ describe("Authentication pages", () => {
       text: "UPDATE sessions SET expires_at = now() - interval '1 second' WHERE id = $1;",
       values: [createdSession.id],
     });
-    const response = await fetch("http://127.0.0.1:3002/obras", {
+    const response = await fetch("http://127.0.0.1:3002/works", {
       redirect: "manual",
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
@@ -72,7 +72,7 @@ describe("Authentication pages", () => {
       name: "Pessoa de teste",
     });
     const createdSession = await session.create(createdUser.id);
-    const response = await fetch("http://127.0.0.1:3002/obras", {
+    const response = await fetch("http://127.0.0.1:3002/works", {
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
     expect(response.status).toBe(200);
@@ -104,7 +104,7 @@ describe("Authentication pages", () => {
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("/obras");
+    expect(response.headers.get("location")).toBe("/works");
   });
 
   test("Keeps the login page accessible when its cookie has expired", async () => {
@@ -119,5 +119,42 @@ describe("Authentication pages", () => {
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
     expect(response.status).toBe(200);
+  });
+});
+
+describe("Registration page", () => {
+  test("Offers registration from login and shows the account creation form", async () => {
+    const login = await fetch("http://127.0.0.1:3002/login");
+    expect(await login.text()).toContain('href="/register"');
+    const response = await fetch("http://127.0.0.1:3002/register");
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain("Criar sua conta");
+    for (const field of ["name", "username", "email", "password"]) {
+      expect(html).toContain(`for="${field}"`);
+    }
+    expect(html).toContain('autoComplete="new-password"');
+    expect(html).toMatch(/<form[^>]*method="post"/);
+    expect(html).toContain('href="/login"');
+  });
+
+  test("Shows a confirmation after registration on the login page", async () => {
+    const response = await fetch(
+      "http://127.0.0.1:3002/login?registration=complete",
+    );
+    expect(await response.text()).toContain(
+      "Conta criada! Entre com seu e-mail e senha.",
+    );
+  });
+
+  test("Redirects authenticated visitors away from registration", async () => {
+    const createdUser = await orchestrator.createUser({});
+    const createdSession = await session.create(createdUser.id);
+    const response = await fetch("http://127.0.0.1:3002/register", {
+      redirect: "manual",
+      headers: { Cookie: `trama_session_id=${createdSession.token}` },
+    });
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe("/works");
   });
 });

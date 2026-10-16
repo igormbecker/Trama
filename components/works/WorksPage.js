@@ -10,7 +10,7 @@ export default function WorksPage({ user }) {
       description="Seu espaço para acompanhar obras e contribuições no Trama."
       navigation={
         <>
-          <Link href="/obras" aria-current="page">
+          <Link href="/works" aria-current="page">
             Minhas obras
           </Link>
           <LogoutButton />

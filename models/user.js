@@ -1,4 +1,4 @@
-﻿import database from "infra/database.js";
+import database from "infra/database.js";
 import { ValidationError, NotFoundError } from "infra/errors";
 import password from "models/password.js";
 
@@ -83,6 +83,7 @@ async function findOneByEmail(email) {
 }
 
 async function create(userInputValues) {
+  userInputValues = validateRegistrationInput(userInputValues);
   await validateUniqueUsername(userInputValues.username);
   await validateUniqueEmail(userInputValues.email);
   await hashPasswordInObject(userInputValues);
@@ -110,6 +111,46 @@ async function create(userInputValues) {
 
     return results.rows[0];
   }
+}
+
+function validateRegistrationInput(input) {
+  const invalidInput = () =>
+    new ValidationError({
+      message: "Invalid registration data.",
+      action:
+        "Provide a name, a username, a valid email and a password with at least 8 characters.",
+    });
+
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw invalidInput();
+  }
+
+  for (const field of ["name", "username", "email", "password"]) {
+    if (typeof input[field] !== "string") {
+      throw invalidInput();
+    }
+  }
+
+  const values = {
+    name: input.name.trim(),
+    username: input.username.trim(),
+    email: input.email.trim(),
+    password: input.password,
+  };
+
+  if (
+    values.name.length === 0 ||
+    values.name.length > 255 ||
+    !/^[a-zA-Z0-9_.-]{1,30}$/.test(values.username) ||
+    values.email.length > 254 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email) ||
+    values.password.length < 8 ||
+    values.password.length > 128
+  ) {
+    throw invalidInput();
+  }
+
+  return values;
 }
 
 async function update(username, userInputValues) {

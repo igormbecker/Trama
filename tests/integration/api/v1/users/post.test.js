@@ -1,6 +1,7 @@
-﻿import { version as uuidVersion } from "uuid";
+import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
 import user from "models/user.js";
+import database from "infra/database.js";
 import password from "models/password.js";
 
 beforeAll(async () => {
@@ -33,7 +34,6 @@ describe("POST /api/v1/users", () => {
         name: "Igor Becker",
         username: "igormbecker",
         email: "igormbecker@gmail.com",
-        password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -56,6 +56,87 @@ describe("POST /api/v1/users", () => {
       expect(incorrectPasswordMatch).toBe(false);
     });
 
+    test.each([
+      null,
+      {},
+      {
+        name: " ",
+        username: "reader",
+        email: "reader@trama.test",
+        password: "password123",
+      },
+      {
+        name: "Reader",
+        username: "invalid user",
+        email: "reader@trama.test",
+        password: "password123",
+      },
+      {
+        name: "Reader",
+        username: "reader",
+        email: "invalid",
+        password: "password123",
+      },
+      {
+        name: "Reader",
+        username: "reader",
+        email: "reader@trama.test",
+        password: "short",
+      },
+      {
+        name: "Reader",
+        username: 123,
+        email: "reader@trama.test",
+        password: "password123",
+      },
+    ])(
+      "Rejects invalid registration data without inserting a user: %#",
+      async (input) => {
+        const before = await database.query(
+          "SELECT count(*)::int AS count FROM users;",
+        );
+        const response = await fetch("http://127.0.0.1:3002/api/v1/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(input),
+        });
+        expect(response.status).toBe(400);
+        expect((await response.json()).name).toBe("ValidationError");
+        const after = await database.query(
+          "SELECT count(*)::int AS count FROM users;",
+        );
+        expect(after.rows[0].count).toBe(before.rows[0].count);
+      },
+    );
+
+    test("Normalizes profile fields and allows the new account to sign in", async () => {
+      const response = await fetch("http://127.0.0.1:3002/api/v1/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: " Reader ",
+          username: " new.reader ",
+          email: " new-reader@trama.test ",
+          password: "example-password",
+        }),
+      });
+      expect(response.status).toBe(201);
+      const body = await response.json();
+      expect(body.name).toBe("Reader");
+      expect(body.username).toBe("new.reader");
+      expect(body.email).toBe("new-reader@trama.test");
+      expect(body).not.toHaveProperty("password");
+      const login = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: body.email,
+          password: "example-password",
+        }),
+      });
+      expect(login.status).toBe(201);
+      expect(login.headers.get("set-cookie")).toContain("trama_session_id=");
+    });
     test("With duplicated 'email'", async () => {
       const response1 = await fetch("http://127.0.0.1:3002/api/v1/users", {
         method: "POST",

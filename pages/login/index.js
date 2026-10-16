@@ -11,7 +11,7 @@ export async function getServerSideProps({ req, res }) {
     await authentication.authenticateSession(req.cookies?.trama_session_id);
 
     return {
-      redirect: { destination: "/obras", permanent: false },
+      redirect: { destination: "/works", permanent: false },
     };
   } catch (error) {
     if (error instanceof UnauthorizedError) {

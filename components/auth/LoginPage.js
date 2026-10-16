@@ -25,7 +25,7 @@ export default function LoginPage() {
     try {
       await signIn(email, password);
       setPassword("");
-      await router.replace("/obras");
+      await router.replace("/works");
     } catch (error) {
       setError(error.message);
     } finally {
@@ -84,6 +84,11 @@ export default function LoginPage() {
           <p className={styles.formDescription}>
             Use seu e-mail e senha para continuar.
           </p>
+          {router.query.registration === "complete" ? (
+            <p className={styles.success} role="status">
+              Conta criada! Entre com seu e-mail e senha.
+            </p>
+          ) : null}
           <form
             method="post"
             onSubmit={handleSubmit}
@@ -129,8 +134,8 @@ export default function LoginPage() {
               {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
           </form>
-          <Link className={styles.backLink} href="/">
-            Voltar à página inicial
+          <Link className={styles.backLink} href="/register">
+            Ainda não tem conta? Criar sua conta
           </Link>
         </div>
       </section>
