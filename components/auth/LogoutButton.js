@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
+import { useAuth } from "./AuthProvider";
 import { useState } from "react";
 import { signOut } from "./authClient";
 import styles from "./auth.module.css";
 
 export default function LogoutButton() {
   const router = useRouter();
+  const { clearUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,6 +20,7 @@ export default function LogoutButton() {
 
     try {
       await signOut();
+      await clearUser();
       await router.replace("/login");
     } catch (error) {
       setError(error.message);

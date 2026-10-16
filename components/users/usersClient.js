@@ -27,10 +27,13 @@ async function request(path, method, body) {
   if (response.status === 400) {
     const body = await response.json().catch(() => ({}));
     const messages = {
+      "Password confirmation does not match.": "As senhas não coincidem.",
       "The informed username is already in use.":
         "Este nome de usuário já está em uso.",
       "The informed e-mail is already in use.":
         "Este e-mail já está cadastrado.",
+      "At least one administrator must remain.":
+        "É necessário manter pelo menos um administrador.",
       "You cannot delete your own account.":
         "Você não pode remover sua própria conta.",
     };
@@ -50,14 +53,25 @@ async function request(path, method, body) {
 export function listUsers() {
   return request("/api/v1/users", "GET");
 }
-export function saveUser(values, originalUsername) {
+export async function saveUser(values, originalUsername) {
+  const password = values.password ?? "";
+  const confirmation = values.password_confirmation ?? "";
+  if (originalUsername && password !== confirmation) {
+    throw new Error("As senhas não coincidem.");
+  }
   const body = {
     name: values.name.trim(),
     username: values.username.trim(),
     email: values.email.trim(),
   };
-  if (!originalUsername || values.password !== "") {
-    body.password = values.password;
+  if (originalUsername && typeof values.is_admin === "boolean") {
+    body.is_admin = values.is_admin;
+  }
+  if (!originalUsername || password !== "") {
+    body.password = password;
+    if (originalUsername) {
+      body.password_confirmation = confirmation;
+    }
   }
   return request(
     originalUsername

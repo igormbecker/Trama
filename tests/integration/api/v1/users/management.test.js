@@ -109,7 +109,7 @@ test.each([
   { email: "invalid" },
   { password: "short" },
   { password: null },
-  { is_admin: true },
+  { is_admin: "admin" },
   { id: "other" },
   null,
 ])("Rejects invalid or protected update fields: %#", async (input) => {

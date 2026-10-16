@@ -22,11 +22,14 @@ async function getHandler(request, response) {
     .json(user.toPublic(await user.findOneByUsername(request.query.username)));
 }
 async function patchHandler(request, response) {
-  return response
-    .status(200)
-    .json(
-      user.toPublic(await user.update(request.query.username, request.body)),
-    );
+  return response.status(200).json(
+    user.toPublic(
+      await user.update(request.query.username, request.body, {
+        allowRoleChange: true,
+        requirePasswordConfirmation: true,
+      }),
+    ),
+  );
 }
 async function deleteHandler(request, response) {
   await user.remove(request.query.username, request.administrator.id);

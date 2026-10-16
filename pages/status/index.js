@@ -1,6 +1,8 @@
-﻿import useSWR from "swr";
+import useSWR from "swr";
 import styles from "./status.module.css";
-import { useState } from "react";
+import HomeLayout from "components/home/HomeLayout";
+import { useRouter } from "next/router";
+import { getStatusReturnPath } from "components/home/statusNavigation";
 
 async function fetchAPI(url) {
   const response = await fetch(url);
@@ -13,7 +15,11 @@ async function fetchAPI(url) {
 }
 
 export default function StatusPage() {
-  const [theme, setTheme] = useState("light");
+  const router = useRouter();
+
+  function handleBack() {
+    router.replace(getStatusReturnPath(router.query.returnTo));
+  }
   const { data, error, isLoading } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 5000,
   });
@@ -30,7 +36,7 @@ export default function StatusPage() {
   let jsonResult = "Loading...";
 
   if (data) {
-    updatedAt = new Date(data.updated_at).toLocaleString("pt-BR");
+    updatedAt = new Date(data.updated_at).toLocaleString("en-US");
     jsonResult = JSON.stringify(data, null, 2);
     statusLabel = isHealthy ? "Healthy" : "Disconnected";
   }
@@ -50,10 +56,12 @@ export default function StatusPage() {
 
   if (error) {
     statusLabel = "Unavailable";
+    statusClass = styles.unavailable;
+    connectionMessage = "Unable to confirm system availability.";
 
     errorMessage = (
       <p className={styles.error} role="alert">
-        Unable to retrieve the current status. Please try again shortly.
+        Unable to retrieve the current status. We will retry automatically.
       </p>
     );
 
@@ -64,35 +72,30 @@ export default function StatusPage() {
   }
 
   return (
-    <div className={styles.page} data-theme={theme}>
-      <style jsx global>{`
-        body {
-          margin: 0;
-        }
-      `}</style>
-      <header className={styles.header}>
-        <span className={styles.brand}>&gt;_Diagnostics center</span>
-        <label className={styles.themeControl}>
-          Tema
-          <select
-            value={theme}
-            onChange={(event) => setTheme(event.target.value)}
-          >
-            <option value="light">Claro</option>
-            <option value="dark">Escuro</option>
-          </select>
-        </label>
-      </header>
-
-      <main className={styles.main}>
+    <HomeLayout
+      title="Infrastructure status | Trama"
+      description="Monitor Trama availability and the database connection."
+      navigation={
+        <button
+          className={styles.backButton}
+          type="button"
+          onClick={handleBack}
+        >
+          <span aria-hidden="true">← </span>Back
+        </button>
+      }
+    >
+      <section className={styles.main} aria-labelledby="status-title" lang="en">
         <div className={styles.introduction}>
           <div>
-            <h1 className={styles.title}>Infrastructure status</h1>
+            <h1 className={styles.title} id="status-title">
+              Infrastructure status
+            </h1>
             <p className={styles.subtitle}>{connectionMessage}</p>
           </div>
 
           <span className={`${styles.badge} ${statusClass}`} role="status">
-            ● {statusLabel}
+            <span aria-hidden="true">●</span> {statusLabel}
           </span>
         </div>
 
@@ -111,13 +114,11 @@ export default function StatusPage() {
         </div>
 
         <p className={styles.updatedAt}>Last updated · {updatedAt}</p>
-      </main>
-
-      <footer className={styles.footer}>
-        <span>/api/v1/status</span>
-        <span>&gt;_bectec.</span>
-      </footer>
-    </div>
+        <p className={styles.updateHint}>
+          This page refreshes automatically every 5 seconds.
+        </p>
+      </section>
+    </HomeLayout>
   );
 }
 

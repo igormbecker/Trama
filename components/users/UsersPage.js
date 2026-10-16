@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
 import { listUsers, saveUser, removeUser } from "./usersClient";
 import styles from "./users.module.css";
@@ -6,6 +7,7 @@ import styles from "./users.module.css";
 const emptyValues = { name: "", username: "", email: "", password: "" };
 
 export default function UsersPage({ user, initialUsers }) {
+  const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
   const [editingUser, setEditingUser] = useState(null);
@@ -42,6 +44,8 @@ export default function UsersPage({ user, initialUsers }) {
             username: selectedUser.username,
             email: selectedUser.email,
             password: "",
+            password_confirmation: "",
+            is_admin: selectedUser.is_admin,
           }
         : emptyValues,
     );
@@ -85,10 +89,14 @@ export default function UsersPage({ user, initialUsers }) {
     setFormError("");
     try {
       const savedUser = await saveUser(formValues, editingUser?.username);
-      // The public registration response does not include administrative fields.
+      if (savedUser.id === user.id && !savedUser.is_admin) {
+        await router.replace("/works");
+        return;
+      }
+      // Public registration returns a regular account without the role field.
       const publicUser = {
         ...savedUser,
-        is_admin: editingUser?.is_admin ?? false,
+        is_admin: savedUser.is_admin ?? false,
       };
       setUsers((current) =>
         editingUser
@@ -240,6 +248,25 @@ export default function UsersPage({ user, initialUsers }) {
                     disabled={isBusy}
                   />
                 </div>
+                {editingUser ? (
+                  <div className={styles.field}>
+                    <label htmlFor="user-role">Perfil</label>
+                    <select
+                      id="user-role"
+                      value={formValues.is_admin ? "admin" : "user"}
+                      onChange={(event) =>
+                        setFormValues((current) => ({
+                          ...current,
+                          is_admin: event.target.value === "admin",
+                        }))
+                      }
+                      disabled={isBusy}
+                    >
+                      <option value="user">Usuário</option>
+                      <option value="admin">Administrador</option>
+                    </select>
+                  </div>
+                ) : null}
                 <div className={styles.field}>
                   <label htmlFor="password">
                     {editingUser ? "Nova senha (opcional)" : "Senha"}
@@ -249,7 +276,9 @@ export default function UsersPage({ user, initialUsers }) {
                     name="password"
                     type="password"
                     autoComplete="new-password"
-                    required={!editingUser}
+                    required={
+                      !editingUser || Boolean(formValues.password_confirmation)
+                    }
                     minLength={8}
                     maxLength={128}
                     aria-describedby="password-hint"
@@ -259,10 +288,29 @@ export default function UsersPage({ user, initialUsers }) {
                   />
                   <small id="password-hint">
                     {editingUser
-                      ? "Deixe em branco para manter a senha atual."
+                      ? "Deixe os dois campos em branco para manter a senha atual."
                       : "Use pelo menos 8 caracteres."}
                   </small>
                 </div>
+                {editingUser ? (
+                  <div className={styles.field}>
+                    <label htmlFor="password-confirmation">
+                      Confirmar nova senha
+                    </label>
+                    <input
+                      id="password-confirmation"
+                      name="password_confirmation"
+                      type="password"
+                      autoComplete="new-password"
+                      minLength={8}
+                      maxLength={128}
+                      required={Boolean(formValues.password)}
+                      value={formValues.password_confirmation}
+                      onChange={handleChange}
+                      disabled={isBusy}
+                    />
+                  </div>
+                ) : null}
               </div>
               {formError ? (
                 <p id="user-form-error" className={styles.error} role="alert">

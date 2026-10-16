@@ -1,16 +1,23 @@
 import Link from "next/link";
+import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HomeLayout, { TramaMark } from "components/home/HomeLayout";
 import { signIn } from "./authClient";
 import styles from "./auth.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { refreshUser, clearUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // The server only renders this form when the visitor has no valid session.
+  useEffect(() => {
+    clearUser();
+  }, [clearUser]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -24,6 +31,7 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
+      refreshUser().catch(() => {});
       setPassword("");
       await router.replace("/works");
     } catch (error) {

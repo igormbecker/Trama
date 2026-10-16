@@ -1,6 +1,8 @@
 import Head from "next/head";
+import { useAuth } from "components/auth/AuthProvider";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useTheme } from "components/theme/ThemeProvider";
 import styles from "./homeLayout.module.css";
 
 export const systemStatusLink = "/status";
@@ -39,8 +41,13 @@ export default function HomeLayout({
   title = "Trama — Gestão editorial colaborativa",
   description = "Conheça o Trama: uma proposta para conectar pessoas, capítulos e etapas da produção editorial, da organização da obra à aprovação.",
   navigation,
+  showThemeControl = true,
 }) {
-  const [theme, setTheme] = useState("light");
+  const { theme, setTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+  const statusReturnPath =
+    router.pathname === "/status" ? "/" : router.asPath || "/";
 
   return (
     <div className={styles.site} lang="pt-BR" data-theme={theme}>
@@ -74,16 +81,18 @@ export default function HomeLayout({
             </>
           )}
         </nav>
-        <label className={styles.themeControl}>
-          <span>Tema</span>
-          <select
-            value={theme}
-            onChange={(event) => setTheme(event.target.value)}
-          >
-            <option value="light">Claro</option>
-            <option value="dark">Escuro</option>
-          </select>
-        </label>
+        {showThemeControl && !isAuthenticated ? (
+          <label className={styles.themeControl}>
+            <span>Tema</span>
+            <select
+              value={theme}
+              onChange={(event) => setTheme(event.target.value)}
+            >
+              <option value="light">Claro</option>
+              <option value="dark">Escuro</option>
+            </select>
+          </label>
+        ) : null}
       </header>
       <main id="conteudo">{children}</main>
       <footer className={styles.footer}>
@@ -107,7 +116,13 @@ export default function HomeLayout({
             <span>Desenvolvido por</span>
             <Brand />
           </div>
-          <Link className={styles.statusLink} href={systemStatusLink}>
+          <Link
+            className={styles.statusLink}
+            href={{
+              pathname: systemStatusLink,
+              query: { returnTo: statusReturnPath },
+            }}
+          >
             Status do sistema <span aria-hidden="true">↗</span>
           </Link>
         </div>

@@ -176,6 +176,7 @@ describe("PATCH /api/v1/users/[username]", () => {
           },
           body: JSON.stringify({
             password: "newpassword123",
+            password_confirmation: "newpassword123",
           }),
         },
       );
@@ -211,4 +212,61 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(incorrectPasswordMatch).toBe(false);
     });
   });
+});
+
+test.each([
+  { password: "new-password" },
+  { password: "new-password", password_confirmation: "different-password" },
+  { password: "", password_confirmation: "confirmation-only" },
+])(
+  "Rejects mismatched administrative password changes on the server: %#",
+  async (input) => {
+    const target = await orchestrator.createUser({});
+    const response = await fetch(
+      `http://127.0.0.1:3002/api/v1/users/${target.username}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: administratorCookie,
+        },
+        body: JSON.stringify(input),
+      },
+    );
+    expect(response.status).toBe(400);
+    expect((await response.json()).message).toBe(
+      "Password confirmation does not match.",
+    );
+    expect(
+      await password.compare(
+        "validpassword",
+        (await user.findOneByUsername(target.username)).password,
+      ),
+    ).toBe(true);
+  },
+);
+test("Preserves the password when both administrative fields are blank", async () => {
+  const target = await orchestrator.createUser({});
+  const response = await fetch(
+    `http://127.0.0.1:3002/api/v1/users/${target.username}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: administratorCookie,
+      },
+      body: JSON.stringify({
+        name: "Unchanged password",
+        password: "",
+        password_confirmation: "",
+      }),
+    },
+  );
+  expect(response.status).toBe(200);
+  expect(
+    await password.compare(
+      "validpassword",
+      (await user.findOneByUsername(target.username)).password,
+    ),
+  ).toBe(true);
 });

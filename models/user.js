@@ -153,15 +153,67 @@ function validateRegistrationInput(input) {
   return values;
 }
 
-async function update(username, userInputValues) {
+function validatePasswordConfirmation(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new ValidationError({ message: "Invalid registration data." });
+  }
+  const { password_confirmation, ...values } = input;
+  if ("password" in input || "password_confirmation" in input) {
+    if (
+      typeof values.password !== "string" ||
+      typeof password_confirmation !== "string" ||
+      values.password !== password_confirmation
+    ) {
+      throw new ValidationError({
+        message: "Password confirmation does not match.",
+        action: "Enter the same new password in both fields.",
+      });
+    }
+    if (values.password === "") {
+      delete values.password;
+    }
+  }
+  return values;
+}
+
+async function updateOwnAccount(currentUser, input) {
+  return await update(currentUser.username, input, {
+    requirePasswordConfirmation: true,
+  });
+}
+
+async function update(
+  username,
+  userInputValues,
+  { allowRoleChange = false, requirePasswordConfirmation = false } = {},
+) {
   const currentUser = await findOneByUsername(username);
+  if (requirePasswordConfirmation) {
+    const values = validatePasswordConfirmation(userInputValues);
+    const hasPasswordFields =
+      "password" in userInputValues ||
+      "password_confirmation" in userInputValues;
+    if (hasPasswordFields && Object.keys(values).length === 0) {
+      return currentUser;
+    }
+    userInputValues = values;
+  }
   const allowedFields = ["name", "username", "email", "password"];
+  if (allowRoleChange) {
+    allowedFields.push("is_admin");
+  }
   if (
     !userInputValues ||
     typeof userInputValues !== "object" ||
     Array.isArray(userInputValues) ||
     Object.keys(userInputValues).length === 0 ||
     Object.keys(userInputValues).some((key) => !allowedFields.includes(key))
+  ) {
+    throw new ValidationError({ message: "Invalid registration data." });
+  }
+  if (
+    "is_admin" in userInputValues &&
+    typeof userInputValues.is_admin !== "boolean"
   ) {
     throw new ValidationError({ message: "Invalid registration data." });
   }
@@ -174,7 +226,10 @@ async function update(username, userInputValues) {
         : "unchanged-password",
   });
   userInputValues = Object.fromEntries(
-    Object.keys(userInputValues).map((key) => [key, validatedValues[key]]),
+    Object.keys(userInputValues).map((key) => [
+      key,
+      key === "is_admin" ? userInputValues.is_admin : validatedValues[key],
+    ]),
   );
 
   if ("username" in userInputValues) {
@@ -190,11 +245,30 @@ async function update(username, userInputValues) {
   }
 
   const userWithNewValues = { ...currentUser, ...userInputValues };
-  const updateUser = await runUpdateQuery(userWithNewValues);
-  return updateUser;
+  if (!("is_admin" in userInputValues)) {
+    return await runUpdateQuery(userWithNewValues);
+  }
 
-  async function runUpdateQuery(userWithNewValues) {
-    const results = await database.query({
+  let client;
+  try {
+    client = await database.getNewClient();
+    await client.query("BEGIN");
+    await client.query("LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE");
+    if (!userInputValues.is_admin) {
+      await requireAnotherAdministrator(client, currentUser.id);
+    }
+    const updatedUser = await runUpdateQuery(userWithNewValues, client);
+    await client.query("COMMIT");
+    return updatedUser;
+  } catch (error) {
+    await client?.query("ROLLBACK");
+    throw error;
+  } finally {
+    await client?.end();
+  }
+
+  async function runUpdateQuery(userWithNewValues, executor = database) {
+    const results = await executor.query({
       text: `
         UPDATE
           users
@@ -203,6 +277,7 @@ async function update(username, userInputValues) {
           username = $3,
           email = $4,
           password = $5,
+          is_admin = COALESCE($6::boolean, is_admin),
           updated_at = timezone('utc', now())
         WHERE
           id = $1
@@ -215,6 +290,7 @@ async function update(username, userInputValues) {
         userWithNewValues.username,
         userWithNewValues.email,
         userWithNewValues.password,
+        "is_admin" in userInputValues ? userInputValues.is_admin : null,
       ],
     });
 
@@ -288,6 +364,24 @@ async function findAll() {
   return result.rows.map(toPublic);
 }
 
+async function requireAnotherAdministrator(client, userId) {
+  const target = await client.query({
+    text: "SELECT is_admin FROM users WHERE id = $1",
+    values: [userId],
+  });
+  if (target.rows[0]?.is_admin) {
+    const result = await client.query(
+      "SELECT count(*)::int AS count FROM users WHERE is_admin = true",
+    );
+    if (result.rows[0].count <= 1) {
+      throw new ValidationError({
+        message: "At least one administrator must remain.",
+        action: "Promote another account before changing this administrator.",
+      });
+    }
+  }
+}
+
 async function remove(username, administratorId) {
   const target = await findOneByUsername(username);
   if (target.id === administratorId) {
@@ -300,6 +394,8 @@ async function remove(username, administratorId) {
   try {
     client = await database.getNewClient();
     await client.query("BEGIN");
+    await client.query("LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE");
+    await requireAnotherAdministrator(client, target.id);
     await client.query({
       text: "DELETE FROM sessions WHERE user_id = $1;",
       values: [target.id],
@@ -318,6 +414,7 @@ async function remove(username, administratorId) {
 }
 
 const user = {
+  updateOwnAccount,
   toPublic,
   findAll,
   remove,

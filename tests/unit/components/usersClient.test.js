@@ -108,3 +108,63 @@ test("Explains network errors", async () => {
     "Não foi possível conectar. Tente novamente.",
   );
 });
+
+test("Sends an explicit role change only when editing an existing user", async () => {
+  const mock = jest
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue({ status: 200, json: async () => ({ is_admin: true }) });
+  await saveUser(
+    {
+      name: "Reader",
+      username: "reader",
+      email: "reader@trama.test",
+      password: "",
+      is_admin: true,
+    },
+    "reader",
+  );
+  expect(JSON.parse(mock.mock.calls[0][1].body).is_admin).toBe(true);
+});
+
+test("Includes confirmation when an administrator changes an existing password", async () => {
+  const mock = jest
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue({ status: 200, json: async () => ({}) });
+  await saveUser(
+    {
+      name: "Reader",
+      username: "reader",
+      email: "reader@trama.test",
+      password: "new-password",
+      password_confirmation: "new-password",
+    },
+    "reader",
+  );
+  expect(JSON.parse(mock.mock.calls[0][1].body)).toMatchObject({
+    password: "new-password",
+    password_confirmation: "new-password",
+  });
+});
+test.each([
+  ["new-password", "different-password"],
+  ["new-password", ""],
+  ["", "confirmation-only"],
+])(
+  "Does not submit a mismatched administrative password pair",
+  async (password, confirmation) => {
+    const mock = jest.spyOn(globalThis, "fetch");
+    await expect(
+      saveUser(
+        {
+          name: "Reader",
+          username: "reader",
+          email: "reader@trama.test",
+          password,
+          password_confirmation: confirmation,
+        },
+        "reader",
+      ),
+    ).rejects.toThrow("As senhas não coincidem.");
+    expect(mock).not.toHaveBeenCalled();
+  },
+);
