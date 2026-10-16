@@ -20,6 +20,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Cadastro público, login e logout, com validações e senhas armazenadas como hash.
 - [x] Sessões no PostgreSQL, cookie de autenticação HttpOnly e expiração fixa de 24 horas.
 - [x] Proteção das páginas autenticadas e das APIs administrativas.
+- [x] API de migrations protegida: GET e POST exigem sessão válida e administrador, sem cache. A preparação inicial do banco é feita pelo comando de migrations.
 - [x] Menu autenticado com Minhas obras, Minha conta e Usuários para administradores.
 - [x] Administração de usuários: listar, buscar na lista, adicionar, editar e remover.
 - [x] Edição de perfil administrativo, bloqueio de exclusão da própria conta e proteção para manter ao menos um administrador.
@@ -150,7 +151,7 @@ A sessão atual expira em 24 horas sem renovação automática. Não alterar ess
 
 Esta lista registra trabalho a verificar, não afirma que a configuração de produção foi auditada ou que esses controles já existem.
 
-- [ ] Revisar a exposição de /api/v1/migrations: GET e POST atualmente não têm autenticação no handler. Definir execução de migrations e acesso apropriados antes da publicação.
+- [ ] Definir o procedimento operacional de migrations em produção e de preparação inicial do banco. GET e POST de /api/v1/migrations já exigem sessão válida e administrador; a autenticação depende das tabelas existentes.
 - [ ] Conferir banco de produção, SSL, variáveis de ambiente e PASSWORD_PEPPER exclusivo, sem versionar segredos.
 - [ ] Definir criação explícita do primeiro administrador em cada ambiente, sem promoção automática por e-mail, nome ou ordem de cadastro.
 - [ ] Revisar limites de tentativas de login, cadastro e recuperação de senha.

@@ -1,8 +1,17 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import migrator from "models/migrator.js";
+import authentication from "models/authentication.js";
 
 const router = createRouter();
+
+router.use(async (request, response, next) => {
+  response.setHeader("Cache-Control", "private, no-store");
+  await authentication.authenticateAdministrator(
+    request.cookies?.trama_session_id,
+  );
+  await next();
+});
 
 router.get(getHandler);
 router.post(postHandler);

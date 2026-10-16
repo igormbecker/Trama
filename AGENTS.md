@@ -101,7 +101,7 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 - `GET /api/v1/users` e `GET/PATCH/DELETE /api/v1/users/[username]` são administrativos: retornam `401` sem sessão e `403` para contas comuns, não expõem hashes e não permitem cache. A edição administrativa aceita nome, usuário, e-mail, senha e is_admin booleano. PATCH /api/v1/user edita somente os dados da conta vinculada à sessão e rejeita campos privilegiados. Para trocar a senha, tanto na própria conta quanto na edição administrativa, exige password e password_confirmation coincidentes; campos vazios preservam a senha atual e a confirmação nunca é armazenada. Remover uma conta apaga suas sessões e o usuário em uma transação.
 - A página pública `/status` usa o `HomeLayout` e a identidade visual compartilhada do Trama, rótulos e mensagens técnicas em inglês e atualização automática a cada 5 segundos. O link do rodapé informa a página de origem no parâmetro returnTo. O botão Voltar retorna a esse caminho interno e, na abertura direta, à página inicial; caminhos externos são recusados.
 - `/api/v1/status` consulta versão do PostgreSQL, limite de conexões e conexões abertas, retornando também um horário.
-- `GET /api/v1/migrations` consulta migrations pendentes; `POST` as aplica e retorna 201 se executou alguma, ou 200 quando não há pendências. Outros métodos retornam 405.
+- `GET /api/v1/migrations` consulta migrations pendentes; `POST` as aplica e retorna 201 se executou alguma, ou 200 quando não há pendências. Ambos exigem sessão válida e perfil de administrador e usam `Cache-Control: private, no-store`. Outros métodos retornam 405 após autenticação administrativa. A preparação inicial do banco deve ocorrer pelo comando de migrations, pois a autenticação depende das tabelas de usuários e sessões.
 
 ## Banco, configurações e migrations
 
@@ -137,7 +137,6 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 
 Estes pontos foram observados por leitura de código; não são autorização para corrigir tudo em qualquer tarefa:
 
-- A rota POST de migrations não possui autenticação no código. Verifique proteção e exposição antes de depender dela em produção.
 - Há chamadas a `.end()` em blocos `finally` que podem receber cliente indefinido após falha de conexão, encobrindo o erro original.
 - Persistência do banco local e isolamento do banco de testes precisam ser considerados conforme o uso evoluir.
 - Alguns exemplos do Notion estão defasados: status antigo com `1 + 1`, configuração antiga de SSL/Jest e o nome incorreto `POSTGRESS_PASSWORD` em um comando.
