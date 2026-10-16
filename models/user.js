@@ -397,6 +397,21 @@ async function remove(username, administratorId) {
     await client.query("LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE");
     await requireAnotherAdministrator(client, target.id);
     await client.query({
+      text: "SELECT id FROM users WHERE id = $1 FOR UPDATE",
+      values: [target.id],
+    });
+    const ownedWorks = await client.query({
+      text: "SELECT id FROM works WHERE owner_id = $1 LIMIT 1",
+      values: [target.id],
+    });
+    if (ownedWorks.rowCount > 0) {
+      throw new ValidationError({
+        message:
+          "Transfer responsibility for your works before deleting this account.",
+        action: "This account must remain while it is responsible for works.",
+      });
+    }
+    await client.query({
       text: "DELETE FROM sessions WHERE user_id = $1;",
       values: [target.id],
     });

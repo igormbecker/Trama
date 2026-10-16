@@ -60,3 +60,79 @@
     padding: 40px 22px;
   }
 }
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--preview-paper);
+  padding: 28px;
+  margin-bottom: 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.panel h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+.panel p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.panel a,
+.workspace > a {
+  color: var(--accent);
+}
+.panel form {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+.panel input,
+.panel textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--preview-paper);
+  color: inherit;
+  font: inherit;
+  padding: 12px;
+}
+.panel textarea {
+  resize: vertical;
+}
+.panel button {
+  justify-self: start;
+  background: var(--accent);
+  color: var(--paper);
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  padding: 12px 24px;
+  cursor: pointer;
+}
+.panel button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.workList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.description {
+  white-space: pre-wrap;
+}
+@media (max-width: 720px) {
+  .panel {
+    padding: 20px;
+  }
+}

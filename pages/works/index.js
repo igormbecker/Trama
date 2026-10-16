@@ -1,3 +1,4 @@
+import work from "models/work.js";
 import WorksPage from "components/works/WorksPage";
 import authentication from "models/authentication.js";
 import { UnauthorizedError } from "infra/errors.js";
@@ -14,6 +15,9 @@ export async function getServerSideProps({ req, res }) {
 
     return {
       props: {
+        works: JSON.parse(
+          JSON.stringify(await work.findAllByOwner(authenticatedUser.id)),
+        ),
         user: {
           id: authenticatedUser.id,
           name: authenticatedUser.name,

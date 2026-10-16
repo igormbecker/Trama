@@ -27,6 +27,8 @@ async function request(path, method, body) {
   if (response.status === 400) {
     const body = await response.json().catch(() => ({}));
     const messages = {
+      "Transfer responsibility for your works before deleting this account.":
+        "Esta conta é responsável por obras e não pode ser removida.",
       "Password confirmation does not match.": "As senhas não coincidem.",
       "The informed username is already in use.":
         "Este nome de usuário já está em uso.",
