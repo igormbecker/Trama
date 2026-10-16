@@ -36,6 +36,36 @@ export function TramaMark() {
   );
 }
 
+function TramaThread() {
+  return (
+    <svg
+      className={styles.footerMark}
+      viewBox="0 0 76 44"
+      fill="none"
+      aria-hidden="true"
+    >
+      <ellipse
+        cx="28"
+        cy="19"
+        rx="22"
+        ry="12"
+        transform="rotate(-25 28 19)"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <ellipse
+        cx="46"
+        cy="25"
+        rx="22"
+        ry="12"
+        transform="rotate(-25 46 25)"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
 export default function HomeLayout({
   children,
   title = "Trama — Gestão editorial colaborativa",
@@ -105,11 +135,14 @@ export default function HomeLayout({
             <TramaMark />
             <span>trama</span>
           </Link>
-          <p>
-            Pessoas, ideias e capítulos.
-            <br />
-            Uma obra construída em conjunto.
-          </p>
+          <div className={styles.footerMessage}>
+            <p>
+              Pessoas, ideias e capítulos.
+              <br />
+              Uma obra construída em conjunto.
+            </p>
+            <TramaThread />
+          </div>
         </div>
         <div className={styles.footerBottom}>
           <div className={styles.signature}>

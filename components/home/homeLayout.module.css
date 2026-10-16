@@ -227,3 +227,15 @@
     gap: 10px;
   }
 }
+
+.footerMessage {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.footerMessage .footerMark {
+  width: 64px;
+  height: 40px;
+  flex-shrink: 0;
+  color: var(--accent);
+}

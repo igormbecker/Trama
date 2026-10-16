@@ -22,7 +22,8 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Proteção das páginas autenticadas e das APIs administrativas.
 - [x] API de migrations protegida: GET e POST exigem sessão válida e administrador, sem cache. A preparação inicial do banco é feita pelo comando de migrations.
 - [x] Menu autenticado com Minhas obras, Minha conta e Usuários para administradores.
-- [x] Primeira versão de obras: criar, listar e abrir obras privadas, com acesso restrito ao responsável e bloqueio de exclusão de contas responsáveis por obras.
+- [x] Primeira versão de obras: criar, listar e abrir obras privadas e bloquear exclusão de contas responsáveis por obras.
+- [x] Participantes e convites do MVP: responsável convida organizadores por link, com aceite pelo e-mail correspondente e acesso de consulta revogável.
 - [x] Administração de usuários: listar, buscar na lista, adicionar, editar e remover.
 - [x] Edição de perfil administrativo, bloqueio de exclusão da própria conta e proteção para manter ao menos um administrador.
 - [x] Minha conta: editar dados pessoais e alterar a própria senha com confirmação.
@@ -31,7 +32,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Página de status no novo estilo, conteúdo técnico em inglês e retorno à página anterior.
 - [x] Ajustes de alinhamento dos formulários e suporte aos temas claro e escuro.
 
-Esses itens descrevem funcionalidades existentes, não uma garantia permanente de testes ou deploy. A página Minhas obras já permite criar, listar e abrir obras próprias. A prévia de capítulos da página pública continua ilustrativa; participantes, capítulos e o fluxo editorial ainda não foram implementados.
+Esses itens descrevem funcionalidades existentes, não uma garantia permanente de testes ou deploy. A página Minhas obras já permite criar, listar e abrir obras próprias. A prévia de capítulos da página pública continua ilustrativa; capítulos e o fluxo editorial ainda não foram implementados. Organizadores aceitos já podem consultar as obras das quais participam.
 
 ## Sequência sugerida
 
@@ -86,19 +87,41 @@ Critério de conclusão: uma pessoa autorizada cria e abre sua obra; outra pesso
 
 Implementação: tabela `works`, model `models/work.js`, GET/POST `/api/v1/works`, GET `/api/v1/works/[id]` e páginas `/works` e `/works/[id]`. O responsável vem da sessão, campos adicionais são rejeitados, descrições omitidas viram texto vazio e títulos/descrições têm espaços externos removidos. A listagem usa criação mais recente primeiro, com desempate por identificador. Acesso a obra alheia, inexistente ou com identificador inválido retorna 404. A chave estrangeira impede remover um responsável; a remoção administrativa também valida essa regra em transação e retorna erro compreensível.
 
-A migration foi executada somente no banco de testes nesta entrega. A aplicação do esquema em desenvolvimento continua pelo fluxo habitual de `npm run dev`. Próximo passo recomendado: definir a matriz de permissões e os convites antes de implementar participantes.
+A migration foi executada somente no banco de testes nesta entrega. A aplicação do esquema em desenvolvimento continua pelo fluxo habitual de `npm run dev`. A etapa seguinte de participantes e convites está descrita abaixo.
 
 ## 2. Participantes e convites
 
-- [ ] Definir papéis por obra e uma matriz de permissões para cada ação.
-- [ ] Definir se autores e organizadores precisam de cadastro próprio além da conta de acesso.
-- [ ] Implementar inclusão e remoção de participantes com autorização no servidor.
-- [ ] Definir convites para contas existentes e pessoas ainda não cadastradas.
-- [ ] Implementar aceite, recusa, expiração e cancelamento de convites.
-- [ ] Escolher o canal de convite e, se necessário, o serviço de e-mail.
-- [ ] Testar acesso cruzado entre obras e revogação de participação.
+### Regras confirmadas para o MVP
 
-Critério de conclusão: uma pessoa convidada aceita participar e recebe somente as permissões previstas para sua obra. Convites inválidos, expirados ou cancelados não concedem acesso.
+- Manter simples: apenas responsável e organizador nesta entrega; autores, revisores e permissões sobre capítulos serão definidos quando esses módulos existirem.
+- Somente o responsável convida, gerencia participantes e cancela convites. O organizador tem acesso de consulta à obra e não gerencia convites nem participantes. Administradores globais continuam sem acesso editorial automático.
+- Convites por e-mail, inclusive para pessoas ainda sem cadastro, compartilhados por link; nenhum e-mail é enviado automaticamente.
+- O aceite ou a recusa exige sessão de uma conta com o mesmo e-mail do convite, comparado sem diferenciar maiúsculas e minúsculas. Convites pendentes não concedem acesso.
+- Validade de sete dias. Reenviar para o mesmo e-mail cancela o convite pendente anterior. Convites expirados, recusados, cancelados ou já aceitos não podem ser usados para obter acesso.
+- Remover um organizador revoga o acesso e preserva o registro de participação e os convites. O responsável não pode remover a si mesmo. Um participante removido só volta por novo convite e novo aceite.
+
+### Entrega implementada
+
+- [x] Página `/invitations` (Meus convites) no menu da conta, com contador de pendentes, título da obra, papel, validade, aceite e recusa em vermelho. A lista usa o e-mail atual da conta e exibe somente convites pendentes e válidos; sair da página não exige recuperar o link. Aceitar abre a obra e recusar remove o item da lista. Listagem, isolamento por conta, consumo único entre lista e link, concorrência, estado vazio, navegação, temas e largura de celular foram verificados no ambiente isolado de testes.
+- [x] Criar migrations de participantes e convites com chaves estrangeiras, unicidade de participação por obra/conta e apenas um convite pendente por obra/e-mail.
+- [x] Implementar criação, listagem e cancelamento de convites, com validação de responsável no model.
+- [x] Adicionar botão de cópia por ícone com nome acessível e tooltip, confirmação de sucesso e alternativa por seleção para acesso pelo IP em HTTP. Falhas oferecem orientação para cópia manual. Cópia e permanência do link foram verificadas no navegador pelo IP do WSL.
+- [x] Destacar o cancelamento de convites em vermelho e preservar a marca original Trama no rodapé, com o símbolo de elos à direita da frase “Pessoas, ideias e capítulos. Uma obra construída em conjunto.”.
+- [x] Implementar consulta, aceite e recusa de convite com e-mail correspondente, expiração e consumo único.
+- [x] Listar organizadores e permitir remoção com confirmação na interface, sem apagar a participação do banco.
+- [x] Incluir obras com participação ativa em Minhas obras e autorizar seus detalhes; remover o acesso após a revogação.
+- [x] Cobrir com testes convites antes do cadastro, reenvio, expiração, recusas, cancelamentos, isolamento, remoção e aceites concorrentes.
+- [x] Conferir no navegador geração de link, cadastro posterior, aceite, listagem e detalhes para organizador, remoção e acesso negado após remoção.
+- [ ] Conferir visualmente os novos controles no tema escuro e em celular e simular falhas de rede durante o envio.
+- [ ] Enviar convites por e-mail automaticamente, somente quando essa integração for necessária e escolhida.
+
+Implementação: `models/workInvitation.js`, `models/workParticipant.js`, tabela `work_invitations` e tabela `work_participants`. As rotas de gestão ficam em `/api/v1/works/[id]/invitations` e `/api/v1/works/[id]/participants`, com rotas de cancelamento/remoção por identificador. GET/POST `/api/v1/invitations/[token]` consultam e respondem ao convite. Todos os endpoints exigem sessão e usam cache privado sem armazenamento. A página `/invitations/[token]` orienta visitantes a entrar ou se cadastrar e reabrir o link; somente a conta correspondente vê o título da obra e as ações de resposta.
+
+O token aleatório é retornado somente na criação; o banco guarda seu hash SHA-256. Para compartilhar novamente, o responsável gera um novo convite, invalidando o pendente anterior. Páginas e APIs de convite usam `Referrer-Policy: no-referrer`. Mutações de convites e participantes usam transações e trava por obra; o aceite revalida o convite dentro da transação para evitar consumo duplicado. A remoção registra `removed_at`; a exclusão de uma conta participante preserva a linha com `user_id` nulo. Não há exclusão de contribuições nessa operação; o módulo de conteúdo ainda não existe e sua retenção deve ser definida quando for implementado.
+
+As migrations desta etapa foram aplicadas somente no banco de testes. Para desenvolvimento, o fluxo habitual de `npm run dev` aplica as pendentes. A verificação de e-mail das contas continua como pendência antes da publicação; esta entrega compara o e-mail cadastrado e não implementa confirmação de posse do endereço.
+
+Próximo passo recomendado: validar a entrega com o usuário e definir a estrutura de partes e capítulos e as permissões do organizador antes de implementar o próximo módulo.
 
 ## 3. Partes e capítulos
 
@@ -154,6 +177,14 @@ Não criar todos esses módulos apenas porque existem no legado. Validar a neces
 ## Ideias futuras — escrita acadêmica
 
 Proposta da esposa do usuário: apoiar a construção individual ou colaborativa de artigos, resumos e resumos expandidos para congressos e simpósios, com modelos e orientações por etapa. Detalhes e decisões em aberto estão em [Apoio à escrita acadêmica](academic-writing-idea.md). A ideia foi registrada para não se perder; prioridade, editor de texto e uso de IA ainda não foram definidos.
+
+## Acesso local pela rede doméstica
+
+O acesso ao desenvolvimento pela rede foi solicitado para testar convites em outro aparelho. O encaminhamento da porta 3001 e a regra restrita à sub-rede doméstica são configurações locais do Windows; o PostgreSQL não foi liberado. Os IPs podem mudar ao reiniciar e exigir atualização. `TRAMA_DEV_ORIGINS` define os hosts adicionais permitidos pelo Next.js em desenvolvimento, separados por vírgula; sem a variável, nenhum host adicional é permitido. A configuração local atual usa o IP Wi-Fi do notebook. Esse acesso não constitui deploy na internet.
+
+## Padrão de datas nas migrations
+
+Usar `pgm.func("timezone('utc', now())")` nos defaults de data atual, conforme preferência confirmada pelo usuário. A migration nova de participantes e convites segue esse padrão, incluindo o intervalo de sete dias na expiração dos convites. Uma migration adicional altera apenas os defaults de `sessions.created_at` e `sessions.updated_at`, preservando os valores existentes e a migration histórica. A expiração das sessões continua calculada pelo model, fixa em 24 horas. Essas migrations foram validadas no banco de testes; sua aplicação no desenvolvimento ocorre pelo fluxo habitual de migrations.
 
 ## Pendências de conta e preferências
 
@@ -225,7 +256,7 @@ O usuário também deseja aplicar essa identidade visual ao site da Bectec no fu
 
 Mensagem sugerida:
 
-> Leia AGENTS.md e docs/roadmap.md neste repositório. Confira o código e o estado do Git e vamos retomar por participantes e convites. Antes de implementar, confirme comigo a matriz de permissões e as regras de convite ainda pendentes. Preserve a arquitetura atual e desenvolva com TDD.
+> Leia AGENTS.md e docs/roadmap.md neste repositório. Confira o código e o estado do Git e vamos retomar pela estrutura de partes e capítulos. Antes de implementar, confirme comigo as regras de estrutura e as permissões editoriais ainda pendentes. Preserve a arquitetura atual e desenvolva com TDD.
 
 Na retomada:
 
@@ -237,3 +268,7 @@ Na retomada:
 6. Atualizar este documento com o que foi entregue, decisões tomadas e próximo passo.
 
 Ao manter o roadmap, marcar como concluído somente o que estiver implementado e verificado. Registrar propostas como propostas e não transformar resultados de uma execução de testes em garantias permanentes.
+
+## Padrão visual de ações negativas
+
+Botões de recusar, cancelar e remover usam a cor vermelha do tema, incluindo a recusa de convites, a gestão de participantes e os cancelamentos na administração de usuários. Ações de voltar preservam seu estilo atual.

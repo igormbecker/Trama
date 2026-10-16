@@ -38,6 +38,16 @@
   height: 22px;
   flex-shrink: 0;
 }
+.invitationCount {
+  margin-left: auto;
+  min-width: 22px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  background: var(--selected);
+  color: var(--accent);
+  font-size: 14px;
+  text-align: center;
+}
 .menu a[aria-current="page"] {
   background: var(--selected);
   color: var(--accent);

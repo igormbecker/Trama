@@ -26,31 +26,38 @@ async function create(ownerId, input) {
   return result.rows[0];
 }
 
-async function findAllByOwner(ownerId) {
+async function findAllForUser(userId) {
   const result = await database.query({
-    text: "SELECT * FROM works WHERE owner_id = $1 ORDER BY created_at DESC, id DESC",
-    values: [ownerId],
+    text: `SELECT w.* FROM works w WHERE w.owner_id = $1 OR EXISTS
+      (SELECT 1 FROM work_participants p WHERE p.work_id = w.id AND p.user_id = $1 AND p.removed_at IS NULL)
+      ORDER BY w.created_at DESC, w.id DESC`,
+    values: [userId],
   });
   return result.rows;
 }
-
-async function findOneById(id, ownerId) {
+function validateId(id) {
   if (
     typeof id !== "string" ||
     !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
   ) {
     throw new NotFoundError({ message: "Work not found." });
   }
+}
+async function findOneById(id, userId) {
+  validateId(id);
   const result = await database.query({
-    text: "SELECT * FROM works WHERE id = $1 AND owner_id = $2",
-    values: [id, ownerId],
+    text: `SELECT w.* FROM works w WHERE w.id = $1 AND (w.owner_id = $2 OR EXISTS
+      (SELECT 1 FROM work_participants p WHERE p.work_id = w.id AND p.user_id = $2 AND p.removed_at IS NULL))`,
+    values: [id, userId],
   });
-  if (!result.rowCount) {
-    throw new NotFoundError({ message: "Work not found." });
-  }
+  if (!result.rowCount) throw new NotFoundError({ message: "Work not found." });
   return result.rows[0];
 }
-
-const work = { create, findAllByOwner, findOneById };
-
+async function requireOwner(id, userId) {
+  const storedWork = await findOneById(id, userId);
+  if (storedWork.owner_id !== userId)
+    throw new NotFoundError({ message: "Work not found." });
+  return storedWork;
+}
+const work = { create, findAllForUser, findOneById, requireOwner, validateId };
 export default work;
