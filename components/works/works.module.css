@@ -216,3 +216,19 @@
   background: var(--error-text);
   color: var(--paper);
 }
+.structure > h2 {
+  font-size: 28px;
+  margin: 32px 0 20px;
+}
+.chapter {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 24px;
+}
+.chapter h4 {
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+.structure .actions {
+  margin-bottom: 20px;
+}

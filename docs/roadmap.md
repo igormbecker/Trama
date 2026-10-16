@@ -32,7 +32,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Página de status no novo estilo, conteúdo técnico em inglês e retorno à página anterior.
 - [x] Ajustes de alinhamento dos formulários e suporte aos temas claro e escuro.
 
-Esses itens descrevem funcionalidades existentes, não uma garantia permanente de testes ou deploy. A página Minhas obras já permite criar, listar e abrir obras próprias. A prévia de capítulos da página pública continua ilustrativa; capítulos e o fluxo editorial ainda não foram implementados. Organizadores aceitos já podem consultar as obras das quais participam.
+Esses itens descrevem funcionalidades existentes, não uma garantia permanente de testes ou deploy. A página Minhas obras já permite criar, listar e abrir obras próprias. A prévia de capítulos da página pública continua ilustrativa; os detalhes da obra já mostram partes e capítulos reais, mas a escrita e o fluxo editorial ainda não foram implementados. Organizadores aceitos já podem consultar as obras das quais participam.
 
 ## Sequência sugerida
 
@@ -41,7 +41,7 @@ Esses itens descrevem funcionalidades existentes, não uma garantia permanente d
 | 1        | Primeira versão de obras    | Criar, listar e abrir uma obra com acesso controlado |
 | 2        | Participantes e convites    | Vincular pessoas à obra e definir suas permissões    |
 | 3        | Partes e capítulos          | Estruturar o conteúdo e atribuir responsáveis        |
-| 4        | Entregas e versões          | Receber arquivos com histórico e acesso autorizado   |
+| 4        | Editor, rascunhos e versões | Escrever conteúdo com salvamento e acesso autorizado |
 | 5        | Revisão e aprovação         | Executar um fluxo editorial rastreável               |
 | 6        | Tarefas e acompanhamento    | Mostrar pendências, responsáveis e prazos reais      |
 | Contínua | Qualidade, conta e operação | Preparar o produto para uso e publicação seguros     |
@@ -121,34 +121,70 @@ O token aleatório é retornado somente na criação; o banco guarda seu hash SH
 
 As migrations desta etapa foram aplicadas somente no banco de testes. Para desenvolvimento, o fluxo habitual de `npm run dev` aplica as pendentes. A verificação de e-mail das contas continua como pendência antes da publicação; esta entrega compara o e-mail cadastrado e não implementa confirmação de posse do endereço.
 
-Próximo passo recomendado: validar a entrega com o usuário e definir a estrutura de partes e capítulos e as permissões do organizador antes de implementar o próximo módulo.
+Próximo passo editorial: validar a estrutura de partes e capítulos implementada abaixo e definir atribuição de autores e permissões de escrita antes de implementar o editor. Organizadores continuam com acesso de consulta.
 
 ## 3. Partes e capítulos
 
 Referência criativa para a obra piloto: [Memórias do Futuro e seus quatro capítulos](example-work.md), ideia que o usuário pediu para preservar.
 
-- [ ] Validar a necessidade de partes/seções e sua relação com os capítulos.
-- [ ] Criar, listar, editar e ordenar capítulos dentro da obra.
+### Regras aprovadas e primeira entrega
+
+- [x] Estrutura obra → partes/seções → capítulos. Cada capítulo pertence a uma parte; subcapítulos não entram nesta entrega.
+- [x] Somente o responsável cria, edita e ordena partes e capítulos. Organizadores ativos podem consultar; administradores globais não recebem acesso editorial automático.
+- [x] Partes possuem título obrigatório e ordem. Capítulos possuem título obrigatório, descrição opcional e ordem dentro da parte. Títulos têm até 255 caracteres e descrições até 5.000; espaços externos são removidos. Não há coordenador, autor, prazo ou conteúdo rico nesta entrega.
+- [x] Criar, listar, editar e ordenar partes e capítulos na tela de detalhes da obra, com numeração derivada da ordem e controles para subir/descer.
+- [x] Testar acesso, validação, isolamento entre obras e partes, revogação do organizador e criações concorrentes. A ordenação exige a lista completa, sem repetições ou identificadores externos.
+
+Implementação: tabelas `work_parts` e `chapters`, regras em `models/workStructure.js`, interface em `components/works/StructurePanel.js`. As rotas ficam em `/api/v1/works/[id]/parts` e `/api/v1/works/[id]/parts/[partId]/chapters`: GET lista, POST cria e PATCH na coleção reordena por `{ ids }`. PATCH por identificador edita os dados. As APIs exigem sessão e usam cache privado sem armazenamento. Mutações usam transação e trava por obra, com posições únicas por pai. A migration `1792230000000_create-work-structure` foi aplicada no banco isolado de testes e no desenvolvimento local, criando apenas as novas tabelas.
+
+A criação de parte e capítulo, edição de capítulo e ordenação foram conferidas no navegador com dados descartáveis. Ainda falta conferir os novos controles no tema escuro e em largura de celular e simular falhas de rede/sessão na interface. Nenhum editor rico foi instalado ou implementado nesta etapa.
+
+### Próximas definições
+
 - [ ] Associar autores, organizadores e revisores conforme os papéis definidos.
 - [ ] Definir os estados iniciais e as transições permitidas.
 - [ ] Definir prazos e regras de alteração ou remoção de capítulos com histórico.
-- [ ] Testar permissões tanto na obra quanto no capítulo.
+- [ ] Definir exclusão e arquivamento de partes e capítulos. Não há rotas ou controles de exclusão nesta primeira entrega.
+- [ ] Testar permissões de escrita tanto na obra quanto no capítulo quando os papéis forem definidos.
 
 O legado possui estados como configuração, espera por convites, entrega, revisão, aprovação, aprovação com restrições e atualização. Revisar suas regras antes de reutilizá-los; os nomes da prévia pública não definem uma máquina de estados pronta.
 
 Critério de conclusão: uma obra apresenta sua estrutura real e cada participante entende em quais capítulos atua e quais ações pode realizar.
 
-## 4. Entregas, arquivos e versões
+## 4. Editor, rascunhos e versões
 
-- [ ] Definir formatos, tamanhos, quantidade de arquivos e regras de substituição.
-- [ ] Escolher armazenamento e configurar ambientes separados.
-- [ ] Implementar envio e download autorizados, sem expor arquivos por URLs públicas permanentes sem uma decisão explícita.
-- [ ] Registrar versão, responsável e data de cada entrega.
-- [ ] Preservar versões anteriores e vincular a revisão à versão correta.
-- [ ] Definir retenção e remoção dos arquivos ao arquivar obras ou excluir contas.
-- [ ] Testar falhas de envio e consistência entre banco e armazenamento.
+### Decisões confirmadas para a V1 em 16/10/2026
 
-Critério de conclusão: um autor envia uma nova versão, as anteriores permanecem identificáveis e somente pessoas autorizadas podem consultar os arquivos.
+Estas regras registram o escopo aprovado, ainda não implementado. Substituem a proposta inicial de entregas por arquivos do legado.
+
+- O conteúdo dos capítulos será escrito em um editor de texto rico dentro do Trama e persistido no PostgreSQL, preservando a arquitetura atual.
+- O editor escolhido é o **Tiptap**, integrado ao React do projeto e executado no próprio Trama, usando somente o núcleo e as extensões de código aberto sob licença MIT. A V1 não dependerá de assinatura, Tiptap Cloud ou extensões pagas. Preservar os avisos de autoria e licença; conferir as licenças dos pacotes e fixar as versões ao instalar. A versão obtida sob MIT pode continuar sendo usada gratuitamente conforme seus termos, inclusive em uso comercial; isso não garante as condições de versões futuras, que devem ser verificadas antes de atualizar. Hospedagem e banco têm custos independentes. Referências: [licença MIT do Tiptap](https://github.com/ueberdosis/tiptap/blob/main/LICENSE.md) e [editor aberto e plataforma](https://tiptap.dev/open-source-to-platform). A escolha está aprovada, mas nenhuma dependência do editor foi instalada nesta decisão.
+- O usuário poderá escrever em outro aplicativo e copiar e colar no editor. A colagem deve limpar conteúdo e formatação incompatíveis; não há promessa de reprodução idêntica ao documento original.
+- A V1 terá títulos, parágrafos, negrito, itálico, listas e links. Importação e exportação de arquivos, anexos e imagens ficam fora desta primeira entrega. Não será necessário contratar um serviço adicional de colaboração em tempo real; a hospedagem do banco continua sujeita ao plano escolhido.
+- Apenas uma pessoa poderá editar cada capítulo por vez. Edição simultânea colaborativa fica para depois. O mecanismo de reserva da edição, liberação, expiração e recuperação após abandono ainda precisa ser definido antes da implementação.
+- O rascunho completo será enviado à API após aproximadamente dois segundos sem digitação. Haverá também um botão "Salvar agora". O intervalo poderá ser ajustado após validar a experiência; ainda falta definir um intervalo máximo para salvar durante digitação contínua.
+- Uma cópia temporária do rascunho será mantida no navegador usando IndexedDB, para oferecer recuperação de alterações pendentes após falha de conexão, fechamento ou recarga da aba. Essa cópia não substitui o banco nem garante recuperação se os dados do navegador forem apagados.
+- O estado de salvamento será explícito: alterações pendentes, salvando, salvo e falha de salvamento/conexão. "Salvo" só será exibido após confirmação do servidor. Falhas devem preservar o texto e permitir nova tentativa; sessão expirada deve orientar nova autenticação sem descartar o rascunho.
+- Cada gravação usará um número de revisão para detectar conteúdo alterado por outra aba ou sessão. Conflitos não podem sobrescrever silenciosamente o texto já salvo nem descartar o rascunho pendente, mesmo com a regra de um editor por vez.
+- O salvamento automático atualizará um único rascunho por capítulo, sem gerar uma versão histórica completa a cada gravação. Histórico editorial e marcos de entrega/revisão serão definidos em uma etapa posterior.
+- A recuperação local deve separar rascunhos por conta e capítulo. Retenção, limpeza no logout e recuperação após nova autenticação ainda precisam ser definidas, considerando computadores compartilhados.
+
+### Implementação pendente
+
+- [ ] Validar a integração do Tiptap com o projeto, os temas, textos longos, colagem de Word/Pages/Google Docs e uso no celular; definir o formato persistido, limites de conteúdo e validação no servidor. A escolha do editor já está aprovada; a instalação e a validação continuam pendentes.
+- [ ] Definir quem pode escrever em cada capítulo, sem ampliar implicitamente as permissões atuais dos organizadores.
+- [ ] Implementar e testar a reserva de edição por capítulo, incluindo duas abas da mesma conta e liberação após abandono.
+- [ ] Implementar o editor, a colagem e o salvamento autorizado do rascunho no PostgreSQL.
+- [ ] Implementar salvamento automático, salvamento manual e estados visíveis de sucesso e falha.
+- [ ] Implementar recuperação local com IndexedDB e tratamento seguro de sessão expirada e nova autenticação.
+- [ ] Implementar controle de revisão e tratamento de conflitos sem sobrescrita silenciosa.
+- [ ] Testar falhas de rede, respostas fora de ordem, recarga e fechamento de aba, recuperação local, expiração da sessão e concorrência.
+- [ ] Definir posteriormente versões editoriais, responsável e data de cada entrega e vínculo da revisão com a versão correta.
+- [ ] Definir retenção do conteúdo e do histórico ao arquivar obras ou excluir contas.
+
+Critério de conclusão da V1: uma pessoa autorizada edita o capítulo, acompanha o estado real do salvamento, reabre o conteúdo salvo e consegue recuperar rascunhos locais pendentes; outra aba ou pessoa não sobrescreve o conteúdo silenciosamente. A verificação deve cobrir falhas e isolamento entre contas.
+
+Importação e exportação continuam como possibilidades futuras. Se forem retomadas, a preferência já discutida é processar os documentos sem armazenar permanentemente os arquivos importados ou exportados. Formatos e eventual suporte a imagens exigem decisão própria.
 
 ## 5. Revisão, comentários e aprovação
 
@@ -159,7 +195,7 @@ Critério de conclusão: um autor envia uma nova versão, as anteriores permanec
 - [ ] Registrar autor, data e motivo das mudanças relevantes.
 - [ ] Testar concorrência e preservação do histórico.
 
-Critério de conclusão: executar com uma obra piloto o fluxo criar obra → adicionar capítulo → convidar autor → enviar arquivo → revisar → aprovar. Usar a experiência desse piloto para ajustar as regras antes de ampliar o produto.
+Critério de conclusão: executar com uma obra piloto o fluxo criar obra → adicionar capítulo → convidar autor → escrever e salvar conteúdo → submeter uma versão para revisão → revisar → aprovar. Usar a experiência desse piloto para ajustar as regras antes de ampliar o produto. A submissão de versões pertence a esta evolução posterior ao rascunho da V1.
 
 ## 6. Tarefas, painéis e comunicação
 

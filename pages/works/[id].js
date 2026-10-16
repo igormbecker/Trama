@@ -3,6 +3,7 @@ import workParticipant from "models/workParticipant.js";
 import WorkPage from "components/works/WorkPage";
 import authentication from "models/authentication.js";
 import work from "models/work.js";
+import workStructure from "models/workStructure.js";
 import { UnauthorizedError, NotFoundError } from "infra/errors.js";
 
 export default WorkPage;
@@ -29,6 +30,11 @@ export async function getServerSideProps({ req, res, params }) {
           is_admin: currentUser.is_admin,
         },
         work: JSON.parse(JSON.stringify(ownedWork)),
+        parts: JSON.parse(
+          JSON.stringify(
+            await workStructure.findAll(params.id, currentUser.id),
+          ),
+        ),
         participants: JSON.parse(JSON.stringify(participants)),
         invitations: JSON.parse(JSON.stringify(invitations)),
       },

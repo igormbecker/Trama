@@ -21,6 +21,7 @@ Estas orientações se aplicam a todo o repositório. Respeite as instruções a
 
 - Consulte docs/roadmap.md ao retomar o projeto: ele registra entregas existentes, pendências, decisões em aberto e a sequência sugerida. Confira o código antes de assumir que o retrato continua atual.
 - Atualize o roadmap quando houver entregas ou decisões efetivas. Os itens propostos não constituem autorização para implementar todo o escopo ou publicar alterações.
+- O escopo aprovado para a futura V1 de escrita está em `docs/roadmap.md`, seção "4. Editor, rascunhos e versões": editor rico sem importação/exportação, anexos ou imagens, conteúdo no PostgreSQL, salvamento automático com recuperação local em IndexedDB e uma pessoa editando cada capítulo por vez, com controle de revisão contra sobrescritas. Essas decisões ainda não representam funcionalidades implementadas; consulte também as definições pendentes antes de desenvolver.
 
 ## Ambiente de trabalho
 
@@ -108,6 +109,8 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 - Convites do MVP são para o papel `organizer`, por link compartilhado manualmente e sem envio automático de e-mail, válidos por sete dias. Aceite e recusa exigem sessão com o e-mail correspondente; a validação usa o e-mail cadastrado e não comprova a posse do endereço. O token é retornado somente ao gerar o convite e seu hash fica em `work_invitations`. Reenvio cancela o pendente anterior; convites expirados, cancelados, recusados ou consumidos não concedem acesso. `models/workInvitation.js` e `models/workParticipant.js` centralizam regras e transações. A remoção preenche `work_participants.removed_at`, revoga consulta e preserva registros; o responsável não pode remover a si mesmo. A interface fica nos detalhes da obra e em `/invitations/[token]`. Para quem ainda não entrou, a página orienta login/cadastro e reabertura do link. Papéis de autor e revisor e alterações de papel ficam para módulos futuros.
 
 - A área autenticada inclui `/invitations` (Meus convites), com convites pendentes e válidos para o e-mail atual da conta, ações de aceitar/recusar e contador no menu. GET `/api/v1/invitations` lista sem tokens ou hashes; POST responde com `invitation_id` e `action`, validando a conta e as mesmas regras transacionais dos links. Os links existentes continuam funcionando e não são necessários para responder pela lista. O contador é atualizado ao responder, ao retornar o foco e periodicamente. Histórico de convites não faz parte desta página.
+
+- A estrutura editorial da obra já possui partes e capítulos em `work_parts` e `chapters`, com regras em `models/workStructure.js` e interface em `components/works/StructurePanel.js`. Somente o responsável cria, edita e ordena; organizadores ativos consultam. Partes têm título e ordem; capítulos têm título, descrição opcional e ordem dentro da parte. GET/POST/PATCH nas coleções `/api/v1/works/[id]/parts` e `/api/v1/works/[id]/parts/[partId]/chapters` listam, criam e reordenam por `{ ids }`; PATCH por identificador edita. Posições são únicas por pai e mutações usam transação com trava por obra. Escrita rica, atribuição de autores, prazos, exclusão e arquivamento permanecem pendentes.
 
 ## Banco, configurações e migrations
 
