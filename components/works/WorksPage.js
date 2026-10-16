@@ -60,7 +60,7 @@ export default function WorksPage({ user, works }) {
         </div>
         <section className={styles.panel} aria-labelledby="create-work-title">
           <h2 id="create-work-title">Criar uma obra</h2>
-          <p>A obra é privada e somente você tem acesso nesta etapa.</p>
+          <p>A obra é privada. Você decide quem pode participar.</p>
           <form onSubmit={handleSubmit} aria-busy={isSubmitting}>
             <label htmlFor="title">Título</label>
             <input
@@ -87,7 +87,7 @@ export default function WorksPage({ user, works }) {
         {works.length === 0 ? (
           <div className={styles.emptyState}>
             <h2>Nenhuma obra por aqui ainda.</h2>
-            <p>Comece criando sua primeira obra no formulário acima.</p>
+            <p>Crie sua primeira obra ou aceite um convite para participar.</p>
           </div>
         ) : (
           <ul className={styles.workList}>

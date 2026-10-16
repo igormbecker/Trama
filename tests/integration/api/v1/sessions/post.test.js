@@ -216,3 +216,15 @@ describe("POST /api/v1/sessions", () => {
     });
   });
 });
+
+test("Session creation and update timestamps default to the project's UTC expression", async () => {
+  const result = await database.query(`
+    SELECT column_name, column_default FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'sessions'
+      AND column_name IN ('created_at', 'updated_at') ORDER BY column_name
+  `);
+  expect(result.rows).toHaveLength(2);
+  for (const column of result.rows) {
+    expect(column.column_default).toContain("timezone('utc'::text, now())");
+  }
+});

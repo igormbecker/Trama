@@ -1,3 +1,5 @@
+import workInvitation from "models/workInvitation.js";
+import workParticipant from "models/workParticipant.js";
 import WorkPage from "components/works/WorkPage";
 import authentication from "models/authentication.js";
 import work from "models/work.js";
@@ -12,6 +14,13 @@ export async function getServerSideProps({ req, res, params }) {
       req.cookies?.trama_session_id,
     );
     const ownedWork = await work.findOneById(params.id, currentUser.id);
+    const isOwner = ownedWork.owner_id === currentUser.id;
+    const participants = isOwner
+      ? await workParticipant.findAll(params.id, currentUser.id)
+      : [];
+    const invitations = isOwner
+      ? await workInvitation.findAll(params.id, currentUser.id)
+      : [];
     return {
       props: {
         user: {
@@ -20,6 +29,8 @@ export async function getServerSideProps({ req, res, params }) {
           is_admin: currentUser.is_admin,
         },
         work: JSON.parse(JSON.stringify(ownedWork)),
+        participants: JSON.parse(JSON.stringify(participants)),
+        invitations: JSON.parse(JSON.stringify(invitations)),
       },
     };
   } catch (error) {

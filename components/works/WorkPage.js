@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
+import ParticipantsPanel from "./ParticipantsPanel";
 import styles from "./works.module.css";
 
-export default function WorkPage({ user, work }) {
+export default function WorkPage({ user, work, participants, invitations }) {
   const router = useRouter();
   return (
     <AppLayout
@@ -18,7 +19,11 @@ export default function WorkPage({ user, work }) {
           <p role="status">Obra criada com sucesso!</p>
         )}
         <div className={styles.heading}>
-          <p>Obra privada · Você é o responsável</p>
+          <p>
+            {work.owner_id === user.id
+              ? "Obra privada · Você é o responsável"
+              : "Você participa como organizador"}
+          </p>
           <h1 id="work-title">{work.title}</h1>
         </div>
         <div className={styles.panel}>
@@ -27,6 +32,13 @@ export default function WorkPage({ user, work }) {
             {work.description || "Esta obra ainda não tem descrição."}
           </p>
         </div>
+        {work.owner_id === user.id && (
+          <ParticipantsPanel
+            workId={work.id}
+            participants={participants}
+            invitations={invitations}
+          />
+        )}
       </section>
     </AppLayout>
   );

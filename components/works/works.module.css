@@ -136,3 +136,83 @@
     padding: 20px;
   }
 }
+
+.panel h3 {
+  font-size: 20px;
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+.memberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  padding: 16px 0;
+}
+.memberRow span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.memberRow button {
+  font-size: 14px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.inviteLink,
+.confirmation {
+  margin-top: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+}
+.inviteLink label {
+  display: block;
+  margin-bottom: 8px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .memberRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.copyLinkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.copyLinkRow input {
+  flex: 1;
+  width: 0;
+}
+.panel .copyButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.copyButton svg {
+  width: 20px;
+  height: 20px;
+}
+.panel .copyButton:hover:enabled {
+  color: var(--ink);
+  background: var(--surface);
+}
+.panel .dangerButton {
+  background: var(--error-text);
+  color: var(--paper);
+}

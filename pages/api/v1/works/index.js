@@ -14,7 +14,7 @@ router.use(async (request, response, next) => {
 router.get(async (request, response) => {
   return response
     .status(200)
-    .json(await work.findAllByOwner(request.authenticatedUser.id));
+    .json(await work.findAllForUser(request.authenticatedUser.id));
 });
 router.post(async (request, response) => {
   return response

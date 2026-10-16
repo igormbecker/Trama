@@ -326,7 +326,7 @@ export default function UsersPage({ user, initialUsers }) {
                   {isBusy ? "Salvando..." : "Salvar usuário"}
                 </button>
                 <button
-                  className={styles.secondaryButton}
+                  className={styles.dangerButton}
                   type="button"
                   onClick={closeForm}
                   disabled={isBusy}
@@ -464,7 +464,7 @@ export default function UsersPage({ user, initialUsers }) {
           ) : null}
           <div className={styles.actions}>
             <button
-              className={styles.secondaryButton}
+              className={styles.dangerButton}
               type="button"
               onClick={closeDeleteDialog}
               disabled={isBusy}

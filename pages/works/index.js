@@ -16,7 +16,7 @@ export async function getServerSideProps({ req, res }) {
     return {
       props: {
         works: JSON.parse(
-          JSON.stringify(await work.findAllByOwner(authenticatedUser.id)),
+          JSON.stringify(await work.findAllForUser(authenticatedUser.id)),
         ),
         user: {
           id: authenticatedUser.id,

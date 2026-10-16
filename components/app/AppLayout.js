@@ -1,6 +1,7 @@
 import Link from "next/link";
 import HomeLayout from "components/home/HomeLayout";
 import LogoutButton from "components/auth/LogoutButton";
+import useInvitations from "components/works/useInvitations";
 import styles from "./appLayout.module.css";
 
 export default function AppLayout({
@@ -9,7 +10,13 @@ export default function AppLayout({
   title,
   description,
   children,
+  initialInvitations,
 }) {
+  const { data: invitations, error: invitationsError } = useInvitations(
+    user.id,
+    initialInvitations,
+  );
+  const invitationCount = invitationsError ? 0 : invitations?.length || 0;
   return (
     <HomeLayout
       title={title}
@@ -35,6 +42,37 @@ export default function AppLayout({
                 />
               </svg>
               Minhas obras
+            </Link>
+            <Link
+              href="/invitations"
+              aria-current={activePage === "invitations" ? "page" : undefined}
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect
+                  x="3"
+                  y="5"
+                  width="18"
+                  height="14"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="m3 6 9 7 9-7"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Meus convites
+              {invitationCount > 0 && (
+                <span
+                  className={styles.invitationCount}
+                  aria-label={`${invitationCount} ${invitationCount === 1 ? "convite pendente" : "convites pendentes"}`}
+                >
+                  {invitationCount}
+                </span>
+              )}
             </Link>
             <Link
               href="/account"
