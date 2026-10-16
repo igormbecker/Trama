@@ -102,6 +102,8 @@ Critério de conclusão: uma pessoa convidada aceita participar e recebe somente
 
 ## 3. Partes e capítulos
 
+Referência criativa para a obra piloto: [Memórias do Futuro e seus quatro capítulos](example-work.md), ideia que o usuário pediu para preservar.
+
 - [ ] Validar a necessidade de partes/seções e sua relação com os capítulos.
 - [ ] Criar, listar, editar e ordenar capítulos dentro da obra.
 - [ ] Associar autores, organizadores e revisores conforme os papéis definidos.
