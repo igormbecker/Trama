@@ -17,6 +17,11 @@ Estas orientações se aplicam a todo o repositório. Respeite as instruções a
 - Quando o acesso ao projeto exigir permissões adicionais, solicite acesso de leitura ou escrita conforme necessário, informando ao usuário o motivo e mantendo o escopo limitado à tarefa.
 - O usuário autorizou commits e push quando solicitar diretamente essa ação para a branch em trabalho. Antes do push, confira o diff, a mensagem do commit, a branch e o remoto; nunca faça push para `main` sem autorização específica.
 
+## Continuidade do desenvolvimento
+
+- Consulte docs/roadmap.md ao retomar o projeto: ele registra entregas existentes, pendências, decisões em aberto e a sequência sugerida. Confira o código antes de assumir que o retrato continua atual.
+- Atualize o roadmap quando houver entregas ou decisões efetivas. Os itens propostos não constituem autorização para implementar todo o escopo ou publicar alterações.
+
 ## Ambiente de trabalho
 
 A cópia escolhida neste notebook está no Ubuntu/WSL:

@@ -4,6 +4,10 @@ Base reutilizável em JavaScript com Next.js (Pages Router), PostgreSQL, migrati
 
 Criada a partir da branch project-template de igormbecker/Curso.Dev. As configurações versionadas em .env.development são exemplos para uso local. Configure credenciais próprias e um PASSWORD_PEPPER exclusivo no ambiente de produção.
 
+## Continuidade do Trama
+
+Consulte o [roadmap do Trama](docs/roadmap.md) para o estado das funcionalidades, pendências, decisões em aberto e próximos passos sugeridos. Leia também as orientações de AGENTS.md antes de desenvolver.
+
 ## Tecnologias e dependências
 
 As versões abaixo refletem o package.json atual. O Node usado pelo projeto é definido em .nvmrc.
