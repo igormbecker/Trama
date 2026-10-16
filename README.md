@@ -182,6 +182,20 @@ Chamadas diretas a Jest também usam `.env.test`; os testes de integração prec
 
 Após entrar, o menu dá acesso a `/works`. Administradores também acessam `/users`, com busca, listagem, cadastro, edição e remoção de usuários. A remoção pede confirmação e não permite excluir a própria conta. Na edição, deixar a nova senha em branco mantém a senha existente.
 
-As contas recebem `is_admin = false` por padrão, inclusive quando criadas por um administrador. O cadastro público em `/register` permanece disponível. A promoção administrativa precisa ser feita explicitamente no banco de destino autorizado; nenhuma migration promove pessoas por nome ou e-mail.
+As contas recebem `is_admin = false` por padrão, inclusive quando criadas por um administrador. O cadastro público em `/register` permanece disponível. Administradores podem mudar o perfil de outra conta pelo formulário de edição. O último administrador não pode perder esse perfil; a regra é verificada em transação, inclusive em alterações concorrentes. Nenhuma migration promove pessoas por nome ou e-mail.
 
 A listagem e as operações individuais da API exigem permissão administrativa verificada no banco a cada requisição. Respostas administrativas não expõem senhas ou hashes e usam `Cache-Control: private, no-store`.
+
+## Preferência de tema
+
+A seleção de tema claro ou escuro é salva no cookie `trama_theme` por um ano, com `Path=/`, `SameSite=Lax` e `Secure` em HTTPS. O cookie contém apenas `light` ou `dark`; valores inválidos usam o tema claro. Se o navegador bloquear cookies, a troca continua funcionando durante a navegação atual, sem garantia de persistência após recarregar.
+
+O estado compartilhado fica em `components/theme/ThemeProvider.js`. O `getInitialProps` de `pages/_app.js` lê a preferência para renderizar o HTML inicial no tema escolhido. Isso desativa a otimização estática automática das páginas públicas; as respostas HTML usam `Cache-Control: private, no-store`. Não há consulta ao banco para o tema. A preferência por conta e a sincronização entre dispositivos ficam para uma próxima etapa.
+
+## Minha conta
+
+A rota autenticada `/account` permite editar nome, usuário, e-mail e a própria senha pelo endpoint `PATCH /api/v1/user`, que identifica a pessoa pela sessão e rejeita alterações de perfil. A aparência é alterada nessa mesma tela e continua sendo salva somente no cookie do navegador.
+
+Visitantes continuam com o seletor de tema nas páginas públicas. Após entrar, o seletor fica disponível somente em Minha conta. O estado de autenticação usado na apresentação é compartilhado por `components/auth/AuthProvider.js`, com a API de usuário atual e o cache do SWR; permissões continuam sendo verificadas no servidor.
+
+Em Minha conta, os campos Nova senha e Confirmar nova senha são opcionais. Quando preenchidos, precisam coincidir e respeitar o limite de 8 a 128 caracteres; deixá-los vazios preserva a senha atual. A confirmação é validada na interface e no servidor e não é armazenada. A edição administrativa de usuários também exige confirmação ao informar uma nova senha; os dois campos vazios preservam a senha existente.
