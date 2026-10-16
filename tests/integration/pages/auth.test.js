@@ -91,6 +91,7 @@ describe("Authentication pages", () => {
     expect(nextData.props.pageProps.user).toEqual({
       id: createdUser.id,
       name: createdUser.name,
+      is_admin: false,
     });
     // Next.js overrides rendered-page cache headers in development.
     expect(response.headers.get("cache-control")).toMatch(/no-store|no-cache/);

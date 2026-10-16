@@ -117,3 +117,20 @@ export class MethodNotAllowedError extends Error {
     };
   }
 }
+
+export class ForbiddenError extends Error {
+  constructor() {
+    super("Administrator access is required.");
+    this.name = "ForbiddenError";
+    this.statusCode = 403;
+    this.action = "Contact an administrator.";
+  }
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}

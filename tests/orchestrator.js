@@ -3,6 +3,7 @@ import testEnvironment from "infra/test-environment.js";
 import database from "infra/database.js";
 import migrator from "models/migrator.js";
 import user from "models/user.js";
+import session from "models/session.js";
 import { faker } from "@faker-js/faker";
 
 async function waitForAllServices() {
@@ -45,7 +46,17 @@ async function createUser(userObject) {
   });
 }
 
+async function createAdministratorCookie() {
+  const administrator = await createUser({});
+  await database.query({
+    text: "UPDATE users SET is_admin = true WHERE id = $1",
+    values: [administrator.id],
+  });
+  return `trama_session_id=${(await session.create(administrator.id)).token}`;
+}
+
 const orchestrator = {
+  createAdministratorCookie,
   waitForAllServices,
   clearDataBase,
   runPendingMigrations,

@@ -177,3 +177,11 @@ NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand --testPathPatterns=t
 ```
 
 Chamadas diretas a Jest também usam `.env.test`; os testes de integração precisam do servidor isolado ativo. Prefira os scripts `npm test` e `npm run test:watch` para executar a integração.
+
+## Área autenticada e usuários
+
+Após entrar, o menu dá acesso a `/works`. Administradores também acessam `/users`, com busca, listagem, cadastro, edição e remoção de usuários. A remoção pede confirmação e não permite excluir a própria conta. Na edição, deixar a nova senha em branco mantém a senha existente.
+
+As contas recebem `is_admin = false` por padrão, inclusive quando criadas por um administrador. O cadastro público em `/register` permanece disponível. A promoção administrativa precisa ser feita explicitamente no banco de destino autorizado; nenhuma migration promove pessoas por nome ou e-mail.
+
+A listagem e as operações individuais da API exigem permissão administrativa verificada no banco a cada requisição. Respostas administrativas não expõem senhas ou hashes e usam `Cache-Control: private, no-store`.

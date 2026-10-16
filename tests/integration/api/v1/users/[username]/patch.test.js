@@ -1,20 +1,23 @@
-﻿import user from "models/user.js";
+import user from "models/user.js";
 import password from "models/password.js";
 import orchestrator from "tests/orchestrator.js";
 
+let administratorCookie;
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDataBase();
   await orchestrator.runPendingMigrations();
+  administratorCookie = await orchestrator.createAdministratorCookie();
 });
 
 describe("PATCH /api/v1/users/[username]", () => {
-  describe("Anonymous user", () => {
+  describe("Administrator", () => {
     test("With nonexistent 'username'", async () => {
       const response = await fetch(
         "http://127.0.0.1:3002/api/v1/users/UsuarioInexistente",
         {
           method: "PATCH",
+          headers: { Cookie: administratorCookie },
         },
       );
       expect(response.status).toBe(404);
@@ -42,6 +45,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Cookie: administratorCookie,
         },
         body: JSON.stringify({
           username: "user1",
@@ -74,6 +78,7 @@ describe("PATCH /api/v1/users/[username]", () => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Cookie: administratorCookie,
           },
           body: JSON.stringify({
             email: "email1@bectec.com.br",
@@ -101,6 +106,7 @@ describe("PATCH /api/v1/users/[username]", () => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Cookie: administratorCookie,
           },
           body: JSON.stringify({
             username: "uniqueuser2",
@@ -116,7 +122,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         name: responseBody.name,
         username: "uniqueuser2",
         email: responseBody.email,
-        password: responseBody.password,
+        is_admin: false,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -133,6 +139,7 @@ describe("PATCH /api/v1/users/[username]", () => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Cookie: administratorCookie,
           },
           body: JSON.stringify({
             email: "uniqueemail2@bectec.com.br",
@@ -148,7 +155,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         name: responseBody.name,
         username: responseBody.username,
         email: "uniqueemail2@bectec.com.br",
-        password: responseBody.password,
+        is_admin: false,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -165,6 +172,7 @@ describe("PATCH /api/v1/users/[username]", () => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Cookie: administratorCookie,
           },
           body: JSON.stringify({
             password: "newpassword123",
@@ -180,7 +188,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         name: responseBody.name,
         username: responseBody.username,
         email: responseBody.email,
-        password: responseBody.password,
+        is_admin: false,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });

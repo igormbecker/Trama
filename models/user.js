@@ -155,13 +155,34 @@ function validateRegistrationInput(input) {
 
 async function update(username, userInputValues) {
   const currentUser = await findOneByUsername(username);
+  const allowedFields = ["name", "username", "email", "password"];
+  if (
+    !userInputValues ||
+    typeof userInputValues !== "object" ||
+    Array.isArray(userInputValues) ||
+    Object.keys(userInputValues).length === 0 ||
+    Object.keys(userInputValues).some((key) => !allowedFields.includes(key))
+  ) {
+    throw new ValidationError({ message: "Invalid registration data." });
+  }
+  const validatedValues = validateRegistrationInput({
+    ...currentUser,
+    ...userInputValues,
+    password:
+      "password" in userInputValues
+        ? userInputValues.password
+        : "unchanged-password",
+  });
+  userInputValues = Object.fromEntries(
+    Object.keys(userInputValues).map((key) => [key, validatedValues[key]]),
+  );
 
   if ("username" in userInputValues) {
-    await validateUniqueUsername(userInputValues.username);
+    await validateUniqueUsername(userInputValues.username, currentUser.id);
   }
 
   if ("email" in userInputValues) {
-    await validateUniqueEmail(userInputValues.email);
+    await validateUniqueEmail(userInputValues.email, currentUser.id);
   }
 
   if ("password" in userInputValues) {
@@ -201,7 +222,7 @@ async function update(username, userInputValues) {
   }
 }
 
-async function validateUniqueUsername(username) {
+async function validateUniqueUsername(username, excludedId = null) {
   const results = await database.query({
     text: `
     SELECT
@@ -209,9 +230,9 @@ async function validateUniqueUsername(username) {
     FROM 
       users
     WHERE
-      LOWER(username) = LOWER($1)
+      LOWER(username) = LOWER($1) AND ($2::uuid IS NULL OR id <> $2)
     ;`,
-    values: [username],
+    values: [username, excludedId],
   });
 
   if (results.rowCount > 0) {
@@ -222,7 +243,7 @@ async function validateUniqueUsername(username) {
   }
 }
 
-async function validateUniqueEmail(email) {
+async function validateUniqueEmail(email, excludedId = null) {
   const results = await database.query({
     text: `
     SELECT
@@ -230,9 +251,9 @@ async function validateUniqueEmail(email) {
     FROM 
       users
     WHERE
-      LOWER(email) = LOWER($1)
+      LOWER(email) = LOWER($1) AND ($2::uuid IS NULL OR id <> $2)
     ;`,
-    values: [email],
+    values: [email, excludedId],
   });
 
   if (results.rowCount > 0) {
@@ -248,7 +269,58 @@ async function hashPasswordInObject(userInputValues) {
   userInputValues.password = hashedPassword;
 }
 
+function toPublic(storedUser) {
+  return {
+    id: storedUser.id,
+    name: storedUser.name,
+    username: storedUser.username,
+    email: storedUser.email,
+    is_admin: storedUser.is_admin,
+    created_at: storedUser.created_at.toISOString(),
+    updated_at: storedUser.updated_at.toISOString(),
+  };
+}
+
+async function findAll() {
+  const result = await database.query(
+    "SELECT id, name, username, email, is_admin, created_at, updated_at FROM users ORDER BY LOWER(name), id;",
+  );
+  return result.rows.map(toPublic);
+}
+
+async function remove(username, administratorId) {
+  const target = await findOneByUsername(username);
+  if (target.id === administratorId) {
+    throw new ValidationError({
+      message: "You cannot delete your own account.",
+      action: "Ask another administrator to manage this account.",
+    });
+  }
+  let client;
+  try {
+    client = await database.getNewClient();
+    await client.query("BEGIN");
+    await client.query({
+      text: "DELETE FROM sessions WHERE user_id = $1;",
+      values: [target.id],
+    });
+    await client.query({
+      text: "DELETE FROM users WHERE id = $1;",
+      values: [target.id],
+    });
+    await client.query("COMMIT");
+  } catch (error) {
+    await client?.query("ROLLBACK");
+    throw error;
+  } finally {
+    await client?.end();
+  }
+}
+
 const user = {
+  toPublic,
+  findAll,
+  remove,
   create,
   findOneById,
   findOneByUsername,

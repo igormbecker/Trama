@@ -14,7 +14,11 @@ export async function getServerSideProps({ req, res }) {
 
     return {
       props: {
-        user: { id: authenticatedUser.id, name: authenticatedUser.name },
+        user: {
+          id: authenticatedUser.id,
+          name: authenticatedUser.name,
+          is_admin: authenticatedUser.is_admin,
+        },
       },
     };
   } catch (error) {

@@ -1,21 +1,14 @@
 import Link from "next/link";
-import HomeLayout from "components/home/HomeLayout";
-import LogoutButton from "components/auth/LogoutButton";
+import AppLayout from "components/app/AppLayout";
 import styles from "./works.module.css";
 
 export default function WorksPage({ user }) {
   return (
-    <HomeLayout
+    <AppLayout
       title="Minhas obras | Trama"
       description="Seu espaço para acompanhar obras e contribuições no Trama."
-      navigation={
-        <>
-          <Link href="/works" aria-current="page">
-            Minhas obras
-          </Link>
-          <LogoutButton />
-        </>
-      }
+      user={user}
+      activePage="works"
     >
       <section className={styles.workspace} aria-labelledby="works-title">
         <div className={styles.heading}>
@@ -42,6 +35,6 @@ export default function WorksPage({ user }) {
           <Link href="/#como-funciona">Conhecer o fluxo editorial</Link>
         </div>
       </section>
-    </HomeLayout>
+    </AppLayout>
   );
 }

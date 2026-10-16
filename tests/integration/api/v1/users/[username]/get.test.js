@@ -1,14 +1,16 @@
-﻿import { version as uuidVersion } from "uuid";
+import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
 
+let administratorCookie;
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDataBase();
   await orchestrator.runPendingMigrations();
+  administratorCookie = await orchestrator.createAdministratorCookie();
 });
 
 describe("GET /api/v1/users/[username]", () => {
-  describe("Anonymous user", () => {
+  describe("Administrator", () => {
     test("With exact case match", async () => {
       await orchestrator.createUser({
         name: "Mesmo Case",
@@ -19,6 +21,7 @@ describe("GET /api/v1/users/[username]", () => {
 
       const response2 = await fetch(
         "http://127.0.0.1:3002/api/v1/users/MesmoCase",
+        { headers: { Cookie: administratorCookie } },
       );
       expect(response2.status).toBe(200);
 
@@ -29,7 +32,7 @@ describe("GET /api/v1/users/[username]", () => {
         name: "Mesmo Case",
         username: "MesmoCase",
         email: "mesmo.case@bectec.com.br",
-        password: response2Body.password,
+        is_admin: false,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });
@@ -49,6 +52,7 @@ describe("GET /api/v1/users/[username]", () => {
 
       const response2 = await fetch(
         "http://127.0.0.1:3002/api/v1/users/casediferente",
+        { headers: { Cookie: administratorCookie } },
       );
       expect(response2.status).toBe(200);
 
@@ -58,7 +62,7 @@ describe("GET /api/v1/users/[username]", () => {
         name: "Case Diferente",
         username: "CaseDiferente",
         email: "case.diferente@bectec.com.br",
-        password: response2Body.password,
+        is_admin: false,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });
@@ -71,6 +75,7 @@ describe("GET /api/v1/users/[username]", () => {
     test("With nonexistent username", async () => {
       const response = await fetch(
         "http://127.0.0.1:3002/api/v1/users/UsuarioInexistente",
+        { headers: { Cookie: administratorCookie } },
       );
       expect(response.status).toBe(404);
 

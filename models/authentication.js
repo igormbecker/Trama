@@ -1,7 +1,11 @@
 ﻿import user from "models/user.js";
 import password from "models/password.js";
 import session from "models/session.js";
-import { NotFoundError, UnauthorizedError } from "infra/errors.js";
+import {
+  NotFoundError,
+  UnauthorizedError,
+  ForbiddenError,
+} from "infra/errors.js";
 
 async function authenticate(providedEmail, providedPassword) {
   try {
@@ -68,7 +72,16 @@ async function authenticateSession(token) {
   }
 }
 
+async function authenticateAdministrator(token) {
+  const authenticatedUser = await authenticateSession(token);
+  if (!authenticatedUser.is_admin) {
+    throw new ForbiddenError();
+  }
+  return authenticatedUser;
+}
+
 const authentication = {
+  authenticateAdministrator,
   authenticate,
   authenticateSession,
 };
