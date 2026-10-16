@@ -128,7 +128,7 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 
 ## Git, CI/CD e publicação
 
-- O usuário informou que merges na `main` irão publicar automaticamente na Vercel. Trate essa branch como caminho para produção.
+- O usuário esclareceu que o projeto ainda não está integrado à Vercel e que pretende publicá-lo somente depois de pronto e validado. O desenvolvimento e a validação seguem localmente. Não presuma deploy automático ao fazer merge na `main`; a integração e o processo de publicação serão definidos depois.
 - Não faça push, merge na main sem autorização que cubra essa ação. Criar ou editar arquivos localmente não é publicar.
 - Antes de alterar qualquer arquivo, inclusive documentação, crie uma branch de trabalho quando estiver na `main`. Não faça alterações diretamente na `main`.
 - Use a branch de trabalho apropriada; não troque de branch nem descarte mudanças do usuário automaticamente. Para novas branches criadas pelo agente, use `codex/`, salvo orientação diferente.

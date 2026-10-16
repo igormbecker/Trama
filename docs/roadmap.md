@@ -151,6 +151,10 @@ Itens candidatos após o fluxo editorial básico funcionar:
 
 Não criar todos esses módulos apenas porque existem no legado. Validar a necessidade e a prioridade de cada um.
 
+## Ideias futuras — escrita acadêmica
+
+Proposta da esposa do usuário: apoiar a construção individual ou colaborativa de artigos, resumos e resumos expandidos para congressos e simpósios, com modelos e orientações por etapa. Detalhes e decisões em aberto estão em [Apoio à escrita acadêmica](academic-writing-idea.md). A ideia foi registrada para não se perder; prioridade, editor de texto e uso de IA ainda não foram definidos.
+
 ## Pendências de conta e preferências
 
 - [ ] Recuperação de senha: fluxo de e-mail e tokens com expiração e uso único.
@@ -183,6 +187,8 @@ Esse recurso permite acesso administrativo indireto ao conteúdo privado e dever
 
 ## Preparação para publicação e operação
 
+O usuário esclareceu em 16/10/2026 que o projeto ainda não está integrado à Vercel e que pretende disponibilizá-lo na internet somente depois de pronto e validado. Até lá, o desenvolvimento e a validação seguem localmente.
+
 Esta lista registra trabalho a verificar, não afirma que a configuração de produção foi auditada ou que esses controles já existem.
 
 - [ ] Definir o procedimento operacional de migrations em produção e de preparação inicial do banco. GET e POST de /api/v1/migrations já exigem sessão válida e administrador; a autenticação depende das tabelas existentes.
@@ -194,7 +200,7 @@ Esta lista registra trabalho a verificar, não afirma que a configuração de pr
 - [x] Bloquear a exclusão de contas responsáveis por obras.
 - [ ] Definir o que acontece com participações, autoria e histórico ao remover uma conta depois que esses módulos existirem.
 - [ ] Conferir CI existente e estabelecer verificações de formatação, análise, testes isolados e build conforme os scripts do projeto.
-- [ ] Validar configurações de preview e produção na Vercel e o processo de deploy; publicação automática pela main foi informada pelo usuário.
+- [ ] Quando chegar a etapa de publicação, configurar a integração com a Vercel e validar preview, produção e o processo de deploy; atualmente não há integração confirmada nem deploy automático pela main.
 - [ ] Revisar logs e tratamento de erros para apoiar diagnóstico sem registrar credenciais ou conteúdo sensível.
 - [ ] Validar navegação por teclado, contraste, mensagens de erro e telas pequenas nos fluxos completos.
 - [ ] Avaliar o custo da renderização global usada para ler o cookie de tema antes de otimizar cache ou desempenho.
