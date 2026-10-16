@@ -11,7 +11,7 @@ beforeAll(async () => {
 describe("DELETE /api/v1/sessions", () => {
   test("Invalidates only the current session and prevents reuse of its cookie", async () => {
     const createdUser = await orchestrator.createUser({});
-    const loginResponse = await fetch("http://localhost:3001/api/v1/sessions", {
+    const loginResponse = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -24,7 +24,7 @@ describe("DELETE /api/v1/sessions", () => {
     const cookie = loginResponse.headers.get("set-cookie").split(";")[0];
     const otherSession = await session.create(createdUser.id);
 
-    const response = await fetch("http://localhost:3001/api/v1/sessions", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
       method: "DELETE",
       headers: { Cookie: cookie },
     });
@@ -47,19 +47,19 @@ describe("DELETE /api/v1/sessions", () => {
     });
     expect(storedSession.rows).toEqual([{ expired: true }]);
 
-    const replay = await fetch("http://localhost:3001/api/v1/user", {
+    const replay = await fetch("http://127.0.0.1:3002/api/v1/user", {
       headers: { Cookie: cookie },
     });
     expect(replay.status).toBe(401);
 
-    const otherResponse = await fetch("http://localhost:3001/api/v1/user", {
+    const otherResponse = await fetch("http://127.0.0.1:3002/api/v1/user", {
       headers: { Cookie: `trama_session_id=${otherSession.token}` },
     });
     expect(otherResponse.status).toBe(200);
     expect((await otherResponse.json()).id).toBe(createdUser.id);
 
     const repeatedLogout = await fetch(
-      "http://localhost:3001/api/v1/sessions",
+      "http://127.0.0.1:3002/api/v1/sessions",
       {
         method: "DELETE",
         headers: { Cookie: cookie },
@@ -73,7 +73,7 @@ describe("DELETE /api/v1/sessions", () => {
     ["malformed token", "trama_session_id=invalid"],
     ["unknown token", `trama_session_id=${"0".repeat(96)}`],
   ])("Clears a %s without failing", async (_description, cookie) => {
-    const response = await fetch("http://localhost:3001/api/v1/sessions", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
       method: "DELETE",
       headers: cookie === undefined ? {} : { Cookie: cookie },
     });
@@ -90,7 +90,7 @@ describe("DELETE /api/v1/sessions", () => {
       text: "UPDATE sessions SET expires_at = now() - interval '1 day' WHERE id = $1 RETURNING expires_at;",
       values: [expiredSession.id],
     });
-    const response = await fetch("http://localhost:3001/api/v1/sessions", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
       method: "DELETE",
       headers: { Cookie: `trama_session_id=${expiredSession.token}` },
     });
@@ -109,7 +109,7 @@ describe("DELETE /api/v1/sessions", () => {
   test("Does not invalidate a session supplied in another project's cookie", async () => {
     const createdUser = await orchestrator.createUser({});
     const createdSession = await session.create(createdUser.id);
-    const response = await fetch("http://localhost:3001/api/v1/sessions", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
       method: "DELETE",
       headers: { Cookie: `session_id=${createdSession.token}` },
     });

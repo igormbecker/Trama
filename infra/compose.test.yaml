@@ -1,0 +1,19 @@
+name: trama-test
+
+services:
+  database:
+    image: "postgres:16.0-alpine3.18"
+    env_file:
+      - ../.env.test
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "trama_test_user", "-d", "trama_test"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  database_data:

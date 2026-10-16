@@ -12,5 +12,11 @@ export default defineConfig([
     ...jest.configs["flat/recommended"],
   },
   prettier,
-  globalIgnores([".next/**", "node_modules/**", "out/**", "build/**"]),
+  globalIgnores([
+    ".next/**",
+    ".next-test/**",
+    "node_modules/**",
+    "out/**",
+    "build/**",
+  ]),
 ]);

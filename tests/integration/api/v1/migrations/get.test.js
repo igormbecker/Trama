@@ -8,7 +8,7 @@ beforeAll(async () => {
 describe("GET /api/v1/migrations", () => {
   describe("Anonymous user", () => {
     test("Retrieving pending migrations", async () => {
-      const response = await fetch("http://localhost:3001/api/v1/migrations");
+      const response = await fetch("http://127.0.0.1:3002/api/v1/migrations");
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();

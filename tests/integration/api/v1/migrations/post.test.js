@@ -10,7 +10,7 @@ describe("POST /api/v1/migrations", () => {
     describe("Running pending migrations", () => {
       test("For the first time", async () => {
         const response1 = await fetch(
-          "http://localhost:3001/api/v1/migrations",
+          "http://127.0.0.1:3002/api/v1/migrations",
           {
             method: "POST",
           },
@@ -23,7 +23,7 @@ describe("POST /api/v1/migrations", () => {
       });
       test("For the second time", async () => {
         const response2 = await fetch(
-          "http://localhost:3001/api/v1/migrations",
+          "http://127.0.0.1:3002/api/v1/migrations",
           {
             method: "POST",
           },

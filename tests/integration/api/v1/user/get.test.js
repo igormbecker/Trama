@@ -17,7 +17,7 @@ describe("GET /api/v1/user", () => {
     ["SQL injection attempt", "trama_session_id=' OR 1=1 --"],
     ["oversized token", `trama_session_id=${"a".repeat(97)}`],
   ])("Rejects a %s", async (_description, cookie) => {
-    const response = await fetch("http://localhost:3001/api/v1/user", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/user", {
       headers: cookie === undefined ? {} : { Cookie: cookie },
     });
 
@@ -33,7 +33,7 @@ describe("GET /api/v1/user", () => {
 
   test("Uses the login cookie to identify the user without renewing the session", async () => {
     const createdUser = await orchestrator.createUser({});
-    const loginResponse = await fetch("http://localhost:3001/api/v1/sessions", {
+    const loginResponse = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -46,7 +46,7 @@ describe("GET /api/v1/user", () => {
     const cookie = loginResponse.headers.get("set-cookie");
     expect(cookie).not.toBeNull();
 
-    const response = await fetch("http://localhost:3001/api/v1/user", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/user", {
       headers: { Cookie: cookie.split(";")[0] },
     });
     expect(response.status).toBe(200);
@@ -78,7 +78,7 @@ describe("GET /api/v1/user", () => {
       values: [expiredSession.id],
     });
 
-    const response = await fetch("http://localhost:3001/api/v1/user", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/user", {
       headers: { Cookie: `trama_session_id=${expiredSession.token}` },
     });
     expect(response.status).toBe(401);
@@ -88,14 +88,14 @@ describe("GET /api/v1/user", () => {
   test("Does not accept another project's cookie name", async () => {
     const createdUser = await orchestrator.createUser({});
     const createdSession = await session.create(createdUser.id);
-    const response = await fetch("http://localhost:3001/api/v1/user", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/user", {
       headers: { Cookie: `session_id=${createdSession.token}` },
     });
     expect(response.status).toBe(401);
   });
 
   test("Rejects unsupported methods", async () => {
-    const response = await fetch("http://localhost:3001/api/v1/user", {
+    const response = await fetch("http://127.0.0.1:3002/api/v1/user", {
       method: "POST",
     });
     expect(response.status).toBe(405);

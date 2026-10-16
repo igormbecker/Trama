@@ -25,11 +25,11 @@ Consulte package.json e package-lock.json para a lista completa e as versões in
 
 O PostgreSQL de desenvolvimento é iniciado pelo Docker Compose definido em infra/compose.yaml. As variáveis são lidas de .env.development. A aplicação usa as variáveis `POSTGRES_*`; o CLI de migrations usa `DATABASE_URL`, composta a partir dessas mesmas variáveis para manter o destino consistente. Os comandos `migrations:up` e `migrations:down` carregam esse arquivo.
 
-O Trama usa o projeto Compose `trama`, com rede e volume próprios, separados do Curso.Dev. O PostgreSQL atende em `127.0.0.1:5433` no computador e mantém a porta `5432` dentro do container. O banco é `trama_dev`, com usuário `trama_user`. A aplicação e os testes HTTP usam a porta `3001`; o Curso.Dev pode continuar nas portas `5432` e `3000`.
+O Trama usa o projeto Compose `trama`, com rede e volume próprios, separados do Curso.Dev. O PostgreSQL atende em `127.0.0.1:5433` no computador e mantém a porta `5432` dentro do container. O banco é `trama_dev`, com usuário `trama_user`. A aplicação usa a porta `3001`; o Curso.Dev pode continuar nas portas `5432` e `3000`. Os testes usam um ambiente separado, descrito abaixo.
 
 Execute os scripts a partir desta pasta. Não sobrescreva o nome do projeto Compose com `-p` ou `COMPOSE_PROJECT_NAME`, nem reutilize as variáveis de banco do Curso.Dev. Variáveis já exportadas no terminal podem prevalecer sobre o arquivo de ambiente.
 
-Os testes ainda compartilham o banco local de desenvolvimento do Trama e apagam seus dados. A limpeza recusa configurações diferentes de `127.0.0.1:5433/trama_dev`, usuário `trama_user` e ambiente de teste. Esse banco deve conter apenas dados descartáveis.
+A suíte usa o banco descartável `trama_test`, em outro container e na porta `5434`. A limpeza dos testes recusa a configuração de desenvolvimento; sua conta e os dados em `trama_dev` são preservados.
 
 ```bash
 docker ps -a
@@ -125,13 +125,15 @@ Confira sempre os scripts atuais em package.json.
   npm run test
   ```
 
-  Esse script inicia o PostgreSQL e executa o Next.js junto com Jest. Os testes de migrations recriam o schema public; execute-os apenas com o banco local descartável.
+  Esse script inicia somente o PostgreSQL de testes, aguarda sua disponibilidade, inicia o Next.js de testes e executa Jest. Ao concluir, mesmo em caso de falha dos testes, encerra o servidor e para somente o banco de testes. Os testes de migrations recriam o schema `public` de `trama_test`.
 
-- Executar Jest em modo watch:
+- Executar os testes em modo watch:
 
   ```bash
   npm run test:watch
   ```
+
+  Usa o mesmo ambiente isolado e mantém os serviços de teste ativos até encerrar o comando com Ctrl+C.
 
 - Criar uma migration:
 
@@ -150,3 +152,28 @@ Confira sempre os scripts atuais em package.json.
   ```bash
   npm run migrations:down
   ```
+
+## Ambiente de testes isolado
+
+| Recurso                        | Desenvolvimento         | Testes                     |
+| ------------------------------ | ----------------------- | -------------------------- |
+| Arquivo de ambiente            | `.env.development`      | `.env.test`                |
+| Projeto Compose                | `trama`                 | `trama-test`               |
+| Banco PostgreSQL               | `trama_dev`             | `trama_test`               |
+| Usuário PostgreSQL             | `trama_user`            | `trama_test_user`          |
+| Porta PostgreSQL no computador | `5433`                  | `5434`                     |
+| Servidor HTTP                  | `http://localhost:3001` | `http://127.0.0.1:3002`    |
+| Arquivos gerados pelo Next.js  | `.next`                 | `.next-test`               |
+| Volume Docker                  | `trama_database_data`   | `trama-test_database_data` |
+
+Você pode manter `npm run dev` aberto enquanto executa `npm test` ou `npm run test:watch`. A configuração de Jest e o inicializador de testes carregam explicitamente `.env.test`, substituindo as variáveis de conexão herdadas do terminal. As credenciais desse arquivo são exemplos exclusivos do ambiente local de testes.
+
+A trava de segurança exige o host, a porta, o usuário, o banco e o servidor HTTP de testes antes de permitir a limpeza do schema. Não altere esses valores para apontar para desenvolvimento ou produção. O inicializador recusa a execução se a porta `3002` já estiver ocupada e usa explicitamente o projeto Compose `trama-test`.
+
+Para executar apenas testes unitários, sem iniciar Docker ou Next.js:
+
+```bash
+NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand --testPathPatterns=tests/unit
+```
+
+Chamadas diretas a Jest também usam `.env.test`; os testes de integração precisam do servidor isolado ativo. Prefira os scripts `npm test` e `npm run test:watch` para executar a integração.

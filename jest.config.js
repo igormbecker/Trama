@@ -1,5 +1,5 @@
-﻿const dotenv = require("dotenv");
-dotenv.config({ path: ".env.development" });
+﻿const { loadTestEnvironment } = require("./infra/test-environment.js");
+loadTestEnvironment();
 
 const nextJest = require("next/jest");
 const createJestConfig = nextJest({

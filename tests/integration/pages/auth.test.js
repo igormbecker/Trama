@@ -10,13 +10,13 @@ beforeAll(async () => {
 
 describe("Authentication pages", () => {
   test("Offers a login link on the homepage", async () => {
-    const response = await fetch("http://localhost:3001/");
+    const response = await fetch("http://127.0.0.1:3002/");
     expect(response.status).toBe(200);
     expect(await response.text()).toContain('href="/login"');
   });
 
   test("Provides a login form with accessible labels and password autocomplete", async () => {
-    const response = await fetch("http://localhost:3001/login");
+    const response = await fetch("http://127.0.0.1:3002/login");
     expect(response.status).toBe(200);
     const html = await response.text();
     expect(html).toMatch(/<title[^>]*>Entrar \| Trama<\/title>/);
@@ -39,7 +39,7 @@ describe("Authentication pages", () => {
   ])(
     "Redirects visitors with %s away from the protected page",
     async (_description, cookie) => {
-      const response = await fetch("http://localhost:3001/obras", {
+      const response = await fetch("http://127.0.0.1:3002/obras", {
         redirect: "manual",
         headers: cookie ? { Cookie: cookie } : {},
       });
@@ -59,7 +59,7 @@ describe("Authentication pages", () => {
       text: "UPDATE sessions SET expires_at = now() - interval '1 second' WHERE id = $1;",
       values: [createdSession.id],
     });
-    const response = await fetch("http://localhost:3001/obras", {
+    const response = await fetch("http://127.0.0.1:3002/obras", {
       redirect: "manual",
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
@@ -72,7 +72,7 @@ describe("Authentication pages", () => {
       name: "Pessoa de teste",
     });
     const createdSession = await session.create(createdUser.id);
-    const response = await fetch("http://localhost:3001/obras", {
+    const response = await fetch("http://127.0.0.1:3002/obras", {
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
     expect(response.status).toBe(200);
@@ -99,7 +99,7 @@ describe("Authentication pages", () => {
   test("Redirects an authenticated visitor from login to the protected page", async () => {
     const createdUser = await orchestrator.createUser({});
     const createdSession = await session.create(createdUser.id);
-    const response = await fetch("http://localhost:3001/login", {
+    const response = await fetch("http://127.0.0.1:3002/login", {
       redirect: "manual",
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
@@ -114,7 +114,7 @@ describe("Authentication pages", () => {
       text: "UPDATE sessions SET expires_at = now() - interval '1 second' WHERE id = $1;",
       values: [createdSession.id],
     });
-    const response = await fetch("http://localhost:3001/login", {
+    const response = await fetch("http://127.0.0.1:3002/login", {
       redirect: "manual",
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });

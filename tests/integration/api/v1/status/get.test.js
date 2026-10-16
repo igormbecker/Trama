@@ -7,7 +7,7 @@ beforeAll(async () => {
 describe("GET /api/v1/status", () => {
   describe("Anonymous user", () => {
     test("Retrieving current system status", async () => {
-      const response = await fetch(`http://localhost:3001/api/v1/status`);
+      const response = await fetch(`http://127.0.0.1:3002/api/v1/status`);
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();

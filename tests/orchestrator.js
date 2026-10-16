@@ -1,10 +1,12 @@
 ﻿import retry from "async-retry";
+import testEnvironment from "infra/test-environment.js";
 import database from "infra/database.js";
 import migrator from "models/migrator.js";
 import user from "models/user.js";
 import { faker } from "@faker-js/faker";
 
 async function waitForAllServices() {
+  testEnvironment.assertTestEnvironment();
   await waitForWebServer();
 
   async function waitForWebServer() {
@@ -14,7 +16,7 @@ async function waitForAllServices() {
     });
 
     async function fetchStatusPage() {
-      const response = await fetch("http://localhost:3001/api/v1/status");
+      const response = await fetch("http://127.0.0.1:3002/api/v1/status");
 
       if (response.status !== 200) {
         throw new Error();
@@ -24,18 +26,7 @@ async function waitForAllServices() {
 }
 
 async function clearDataBase() {
-  const isTramaTestDatabase =
-    process.env.NODE_ENV === "test" &&
-    process.env.POSTGRES_HOST === "127.0.0.1" &&
-    process.env.POSTGRES_PORT === "5433" &&
-    process.env.POSTGRES_USER === "trama_user" &&
-    process.env.POSTGRES_DB === "trama_dev";
-
-  if (!isTramaTestDatabase) {
-    throw new Error(
-      "Database cleanup requires the local Trama test configuration (127.0.0.1:5433/trama_dev).",
-    );
-  }
+  testEnvironment.assertTestEnvironment();
 
   await database.query(`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`);
 }

@@ -107,10 +107,10 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 
 ## Testes e validação
 
-- `npm test` executa Jest em sequência; `npm run test:watch` acompanha mudanças.
-- Os testes de integração fazem chamadas a `http://localhost:3001`. `npm test` inicia o banco e o Next.js; `test:watch` depende desses serviços disponíveis. A limpeza exige a configuração local do Trama e `NODE_ENV=test` antes de apagar dados.
-- ATENÇÃO: os testes de migrations executam `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`. Só execute após confirmar que o banco é local, descartável e adequado ao teste; não use banco de produção ou com dados que devam ser preservados.
-- O Jest carrega `.env.development`. Considere também variáveis já presentes no processo ao confirmar o destino efetivo.
+- `npm test` e `npm run test:watch` usam `infra/scripts/run-tests.js`, que carrega `.env.test`, inicia os serviços exclusivos de testes e executa Jest em sequência. Ao encerrar, para somente os serviços de teste.
+- Os testes de integração fazem chamadas a `http://127.0.0.1:3002`. Usam o projeto Compose `trama-test`, banco `trama_test`, usuário `trama_test_user` e porta PostgreSQL `5434`, definidos em `infra/compose.test.yaml` e `.env.test`. O Next.js de testes gera arquivos em `.next-test`; a aplicação de desenvolvimento continua em `3001`, banco `trama_dev` na porta `5433` e diretório `.next`.
+- Os testes de migrations executam `DROP SCHEMA public CASCADE; CREATE SCHEMA public;` somente no banco descartável `trama_test`. `infra/test-environment.js` exige a configuração isolada antes de permitir a limpeza. Nunca flexibilize essa trava para aceitar o banco de desenvolvimento ou produção.
+- O Jest carrega explicitamente `.env.test`, sobrescrevendo as variáveis de conexão herdadas. O mesmo carregador é usado pelo inicializador dos serviços de teste. A conta e os dados de desenvolvimento devem ser preservados ao executar a suíte.
 - O teste de status depende de valores específicos de versão, limite e quantidade de conexões; considere isso ao diagnosticar falhas.
 - Faça validação proporcional à mudança. Para documentação, confira conteúdo e formatação; não rode testes que apagam o banco.
 - Evite `npm run lint:fix` global em mudanças pequenas, pois pode reformatar arquivos não relacionados. Formate apenas os arquivos da tarefa quando necessário.
