@@ -1,4 +1,6 @@
 .site {
+  --error-background: #f0d7d2;
+  --error-text: #752e2e;
   --ink: #30313a;
   --accent: #373a86;
   --muted: #5e5c61;
@@ -21,6 +23,8 @@
   color-scheme: light;
 }
 .site[data-theme="dark"] {
+  --error-background: #49332e;
+  --error-text: #f0bab0;
   --ink: #eee7db;
   --accent: #c5bde5;
   --muted: #c1b8aa;

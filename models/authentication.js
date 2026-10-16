@@ -1,5 +1,6 @@
 ﻿import user from "models/user.js";
 import password from "models/password.js";
+import session from "models/session.js";
 import { NotFoundError, UnauthorizedError } from "infra/errors.js";
 
 async function authenticate(providedEmail, providedPassword) {
@@ -53,8 +54,23 @@ async function authenticate(providedEmail, providedPassword) {
   }
 }
 
+async function authenticateSession(token) {
+  const storedSession = await session.findOneValidByToken(token);
+
+  try {
+    return await user.findOneById(storedSession.user_id);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      throw new UnauthorizedError();
+    }
+
+    throw error;
+  }
+}
+
 const authentication = {
   authenticate,
+  authenticateSession,
 };
 
 export default authentication;

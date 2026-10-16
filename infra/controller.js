@@ -29,7 +29,38 @@ function onErrorHandler(error, request, response) {
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
+function setSessionCookie(response, session) {
+  const expiresAt = new Date(session.expires_at);
+  const maxAge = Math.max(
+    0,
+    Math.floor((expiresAt.getTime() - Date.now()) / 1000),
+  );
+  const attributes = [
+    `trama_session_id=${encodeURIComponent(session.token)}`,
+    `Max-Age=${maxAge}`,
+    `Expires=${expiresAt.toUTCString()}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+  ];
+
+  if (process.env.NODE_ENV === "production") {
+    attributes.push("Secure");
+  }
+
+  response.setHeader("Set-Cookie", attributes.join("; "));
+}
+
+function clearSessionCookie(response) {
+  setSessionCookie(response, {
+    token: "",
+    expires_at: new Date(0),
+  });
+}
+
 const controller = {
+  setSessionCookie,
+  clearSessionCookie,
   errorHandlers: {
     onNoMatch: onNoMatchHandler,
     onError: onErrorHandler,

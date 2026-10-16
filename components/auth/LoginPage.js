@@ -1,0 +1,139 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import HomeLayout, { TramaMark } from "components/home/HomeLayout";
+import { signIn } from "./authClient";
+import styles from "./auth.module.css";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      await signIn(email, password);
+      setPassword("");
+      await router.replace("/obras");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <HomeLayout
+      title="Entrar | Trama"
+      description="Entre no Trama e continue construindo suas obras em conjunto."
+      navigation={<Link href="/">Página inicial</Link>}
+    >
+      <section className={styles.loginSection} aria-labelledby="login-title">
+        <div className={styles.introduction}>
+          <p className={styles.eyebrow}>Seu espaço de criação</p>
+          <h1>
+            O próximo capítulo
+            <br />
+            começa com você.
+          </h1>
+          <p>
+            Ideias se encontram, pessoas colaboram e uma obra ganha forma. Entre
+            para continuar essa história.
+          </p>
+          <div className={styles.bookIllustration} aria-hidden="true">
+            <div className={styles.bookCover}>
+              <TramaMark />
+              <span>
+                Cada voz.
+                <br />
+                Uma nova
+                <br />
+                perspectiva.
+              </span>
+              <small>trama</small>
+            </div>
+            <div className={styles.bookPage}>
+              <span>
+                Uma obra é feita
+                <br />
+                de encontros.
+              </span>
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+              <small>Vamos escrever o que vem a seguir.</small>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.formPanel}>
+          <p className={styles.eyebrow}>Bem-vindo ao Trama</p>
+          <h2 id="login-title">Entrar na sua conta</h2>
+          <p className={styles.formDescription}>
+            Use seu e-mail e senha para continuar.
+          </p>
+          <form
+            method="post"
+            onSubmit={handleSubmit}
+            aria-describedby={error ? "login-error" : undefined}
+          >
+            <div className={styles.field}>
+              <label htmlFor="email">E-mail</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="username"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="password">Senha</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+            {error ? (
+              <p className={styles.error} id="login-error" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <button
+              className={styles.primaryButton}
+              type="submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? "Entrando..." : "Entrar"}
+            </button>
+          </form>
+          <Link className={styles.backLink} href="/">
+            Voltar à página inicial
+          </Link>
+        </div>
+      </section>
+    </HomeLayout>
+  );
+}

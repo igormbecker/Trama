@@ -34,17 +34,19 @@ export function TramaMark() {
   );
 }
 
-export default function HomeLayout({ children }) {
+export default function HomeLayout({
+  children,
+  title = "Trama — Gestão editorial colaborativa",
+  description = "Conheça o Trama: uma proposta para conectar pessoas, capítulos e etapas da produção editorial, da organização da obra à aprovação.",
+  navigation,
+}) {
   const [theme, setTheme] = useState("light");
 
   return (
     <div className={styles.site} lang="pt-BR" data-theme={theme}>
       <Head>
-        <title>Trama — Gestão editorial colaborativa</title>
-        <meta
-          name="description"
-          content="Conheça o Trama: uma proposta para conectar pessoas, capítulos e etapas da produção editorial, da organização da obra à aprovação."
-        />
+        <title>{title}</title>
+        <meta name="description" content={description} />
       </Head>
       <style jsx global>{`
         body {
@@ -64,8 +66,13 @@ export default function HomeLayout({ children }) {
           <span>trama</span>
         </Link>
         <nav aria-label="Navegação principal">
-          <a href="#como-funciona">Como funciona</a>
-          <a href="#para-quem">Para quem</a>
+          {navigation ?? (
+            <>
+              <a href="#como-funciona">Como funciona</a>
+              <a href="#para-quem">Para quem</a>
+              <Link href="/login">Entrar</Link>
+            </>
+          )}
         </nav>
         <label className={styles.themeControl}>
           <span>Tema</span>

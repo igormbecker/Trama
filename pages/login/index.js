@@ -1,0 +1,23 @@
+import LoginPage from "components/auth/LoginPage";
+import authentication from "models/authentication.js";
+import { UnauthorizedError } from "infra/errors.js";
+
+export default LoginPage;
+
+export async function getServerSideProps({ req, res }) {
+  res.setHeader("Cache-Control", "private, no-store");
+
+  try {
+    await authentication.authenticateSession(req.cookies?.trama_session_id);
+
+    return {
+      redirect: { destination: "/obras", permanent: false },
+    };
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return { props: {} };
+    }
+
+    throw error;
+  }
+}

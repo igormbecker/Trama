@@ -1,0 +1,62 @@
+.workspace {
+  max-width: 1240px;
+  padding: 45px 5% 85px;
+  margin: auto;
+}
+.heading {
+  margin-bottom: 40px;
+}
+.heading p {
+  color: var(--muted);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.heading p:first-child {
+  color: var(--accent);
+  font-size: 16px;
+  margin-bottom: 18px;
+}
+.heading h1 {
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--preview-paper);
+  padding: 65px 24px;
+}
+.emptyState svg {
+  width: 80px;
+  height: 64px;
+  color: var(--accent);
+  margin-bottom: 30px;
+}
+.emptyState h2 {
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+.emptyState p {
+  max-width: 48ch;
+  color: var(--muted);
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+.emptyState a {
+  font-size: 16px;
+  color: var(--accent);
+}
+@media (max-width: 720px) {
+  .workspace {
+    padding: 30px 6% 45px;
+  }
+  .emptyState {
+    padding: 40px 22px;
+  }
+}
