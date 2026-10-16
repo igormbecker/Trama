@@ -168,3 +168,16 @@ test.each([
     expect(mock).not.toHaveBeenCalled();
   },
 );
+
+test("Explains why an account responsible for works cannot be removed", async () => {
+  jest.spyOn(globalThis, "fetch").mockResolvedValue({
+    status: 400,
+    json: async () => ({
+      message:
+        "Transfer responsibility for your works before deleting this account.",
+    }),
+  });
+  await expect(removeUser("owner")).rejects.toThrow(
+    "Esta conta é responsável por obras e não pode ser removida.",
+  );
+});

@@ -22,6 +22,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Proteção das páginas autenticadas e das APIs administrativas.
 - [x] API de migrations protegida: GET e POST exigem sessão válida e administrador, sem cache. A preparação inicial do banco é feita pelo comando de migrations.
 - [x] Menu autenticado com Minhas obras, Minha conta e Usuários para administradores.
+- [x] Primeira versão de obras: criar, listar e abrir obras privadas, com acesso restrito ao responsável e bloqueio de exclusão de contas responsáveis por obras.
 - [x] Administração de usuários: listar, buscar na lista, adicionar, editar e remover.
 - [x] Edição de perfil administrativo, bloqueio de exclusão da própria conta e proteção para manter ao menos um administrador.
 - [x] Minha conta: editar dados pessoais e alterar a própria senha com confirmação.
@@ -30,7 +31,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Página de status no novo estilo, conteúdo técnico em inglês e retorno à página anterior.
 - [x] Ajustes de alinhamento dos formulários e suporte aos temas claro e escuro.
 
-Esses itens descrevem funcionalidades existentes, não uma garantia permanente de testes ou deploy. A página Minhas obras ainda é uma estrutura inicial; a prévia de capítulos da página pública é ilustrativa. Ainda não há gestão editorial real.
+Esses itens descrevem funcionalidades existentes, não uma garantia permanente de testes ou deploy. A página Minhas obras já permite criar, listar e abrir obras próprias. A prévia de capítulos da página pública continua ilustrativa; participantes, capítulos e o fluxo editorial ainda não foram implementados.
 
 ## Sequência sugerida
 
@@ -46,32 +47,46 @@ Esses itens descrevem funcionalidades existentes, não uma garantia permanente d
 
 A ordem pode ser ajustada após definir as regras. Preparação de produção e recuperação de conta devem ser tratadas antes de abrir o sistema a usuários reais, conforme a forma de lançamento.
 
-## 1. Próximo passo recomendado: obras
+## 1. Primeira versão de obras
 
 Entregar uma primeira fatia utilizável, do banco à interface, sem tentar construir toda a gestão editorial de uma vez.
 
-### Decisões antes da implementação
+### Decisões confirmadas em 16/10/2026
 
-- Quem pode criar obras: qualquer usuário autenticado ou somente administradores?
-- Quem pode ver e editar uma obra? O administrador global terá acesso editorial a todas elas?
-- Quais campos são obrigatórios? Sugestão inicial: título e descrição opcional, com responsável identificado pela sessão.
-- Uma obra pode ser excluída ou deve ser arquivada? Como preservar seu histórico?
-- A obra pertence a uma pessoa, a uma editora ou a uma organização? Há necessidade de múltiplas organizações desde o início?
+- Qualquer usuário autenticado poderá criar sua própria obra.
+- Cada obra terá um único responsável principal, inicialmente a pessoa que a criou, identificada pela sessão.
+- Na primeira entrega, as obras serão privadas e somente o responsável terá acesso direto à listagem e aos detalhes de suas obras.
+- O administrador global não terá acesso editorial direto automático a todas as obras. Essa permissão poderá ser revista futuramente, preservando a distinção entre administração do sistema e responsabilidade pela obra.
+- Outros participantes poderão colaborar na gestão conforme seus papéis, a definir na entrega de participantes.
+- A personificação de usuários para suporte foi aceita como entrega futura, separada da primeira versão de obras. Ela permitirá acesso administrativo indireto às obras privadas, usando as permissões do usuário representado.
 
-A permissão global de administrador não deve ser confundida automaticamente com um papel dentro de uma obra.
+- O título será obrigatório, com até 255 caracteres; a descrição será opcional, com até 5.000 caracteres. Títulos repetidos serão permitidos.
+- A exclusão de uma conta será bloqueada enquanto ela for responsável por obras, preservando os dados.
+
+### Detalhes para entregas posteriores
+
+- Confirmar o vínculo inicial apenas à pessoa responsável, deixando editora e organizações para depois.
+- Definir edição, transferência de responsabilidade, arquivamento, restauração e eventual exclusão em entregas posteriores.
+
+A permissão global de administrador não deve ser confundida automaticamente com um papel dentro de uma obra. As regras de autorização devem ficar no servidor, nos models, e ser cobertas por testes.
 
 ### Primeira entrega proposta
 
-- [ ] Definir o modelo mínimo e criar a migration de obras.
-- [ ] Escrever testes de criação, validação, listagem e acesso a uma obra.
-- [ ] Confirmar a falha esperada antes de implementar cada comportamento.
-- [ ] Implementar as regras no model e os endpoints na API existente.
-- [ ] Substituir o conteúdo provisório de /works por listagem real, estado vazio e ação de criar.
-- [ ] Criar a tela de detalhes da obra.
-- [ ] Validar os estados de carregamento, erro e sucesso e o uso em celular.
+- [x] Definir o modelo mínimo e criar a migration de obras.
+- [x] Escrever testes de criação, validação, listagem e acesso a uma obra.
+- [x] Confirmar a falha esperada antes de implementar cada comportamento.
+- [x] Implementar as regras no model e os endpoints na API existente.
+- [x] Substituir o conteúdo provisório de /works por listagem real, estado vazio e ação de criar.
+- [x] Criar a tela de detalhes da obra.
+- [x] Conferir estado vazio, envio em andamento, sucesso, listagem e detalhes no navegador, incluindo o formulário em largura de celular.
+- [ ] Exercitar falhas de rede e sessão expirada durante o envio pela interface; o servidor já tem cobertura para sessões inválidas e dados inválidos.
 - [ ] Acrescentar edição e arquivamento ou exclusão após definir a regra.
 
 Critério de conclusão: uma pessoa autorizada cria e abre sua obra; outra pessoa sem permissão não consegue acessá-la por interface, URL ou API. O fluxo deve preservar os dados de desenvolvimento durante os testes.
+
+Implementação: tabela `works`, model `models/work.js`, GET/POST `/api/v1/works`, GET `/api/v1/works/[id]` e páginas `/works` e `/works/[id]`. O responsável vem da sessão, campos adicionais são rejeitados, descrições omitidas viram texto vazio e títulos/descrições têm espaços externos removidos. A listagem usa criação mais recente primeiro, com desempate por identificador. Acesso a obra alheia, inexistente ou com identificador inválido retorna 404. A chave estrangeira impede remover um responsável; a remoção administrativa também valida essa regra em transação e retorna erro compreensível.
+
+A migration foi executada somente no banco de testes nesta entrega. A aplicação do esquema em desenvolvimento continua pelo fluxo habitual de `npm run dev`. Próximo passo recomendado: definir a matriz de permissões e os convites antes de implementar participantes.
 
 ## 2. Participantes e convites
 
@@ -86,6 +101,8 @@ Critério de conclusão: uma pessoa autorizada cria e abre sua obra; outra pesso
 Critério de conclusão: uma pessoa convidada aceita participar e recebe somente as permissões previstas para sua obra. Convites inválidos, expirados ou cancelados não concedem acesso.
 
 ## 3. Partes e capítulos
+
+Referência criativa para a obra piloto: [Memórias do Futuro e seus quatro capítulos](example-work.md), ideia que o usuário pediu para preservar.
 
 - [ ] Validar a necessidade de partes/seções e sua relação com os capítulos.
 - [ ] Criar, listar, editar e ordenar capítulos dentro da obra.
@@ -134,6 +151,10 @@ Itens candidatos após o fluxo editorial básico funcionar:
 
 Não criar todos esses módulos apenas porque existem no legado. Validar a necessidade e a prioridade de cada um.
 
+## Ideias futuras — escrita acadêmica
+
+Proposta da esposa do usuário: apoiar a construção individual ou colaborativa de artigos, resumos e resumos expandidos para congressos e simpósios, com modelos e orientações por etapa. Detalhes e decisões em aberto estão em [Apoio à escrita acadêmica](academic-writing-idea.md). A ideia foi registrada para não se perder; prioridade, editor de texto e uso de IA ainda não foram definidos.
+
 ## Pendências de conta e preferências
 
 - [ ] Recuperação de senha: fluxo de e-mail e tokens com expiração e uso único.
@@ -147,7 +168,26 @@ Não criar todos esses módulos apenas porque existem no legado. Validar a neces
 
 A sessão atual expira em 24 horas sem renovação automática. Não alterar essa decisão silenciosamente. A preferência de tema atual é do navegador, não da conta; a futura persistência pode sincronizar no login sem consultar o banco a cada navegação.
 
+## Personificação de usuários para suporte — entrega futura
+
+Permitir que administradores reproduzam problemas navegando com as permissões de outro usuário, sem conhecer sua senha. A implementação não faz parte da primeira entrega de obras.
+
+Direção proposta para detalhar antes da implementação:
+
+- [ ] Restringir o início da personificação a administradores e definir quais contas podem ser representadas.
+- [ ] Preservar a identidade do administrador e a do usuário representado na sessão e na auditoria.
+- [ ] Exibir aviso permanente com o usuário representado e uma ação para encerrar e retornar à conta administrativa.
+- [ ] Aplicar as permissões do usuário representado, sem herdar privilégios administrativos durante a personificação.
+- [ ] Registrar início, encerramento e alterações relevantes com o administrador que executou a ação.
+- [ ] Bloquear troca de senha, alteração de perfil administrativo e personificação encadeada nesse modo.
+- [ ] Definir prazo curto, encerramento e revogação do acesso.
+- [ ] Testar autorização, expiração, retorno à conta administrativa e identificação correta das ações.
+
+Esse recurso permite acesso administrativo indireto ao conteúdo privado e deverá ser comunicado como regra do produto. Ele ajuda a reproduzir problemas de dados e permissões; não reproduz necessariamente o navegador ou dispositivo do usuário.
+
 ## Preparação para publicação e operação
+
+O usuário esclareceu em 16/10/2026 que o projeto ainda não está integrado à Vercel e que pretende disponibilizá-lo na internet somente depois de pronto e validado. Até lá, o desenvolvimento e a validação seguem localmente.
 
 Esta lista registra trabalho a verificar, não afirma que a configuração de produção foi auditada ou que esses controles já existem.
 
@@ -157,9 +197,10 @@ Esta lista registra trabalho a verificar, não afirma que a configuração de pr
 - [ ] Revisar limites de tentativas de login, cadastro e recuperação de senha.
 - [ ] Revisar proteção das operações autenticadas, cookies e exposição dos tokens de sessão; avaliar hash dos tokens armazenados.
 - [ ] Definir backup, retenção e testar restauração do banco e dos arquivos.
-- [ ] Definir o que acontece com obras, autoria e histórico ao remover uma conta; a exclusão atual remove o usuário e suas sessões.
+- [x] Bloquear a exclusão de contas responsáveis por obras.
+- [ ] Definir o que acontece com participações, autoria e histórico ao remover uma conta depois que esses módulos existirem.
 - [ ] Conferir CI existente e estabelecer verificações de formatação, análise, testes isolados e build conforme os scripts do projeto.
-- [ ] Validar configurações de preview e produção na Vercel e o processo de deploy; publicação automática pela main foi informada pelo usuário.
+- [ ] Quando chegar a etapa de publicação, configurar a integração com a Vercel e validar preview, produção e o processo de deploy; atualmente não há integração confirmada nem deploy automático pela main.
 - [ ] Revisar logs e tratamento de erros para apoiar diagnóstico sem registrar credenciais ou conteúdo sensível.
 - [ ] Validar navegação por teclado, contraste, mensagens de erro e telas pequenas nos fluxos completos.
 - [ ] Avaliar o custo da renderização global usada para ler o cookie de tema antes de otimizar cache ou desempenho.
@@ -184,7 +225,7 @@ O usuário também deseja aplicar essa identidade visual ao site da Bectec no fu
 
 Mensagem sugerida:
 
-> Leia AGENTS.md e docs/roadmap.md neste repositório. Confira o código e o estado do Git e vamos retomar pela primeira entrega de obras. Antes de implementar, confirme comigo as decisões de negócio ainda pendentes. Preserve a arquitetura atual e desenvolva com TDD.
+> Leia AGENTS.md e docs/roadmap.md neste repositório. Confira o código e o estado do Git e vamos retomar por participantes e convites. Antes de implementar, confirme comigo a matriz de permissões e as regras de convite ainda pendentes. Preserve a arquitetura atual e desenvolva com TDD.
 
 Na retomada:
 
