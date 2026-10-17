@@ -465,6 +465,12 @@ export default function ChapterEditor({
           Voltar à leitura
         </button>
       </div>
+      {status === "Salvo no Trama" && !saving && !manualSaving && (
+        <p className={styles.savedStatus}>
+          <SuccessIcon />
+          Salvo no Trama
+        </p>
+      )}
     </section>
   );
 }
