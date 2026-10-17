@@ -18,4 +18,15 @@ router.get(async (request, response) => {
       await work.findOneById(request.query.id, request.authenticatedUser.id),
     );
 });
+router.patch(async (request, response) => {
+  return response
+    .status(200)
+    .json(
+      await work.update(
+        request.query.id,
+        request.authenticatedUser.id,
+        request.body,
+      ),
+    );
+});
 export default router.handler(controller.errorHandlers);

@@ -6,6 +6,7 @@ import ParticipantsPanel from "./ParticipantsPanel";
 import StructurePanel from "./StructurePanel";
 import styles from "./works.module.css";
 import useRecordAccess from "components/home/useRecordAccess";
+import WorkDetails from "./WorkDetails";
 
 export default function WorkPage({
   user,
@@ -36,12 +37,7 @@ export default function WorkPage({
           </p>
           <h1 id="work-title">{work.title}</h1>
         </div>
-        <div className={styles.panel}>
-          <h2>Descrição</h2>
-          <p className={styles.description}>
-            {work.description || "Esta obra ainda não tem descrição."}
-          </p>
-        </div>
+        <WorkDetails work={work} canManage={work.owner_id === user.id} />
         <StructurePanel
           workId={work.id}
           parts={parts}

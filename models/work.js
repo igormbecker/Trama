@@ -1,7 +1,7 @@
 import database from "infra/database.js";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
-async function create(ownerId, input) {
+function validateInput(input) {
   if (
     !input ||
     typeof input !== "object" ||
@@ -19,10 +19,27 @@ async function create(ownerId, input) {
   if (!title || title.length > 255 || description.length > 5000) {
     throw new ValidationError({ message: "Invalid work data." });
   }
+  return { title, description };
+}
+
+async function create(ownerId, input) {
+  const { title, description } = validateInput(input);
   const result = await database.query({
     text: "INSERT INTO works (owner_id, title, description) VALUES ($1, $2, $3) RETURNING *",
     values: [ownerId, title, description],
   });
+  return result.rows[0];
+}
+
+async function update(id, userId, input) {
+  validateId(id);
+  const { title, description } = validateInput(input);
+  const result = await database.query({
+    text: `UPDATE works SET title = $3, description = $4, updated_at = timezone('utc', now())
+      WHERE id = $1 AND owner_id = $2 RETURNING *`,
+    values: [id, userId, title, description],
+  });
+  if (!result.rowCount) throw new NotFoundError({ message: "Work not found." });
   return result.rows[0];
 }
 
@@ -59,5 +76,12 @@ async function requireOwner(id, userId) {
     throw new NotFoundError({ message: "Work not found." });
   return storedWork;
 }
-const work = { create, findAllForUser, findOneById, requireOwner, validateId };
+const work = {
+  create,
+  update,
+  findAllForUser,
+  findOneById,
+  requireOwner,
+  validateId,
+};
 export default work;
