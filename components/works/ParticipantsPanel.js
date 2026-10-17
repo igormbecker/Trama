@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -96,7 +97,7 @@ export default function ParticipantsPanel({
         gerencia participantes e convites.
       </p>
       {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
+      {message && <SuccessMessage>{message}</SuccessMessage>}
       <form onSubmit={handleInvite}>
         <label htmlFor="invite-email">E-mail do organizador</label>
         <input
@@ -150,7 +151,11 @@ export default function ParticipantsPanel({
               </svg>
             </button>
           </div>
-          <p role="status">{copyMessage}</p>
+          {copyMessage === "Link copiado!" ? (
+            <SuccessMessage>{copyMessage}</SuccessMessage>
+          ) : (
+            <p role="status">{copyMessage}</p>
+          )}
           <p>
             Copie este link e envie para a pessoa convidada. Vale por sete dias
             e exige uma conta com o e-mail informado. Nenhum e-mail é enviado

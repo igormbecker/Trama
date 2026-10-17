@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { saveStructure } from "./structureClient";
@@ -125,7 +126,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
     >
       <h2 id="structure-title">Partes e capítulos</h2>
       {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
+      {message && <SuccessMessage>{message}</SuccessMessage>}
       {canManage && (
         <div className={styles.panel}>
           <button

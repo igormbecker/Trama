@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import Link from "next/link";
 import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/router";
@@ -93,9 +94,9 @@ export default function LoginPage() {
             Use seu e-mail e senha para continuar.
           </p>
           {router.query.registration === "complete" ? (
-            <p className={styles.success} role="status">
+            <SuccessMessage>
               Conta criada! Entre com seu e-mail e senha.
-            </p>
+            </SuccessMessage>
           ) : null}
           <form
             method="post"

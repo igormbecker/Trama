@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
@@ -23,7 +24,7 @@ export default function WorkPage({
       <section className={styles.workspace} aria-labelledby="work-title">
         <Link href="/works">← Minhas obras</Link>
         {router.query.created === "1" && (
-          <p role="status">Obra criada com sucesso!</p>
+          <SuccessMessage>Obra criada com sucesso!</SuccessMessage>
         )}
         <div className={styles.heading}>
           <p>
