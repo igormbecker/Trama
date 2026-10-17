@@ -44,6 +44,14 @@ describe("Test database isolation", () => {
     ["production mode", { NODE_ENV: "production" }],
     ["development HTTP server", { TEST_BASE_URL: "http://localhost:3001" }],
     ["missing test server marker", { TRAMA_TEST_SERVER: undefined }],
+    [
+      "remote application URL",
+      { DATABASE_URL: "postgres://remote.invalid/production" },
+    ],
+    [
+      "remote direct URL",
+      { DATABASE_URL_UNPOOLED: "postgres://remote.invalid/production" },
+    ],
   ])("Rejects %s before sending SQL", async (_description, overrides) => {
     jest.replaceProperty(process, "env", {
       ...isolatedEnvironment,
@@ -78,6 +86,7 @@ describe("Test environment loading", () => {
       POSTGRES_PASSWORD: "synthetic-production-value",
       POSTGRES_CA: "synthetic-certificate",
       DATABASE_URL: "postgres://invalid.example.com/production_db",
+      DATABASE_URL_UNPOOLED: "postgres://invalid.example.com/production_db",
       PASSWORD_PEPPER: "synthetic-pepper",
     });
 
@@ -91,5 +100,6 @@ describe("Test environment loading", () => {
     expect(connection.port).toBe("5434");
     expect(connection.pathname).toBe("/trama_test");
     expect(connection.username).toBe("trama_test_user");
+    expect(process.env.DATABASE_URL_UNPOOLED).toBe(process.env.DATABASE_URL);
   });
 });

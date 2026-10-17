@@ -4,6 +4,8 @@
   "description": "Um novo espaço para a produção editorial. Produto em desenvolvimento.",
   "main": "index.js",
   "scripts": {
+    "build": "next build",
+    "start": "next start --port 3001",
     "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && (trap 'npm run services:stop' INT TERM ; next dev --port 3001)",
     "test": "node infra/scripts/run-tests.js",
     "test:watch": "node infra/scripts/run-tests.js --watch",

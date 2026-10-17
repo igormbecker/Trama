@@ -43,12 +43,12 @@ export default function InvitationPage({ user, invitation }) {
           <>
             <h2>Entre para responder ao convite</h2>
             <p>
-              Use uma conta com o e-mail que recebeu o convite. Após entrar ou
-              criar sua conta, abra este link novamente para aceitar ou recusar.
+              Use uma conta com o e-mail que recebeu o convite. Se ainda não tem
+              conta, solicite o cadastro ao administrador do Trama. Após entrar,
+              abra este link novamente para aceitar ou recusar.
             </p>
             <div className={styles.actions}>
               <Link href="/login">Entrar</Link>
-              <Link href="/register">Criar conta</Link>
             </div>
           </>
         ) : !invitation ? (

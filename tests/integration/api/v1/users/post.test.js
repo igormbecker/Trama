@@ -4,19 +4,22 @@ import user from "models/user.js";
 import database from "infra/database.js";
 import password from "models/password.js";
 
+let administratorCookie;
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDataBase();
   await orchestrator.runPendingMigrations();
+  administratorCookie = await orchestrator.createAdministratorCookie();
 });
 
 describe("POST /api/v1/users", () => {
-  describe("Anonymous user", () => {
+  describe("Administrator", () => {
     test("With unique and valid data", async () => {
       const response = await fetch("http://127.0.0.1:3002/api/v1/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: administratorCookie,
         },
         body: JSON.stringify({
           name: "Igor Becker",
@@ -97,7 +100,10 @@ describe("POST /api/v1/users", () => {
         );
         const response = await fetch("http://127.0.0.1:3002/api/v1/users", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: administratorCookie,
+          },
           body: JSON.stringify(input),
         });
         expect(response.status).toBe(400);
@@ -112,7 +118,10 @@ describe("POST /api/v1/users", () => {
     test("Normalizes profile fields and allows the new account to sign in", async () => {
       const response = await fetch("http://127.0.0.1:3002/api/v1/users", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: administratorCookie,
+        },
         body: JSON.stringify({
           name: " Reader ",
           username: " new.reader ",
@@ -128,7 +137,10 @@ describe("POST /api/v1/users", () => {
       expect(body).not.toHaveProperty("password");
       const login = await fetch("http://127.0.0.1:3002/api/v1/sessions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: administratorCookie,
+        },
         body: JSON.stringify({
           email: body.email,
           password: "example-password",
@@ -142,6 +154,7 @@ describe("POST /api/v1/users", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: administratorCookie,
         },
         body: JSON.stringify({
           name: "Igor Becker",
@@ -156,6 +169,7 @@ describe("POST /api/v1/users", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: administratorCookie,
         },
         body: JSON.stringify({
           name: "Igor Becker",
@@ -181,6 +195,7 @@ describe("POST /api/v1/users", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: administratorCookie,
         },
         body: JSON.stringify({
           name: "Igor Becker",
@@ -195,6 +210,7 @@ describe("POST /api/v1/users", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: administratorCookie,
         },
         body: JSON.stringify({
           name: "Igor Becker",

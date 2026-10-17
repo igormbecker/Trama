@@ -11,9 +11,12 @@ router.post(postHandler);
 export default router.handler(controller.errorHandlers);
 
 async function postHandler(request, response) {
+  response.setHeader("Cache-Control", "private, no-store");
+  await authentication.authenticateAdministrator(
+    request.cookies?.trama_session_id,
+  );
   const userInputValues = request.body;
   const newUser = await user.create(userInputValues);
-  response.setHeader("Cache-Control", "private, no-store");
   return response.status(201).json({
     id: newUser.id,
     name: newUser.name,

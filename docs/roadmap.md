@@ -14,6 +14,19 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 
 ## O que já está implementado
 
+- [x] Cadastro restrito a administradores: POST /api/v1/users exige sessão administrativa; visitantes e contas comuns não criam usuários. A página /register informa o fechamento do cadastro público, e login e convites orientam solicitar conta ao administrador. Novas contas continuam comuns, sem promoção automática.
+
+### Publicação restrita — decisões de 17/10/2026
+
+- Página inicial e login poderão ser públicos; somente contas cadastradas pelo administrador entram na área autenticada.
+- Projeto vazio `trama` criado na Vercel, separado do Curso.Dev, com framework Next.js e Node 24. Nenhum deploy foi executado. Painel: https://vercel.com/igor-m-becker-jrs-projects/trama.
+- Projeto Neon `trama` identificado como `jolly-boat-90353896`, na região AWS US East 2 (Ohio), com branches `production` e `preview`. O usuário manteve `production` como padrão e escolheu configurar preview manualmente, sem branches automáticas por deployment.
+- Ambas as branches receberam uma cópia consistente de `trama_dev` em 17/10/2026: três contas, uma obra, duas partes e quatro capítulos, incluindo os documentos salvos. A importação verificou as nove tabelas por contagem e checksum antes de confirmar cada transação; sessões ficaram vazias e reservas de edição foram liberadas. Novas alterações de dados serão independentes entre os ambientes. Backups com dados privados ficam em `.vercel/backups`, ignorados pelo Git.
+- Vercel recebeu `DATABASE_URL`, `DATABASE_URL_UNPOOLED` e `PASSWORD_PEPPER` como segredos, em entradas separadas para Production e Preview. O desenvolvimento e os testes locais continuam no Docker. A conexão da aplicação aceita a URL do ambiente, com fallback para os campos locais existentes; migrations usam a URL direta quando disponível. A trava dos testes verifica as URLs e sobrescreve a URL direta herdada com a de `trama_test`.
+- Preservar o PASSWORD_PEPPER de origem ao copiar contas para manter a validação das senhas. Nunca registrar seu valor em documentação ou commits.
+- Antes da importação, conferir os destinos, os dados já existentes e fazer cópia de segurança. Não copiar sessões e reservas de edição ativas como credenciais válidas para a internet.
+- Pendentes: enviar a branch de cadastro restrito mediante autorização de commit/push, concluir o vínculo com GitHub, executar o primeiro deploy e verificar build remoto, login, permissões, editor e exportações no ambiente online. Scripts `build` e `start` estão disponíveis; `.vercel`, arquivos `.env*.local`, `.env.production` e dumps ficam ignorados pelo Git. Nenhum deploy está confirmado por este registro.
+
 - [x] Exportação da obra salva em DOCX editável e PDF de leitura, organizada por partes e capítulos. Botões na leitura completa; GET /api/v1/works/[id]/export?format=docx|pdf exige acesso atual à obra e usa cache privado. Geração em memória, sem guardar arquivos no banco. PDF com Inter estática incorporada, somente a marca Trama no rodapé e número da página. DOCX com estilos editáveis, A4 e numeração. Revisão/comentários/preparação continuam planejados dentro do Trama; importar arquivos permanece fora do escopo. Conferência visual do DOCX pendente em Word/LibreOffice (renderizador indisponível no ambiente).
 
 - [x] Menu autenticado recolhível pelo cabeçalho, com transição para a esquerda e expansão do conteúdo. O controle permanece disponível ao ocultar, informa o estado e impede foco nos links ocultos; respeita preferência por movimento reduzido.
@@ -23,7 +36,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Ambiente local separado do Curso.Dev: aplicação na porta 3001 e PostgreSQL de desenvolvimento na 5433, com projeto Compose e volume próprios.
 - [x] Testes isolados: aplicação na 3002, PostgreSQL na 5434 e banco descartável exclusivo, com trava contra limpeza do banco de desenvolvimento.
 - [x] Página inicial do produto, fonte Inter, temas de papel e carvão quente e assinatura Bectec no rodapé.
-- [x] Cadastro público, login e logout, com validações e senhas armazenadas como hash.
+- [x] Cadastro administrativo, login e logout, com validações e senhas armazenadas como hash. O cadastro público anterior foi fechado para a publicação restrita.
 - [x] Sessões no PostgreSQL, cookie de autenticação HttpOnly e expiração fixa de 24 horas.
 - [x] Proteção das páginas autenticadas e das APIs administrativas.
 - [x] API de migrations protegida: GET e POST exigem sessão válida e administrador, sem cache. A preparação inicial do banco é feita pelo comando de migrations.
