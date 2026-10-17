@@ -5,6 +5,7 @@ import workStructure from "models/workStructure.js";
 import workInvitation from "models/workInvitation.js";
 import workParticipant from "models/workParticipant.js";
 import database from "infra/database.js";
+import chapterContent from "models/chapterContent.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -56,6 +57,44 @@ const document = {
     },
   ],
 };
+
+test("Reads the saved work as a whole and protects the reading page", async () => {
+  const fixture = await setup();
+  const { owner, work: book, chapter } = fixture;
+  const url = `/works/${book.id}/read`;
+  const empty = await request(url, owner);
+  expect(empty.status).toBe(200);
+  expect(await empty.text()).toContain("Esta obra ainda não tem texto salvo");
+  const lease = await chapterContent.reserve(book.id, chapter.id, owner.id, {});
+  await chapterContent.save(book.id, chapter.id, owner.id, {
+    document,
+    revision: 0,
+    token: lease.token,
+  });
+  const response = await request(url, owner);
+  expect(response.status).toBe(200);
+  const html = await response.text();
+  expect(html).toContain("Uma carta");
+  expect(html).toContain("Sumário");
+  expect(html).not.toContain(lease.token);
+  expect(html).not.toContain("Descrição preservada");
+  const organizer = await account();
+  const invitation = await workInvitation.create(book.id, owner.id, {
+    email: organizer.email,
+  });
+  await workInvitation.respond(invitation.token, organizer.id, {
+    action: "accept",
+  });
+  expect((await request(url, organizer)).status).toBe(200);
+  await workParticipant.remove(book.id, organizer.id, owner.id);
+  expect((await request(url, organizer)).status).toBe(404);
+  expect((await request(url, await account())).status).toBe(404);
+  const anonymous = await fetch(`http://127.0.0.1:3002${url}`, {
+    redirect: "manual",
+  });
+  expect(anonymous.status).toBe(307);
+  expect(anonymous.headers.get("location")).toBe("/login");
+});
 
 test("Owner saves rich text under an exclusive lease and revision; readers cannot write", async () => {
   const fixture = await setup();

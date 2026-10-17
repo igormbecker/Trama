@@ -259,6 +259,15 @@
   color: var(--paper);
   text-decoration: none;
 }
+.workspace .readWorkButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--paper);
+  text-decoration: none;
+}
 .writeButton:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
