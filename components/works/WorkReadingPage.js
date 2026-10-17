@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AppLayout from "components/app/AppLayout";
 import useRecordAccess from "components/home/useRecordAccess";
 import ChapterReader from "./ChapterReader";
+import ExportWorkButtons from "./ExportWorkButtons";
 import styles from "./chapter.module.css";
 
 export default function WorkReadingPage({ user, work, parts }) {
@@ -26,6 +27,7 @@ export default function WorkReadingPage({ user, work, parts }) {
       <section id="reading-top" className={styles.workspace}>
         <Link href={`/works/${work.id}`}>← Voltar à obra</Link>
         <h1>{work.title}</h1>
+        <ExportWorkButtons workId={work.id} disabled={!parts.length} />
         <p>
           Texto salvo até o momento. Alterações ainda não salvas no editor não
           aparecem nesta leitura.

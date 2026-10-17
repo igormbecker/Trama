@@ -78,6 +78,34 @@ test("Reads the saved work as a whole and protects the reading page", async () =
   expect(html).toContain("Sumário");
   expect(html).not.toContain(lease.token);
   expect(html).not.toContain("Descrição preservada");
+  for (const format of ["docx", "pdf"]) {
+    const exported = await request(
+      `/api/v1/works/${book.id}/export?format=${format}`,
+      owner,
+    );
+    expect(exported.status).toBe(200);
+    expect(exported.headers.get("cache-control")).toBe("private, no-store");
+    expect(exported.headers.get("content-disposition")).toContain(`.${format}`);
+    const buffer = Buffer.from(await exported.arrayBuffer());
+    expect(buffer.subarray(0, format === "pdf" ? 5 : 2).toString()).toBe(
+      format === "pdf" ? "%PDF-" : "PK",
+    );
+  }
+  expect(
+    (await request(`/api/v1/works/${book.id}/export?format=html`, owner))
+      .status,
+  ).toBe(400);
+  expect(
+    (await request(`/api/v1/works/${book.id}/export?format=pdf`, null)).status,
+  ).toBe(401);
+  expect(
+    (
+      await request(
+        `/api/v1/works/${book.id}/export?format=pdf`,
+        await account(),
+      )
+    ).status,
+  ).toBe(404);
   const organizer = await account();
   const invitation = await workInvitation.create(book.id, owner.id, {
     email: organizer.email,
@@ -86,8 +114,16 @@ test("Reads the saved work as a whole and protects the reading page", async () =
     action: "accept",
   });
   expect((await request(url, organizer)).status).toBe(200);
+  expect(
+    (await request(`/api/v1/works/${book.id}/export?format=pdf`, organizer))
+      .status,
+  ).toBe(200);
   await workParticipant.remove(book.id, organizer.id, owner.id);
   expect((await request(url, organizer)).status).toBe(404);
+  expect(
+    (await request(`/api/v1/works/${book.id}/export?format=docx`, organizer))
+      .status,
+  ).toBe(404);
   expect((await request(url, await account())).status).toBe(404);
   const anonymous = await fetch(`http://127.0.0.1:3002${url}`, {
     redirect: "manual",
