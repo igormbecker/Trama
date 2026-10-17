@@ -24,7 +24,7 @@ O capítulo termina com Clara fora da casa, ao telefone com dona Lídia, prepara
 
 ### Parte II — As vozes do passado
 
-**2.1. A mulher que reconheceu a letra:** título e descrição já sugeridos e visíveis na captura da estrutura enviada pelo usuário. O texto completo ainda não foi escrito.
+**2.1. A mulher que reconheceu a letra:** capítulo completo escrito em 17/10/2026, disponível em [example-chapter-03.md](example-chapter-03.md) e entregue em Word separado. A descrição abaixo é a sugestão anterior; a cena efetiva ocorre nos fundos de uma farmácia, depois de a presença se manifestar na casa de Lídia.
 
 Descrição já apresentada:
 
@@ -56,15 +56,25 @@ Na versão completa do primeiro capítulo, a pista é uma fotografia guardada no
 
 ## O que falta escrever e decidir
 
-- [ ] Escrever o capítulo **2.1. A mulher que reconheceu a letra**, continuando após a ligação, com a visita a Lídia, o reconhecimento da caligrafia e a menção a alguém desaparecido décadas antes. A identidade pode continuar sendo ocultada do leitor; ainda não está definida.
-- [ ] Definir o autor da carta e o significado das duas letras entrelaçadas.
+- [x] Escrever o capítulo **2.1. A mulher que reconheceu a letra**. A desaparecida é Ester Martins, irmã de Lídia. Ver continuidade dos novos capítulos abaixo.
+- [ ] Confirmar quem escreveu a carta. Lídia reconhece a letra de Ester e interpreta as iniciais como EM, mas isso não comprova a autoria.
 - [ ] Desenvolver a pessoa desconhecida, a árvore e a rua mencionadas na carta; não confundir automaticamente essa rua com o endereço de Lídia.
 - [ ] Explicar gradualmente a data futura, o trecho invisível à transcrição e as mensagens do número de Helena.
 - [ ] Definir a relação de Helena e Lídia com a presença e por que a casa ainda não podia ser esvaziada.
 - [ ] Construir as regras da assombração: imitação de vozes, respostas, leitura em voz alta, alcance fora da casa e consequências de desobedecer. As advertências são pistas; ainda não formam um sistema de regras explicado.
 - [ ] Planejar os capítulos seguintes e o desfecho, sem apresentar ideias ainda não aprovadas como capítulos já escritos.
 
-Não há terceiro ou quarto capítulo completo registrado nesta memória. Também não foi confirmado se haverá outros capítulos na Parte I; o próximo previsto na estrutura mostrada é o 2.1, na Parte II.
+## Continuação escrita em 17/10/2026
+
+Foram escritos três capítulos novos, entregues em arquivos Word separados, sem inserção ou confirmação de salvamento na aplicação:
+
+- **1.2. A segunda ligação:** [texto integral](example-chapter-02.md). Clara segue pela avenida até Lídia. A mãe recebe uma ligação falsa atribuída a Lídia, que sabe do ferimento. As duas ouvem uma voz dentro da casa de Lídia, primeiro desconhecida, depois igual à de Helena. A mãe chega à rua. Este capítulo encerra a Parte I.
+- **2.1. A mulher que reconheceu a letra:** [texto integral](example-chapter-03.md). As três se abrigam na farmácia. Lídia reconhece a caligrafia de sua irmã **Ester Martins**, desaparecida em **1998**, aos **23 anos**, na casa onde Helena cresceu, na **Rua do Cedro**. A data futura da carta coincide com o dia e mês do desaparecimento, também ocorrido numa quinta-feira. As iniciais parecem ser EM. A mãe de Clara continua sem nome definido. A fotografia foi feita na cozinha da mãe de Lídia; segundo Lídia, Ester estava atrás delas, não era a fotógrafa. A identidade de quem fotografou continua indefinida.
+- **2.2. O nome atrás da parede:** [texto integral](example-chapter-04.md). As três passam a noite num hotel perto do hospital. Lídia tem a chave da casa da Rua do Cedro, entregue por Helena no hospital; combinam ir juntas no dia seguinte. Na lembrança de 1998, Ester tinha uma bicicleta verde deixada na figueira. Uma voz pedia uma tesoura atrás de um armário sem prateleiras. Helena respondeu com o próprio nome à pergunta de quem estava ali. Havia somente uma parede atrás da abertura, embora a voz continuasse. A polícia quebrou a parede e não encontrou nada. Três dias depois chegou um bilhete com a letra de Ester: “Não deixem que ela fique sem ninguém.” Helena guardou o bilhete no livro de receitas; seu paradeiro atual não foi verificado. Sulcos no verso da fotografia revelam parte de outra frase: “... responder com o nome, ela sabe de quem esperar a voz.” No fim, a recepção do hotel anuncia uma visitante chamada Ester Martins, que diz ter trazido a tesoura.
+
+As informações antigas deste arquivo sobre nomes não definidos descrevem o estado ao fim do capítulo 1.1; a continuação acima prevalece para Ester, Rua do Cedro e a figueira. A autoria da carta, a confiabilidade das advertências, a natureza da visitante e o mecanismo das mensagens permanecem mistérios. Os relatos de Lídia e os sulcos são pistas, não comprovação de um sistema completo de regras.
+
+**Próxima cena:** continuar imediatamente após a ligação da recepção, sem saltar automaticamente para a visita planejada à Rua do Cedro. Clara, sua mãe e Lídia estão juntas no quarto de Clara e da mãe. Não está estabelecido que a visitante seja realmente Ester, nem como soube do hotel. Não houve encontro presencial com ela ainda.
 
 ## Ideia inicial preservada como histórico
 
