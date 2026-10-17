@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
@@ -173,11 +174,7 @@ export default function UsersPage({ user, initialUsers }) {
             Adicionar usuário
           </button>
         </div>
-        {notice ? (
-          <p className={styles.success} role="status">
-            {notice}
-          </p>
-        ) : null}
+        {notice ? <SuccessMessage>{notice}</SuccessMessage> : null}
         {error ? (
           <p className={styles.error} role="alert">
             {error}

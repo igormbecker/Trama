@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -61,9 +62,9 @@ export default function InvitationPage({ user, invitation }) {
           </>
         ) : declined ? (
           <>
-            <p role="status">
+            <SuccessMessage>
               Convite recusado. Você não recebeu acesso à obra.
-            </p>
+            </SuccessMessage>
             <Link href="/works">Minhas obras</Link>
           </>
         ) : (

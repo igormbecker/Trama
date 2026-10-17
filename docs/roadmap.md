@@ -14,6 +14,12 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 
 ## O que já está implementado
 
+- [x] Exportação da obra salva em DOCX editável e PDF de leitura, organizada por partes e capítulos. Botões na leitura completa; GET /api/v1/works/[id]/export?format=docx|pdf exige acesso atual à obra e usa cache privado. Geração em memória, sem guardar arquivos no banco. PDF com Inter estática incorporada, somente a marca Trama no rodapé e número da página. DOCX com estilos editáveis, A4 e numeração. Revisão/comentários/preparação continuam planejados dentro do Trama; importar arquivos permanece fora do escopo. Conferência visual do DOCX pendente em Word/LibreOffice (renderizador indisponível no ambiente).
+
+- [x] Menu autenticado recolhível pelo cabeçalho, com transição para a esquerda e expansão do conteúdo. O controle permanece disponível ao ocultar, informa o estado e impede foco nos links ocultos; respeita preferência por movimento reduzido.
+
+- [x] Responsável edita título e descrição da obra nos detalhes, por `PATCH /api/v1/works/[id]`, com os mesmos limites da criação, cache privado e confirmação visual. Organizadores e administradores sem responsabilidade sobre a obra não podem editar; transferência e arquivamento continuam pendentes.
+- [x] Entrada autenticada em `/home` (“Seu espaço”), com retomada do último capítulo, até cinco obras acessadas recentemente e aviso de convites pendentes. Histórico local por conta e navegador, com apenas identificadores e sem conteúdo ou tokens. Obras são filtradas pela lista autorizada atual e capítulos consultados pela API antes da exibição. O editor mantém reserva e recuperação existentes. A lista completa e criação continuam em `/works`; login, menu e marca levam à nova entrada. Sincronização de acessos entre dispositivos permanece futura.
 - [x] Ambiente local separado do Curso.Dev: aplicação na porta 3001 e PostgreSQL de desenvolvimento na 5433, com projeto Compose e volume próprios.
 - [x] Testes isolados: aplicação na 3002, PostgreSQL na 5434 e banco descartável exclusivo, com trava contra limpeza do banco de desenvolvimento.
 - [x] Página inicial do produto, fonte Inter, temas de papel e carvão quente e assinatura Bectec no rodapé.
@@ -124,7 +130,7 @@ O token aleatório é retornado somente na criação; o banco guarda seu hash SH
 
 As migrations desta etapa foram aplicadas somente no banco de testes. Para desenvolvimento, o fluxo habitual de `npm run dev` aplica as pendentes. A verificação de e-mail das contas continua como pendência antes da publicação; esta entrega compara o e-mail cadastrado e não implementa confirmação de posse do endereço.
 
-Próximo passo editorial: validar a estrutura de partes e capítulos implementada abaixo e definir atribuição de autores e permissões de escrita antes de implementar o editor. Organizadores continuam com acesso de consulta.
+Próximo passo editorial: validar o editor por capítulo descrito na seção 4. Nesta etapa somente o responsável escreve; organizadores continuam com acesso de consulta. Atribuição de autores fica para depois.
 
 ## 3. Partes e capítulos
 
@@ -160,30 +166,50 @@ Critério de conclusão: uma obra apresenta sua estrutura real e cada participan
 
 ### Decisões confirmadas para a V1 em 16/10/2026
 
-Estas regras registram o escopo aprovado, ainda não implementado. Substituem a proposta inicial de entregas por arquivos do legado.
+Estas regras registram o escopo aprovado. A primeira implementação por capítulo está descrita abaixo; os itens ainda não verificados continuam explícitos. Substituem a proposta inicial de entregas por arquivos do legado.
 
 - O conteúdo dos capítulos será escrito em um editor de texto rico dentro do Trama e persistido no PostgreSQL, preservando a arquitetura atual.
 - O editor escolhido é o **Tiptap**, integrado ao React do projeto e executado no próprio Trama, usando somente o núcleo e as extensões de código aberto sob licença MIT. A V1 não dependerá de assinatura, Tiptap Cloud ou extensões pagas. Preservar os avisos de autoria e licença; conferir as licenças dos pacotes e fixar as versões ao instalar. A versão obtida sob MIT pode continuar sendo usada gratuitamente conforme seus termos, inclusive em uso comercial; isso não garante as condições de versões futuras, que devem ser verificadas antes de atualizar. Hospedagem e banco têm custos independentes. Referências: [licença MIT do Tiptap](https://github.com/ueberdosis/tiptap/blob/main/LICENSE.md) e [editor aberto e plataforma](https://tiptap.dev/open-source-to-platform). A escolha está aprovada, mas nenhuma dependência do editor foi instalada nesta decisão.
 - O usuário poderá escrever em outro aplicativo e copiar e colar no editor. A colagem deve limpar conteúdo e formatação incompatíveis; não há promessa de reprodução idêntica ao documento original.
 - A V1 terá títulos, parágrafos, negrito, itálico, listas e links. Importação e exportação de arquivos, anexos e imagens ficam fora desta primeira entrega. Não será necessário contratar um serviço adicional de colaboração em tempo real; a hospedagem do banco continua sujeita ao plano escolhido.
-- Apenas uma pessoa poderá editar cada capítulo por vez. Edição simultânea colaborativa fica para depois. O mecanismo de reserva da edição, liberação, expiração e recuperação após abandono ainda precisa ser definido antes da implementação.
-- O rascunho completo será enviado à API após aproximadamente dois segundos sem digitação. Haverá também um botão "Salvar agora". O intervalo poderá ser ajustado após validar a experiência; ainda falta definir um intervalo máximo para salvar durante digitação contínua.
+- Somente o responsável pela obra escreve nesta etapa; organizadores ativos leem. Atribuição de autores fica para depois.
+- Apenas uma aba poderá editar cada capítulo por vez, inclusive entre abas da mesma conta. A reserva vence após 90 segundos sem contato, renova a cada 25 segundos e ao salvar, e é liberada ao voltar à leitura. Fechamento inesperado depende da expiração. Edição simultânea colaborativa fica para depois.
+- O rascunho completo é enviado à API após aproximadamente dois segundos sem digitação, ou a cada 15 segundos durante digitação contínua. Há também um botão "Salvar agora". Os intervalos poderão ser ajustados após validar a experiência.
 - Uma cópia temporária do rascunho será mantida no navegador usando IndexedDB, para oferecer recuperação de alterações pendentes após falha de conexão, fechamento ou recarga da aba. Essa cópia não substitui o banco nem garante recuperação se os dados do navegador forem apagados.
 - O estado de salvamento será explícito: alterações pendentes, salvando, salvo e falha de salvamento/conexão. "Salvo" só será exibido após confirmação do servidor. Falhas devem preservar o texto e permitir nova tentativa; sessão expirada deve orientar nova autenticação sem descartar o rascunho.
 - Cada gravação usará um número de revisão para detectar conteúdo alterado por outra aba ou sessão. Conflitos não podem sobrescrever silenciosamente o texto já salvo nem descartar o rascunho pendente, mesmo com a regra de um editor por vez.
 - O salvamento automático atualizará um único rascunho por capítulo, sem gerar uma versão histórica completa a cada gravação. Histórico editorial e marcos de entrega/revisão serão definidos em uma etapa posterior.
-- A recuperação local deve separar rascunhos por conta e capítulo. Retenção, limpeza no logout e recuperação após nova autenticação ainda precisam ser definidas, considerando computadores compartilhados.
+- A recuperação local separa rascunhos por conta e capítulo. Alterações pendentes permanecem em IndexedDB após sair da página ou da conta e podem ser recuperadas pela mesma conta após novo login. A cópia é removida após confirmação do salvamento no servidor ou descarte explícito. Não há expiração automática; em computador compartilhado, os dados locais continuam no perfil do navegador até serem removidos. Esse armazenamento não é criptografado e não substitui backup.
 
-### Implementação pendente
+### Primeira implementação por capítulo
 
-- [ ] Validar a integração do Tiptap com o projeto, os temas, textos longos, colagem de Word/Pages/Google Docs e uso no celular; definir o formato persistido, limites de conteúdo e validação no servidor. A escolha do editor já está aprovada; a instalação e a validação continuam pendentes.
-- [ ] Definir quem pode escrever em cada capítulo, sem ampliar implicitamente as permissões atuais dos organizadores.
-- [ ] Implementar e testar a reserva de edição por capítulo, incluindo duas abas da mesma conta e liberação após abandono.
-- [ ] Implementar o editor, a colagem e o salvamento autorizado do rascunho no PostgreSQL.
-- [ ] Implementar salvamento automático, salvamento manual e estados visíveis de sucesso e falha.
-- [ ] Implementar recuperação local com IndexedDB e tratamento seguro de sessão expirada e nova autenticação.
-- [ ] Implementar controle de revisão e tratamento de conflitos sem sobrescrita silenciosa.
-- [ ] Testar falhas de rede, respostas fora de ordem, recarga e fechamento de aba, recuperação local, expiração da sessão e concorrência.
+- [x] A colagem reconhece estilos explícitos de título do Word: `MsoTitle` como Título 1, `MsoSubtitle` como Título 2, `MsoHeading1/2/3`, `mso-outline-level` de 1 a 3 e nomes de estilo em português/inglês. Não infere títulos apenas pelo tamanho ou negrito da fonte. Verificados reconhecimento, salvamento e leitura no navegador com HTML representativo do Word; textos já colados não são reclassificados automaticamente. Colagem real do documento pelo usuário continua sendo a confirmação final de compatibilidade com seu Word.
+
+- Os links da marca Trama no cabeçalho e no rodapé levam a `/home` para contas autenticadas e à página inicial para visitantes, acompanhando o estado de autenticação compartilhado.
+- A edição de partes também retorna ao item salvo com confirmação acima do título. As confirmações de salvamento da obra, estrutura e editor usam peso normal, sem negrito, e ícone SVG de círculo com visto no mesmo traço do menu, substituindo o emoji.
+- Salvar a descrição retorna ao capítulo editado, com confirmação verde acima dele e foco na mensagem. O formulário só fecha após salvar e atualizar a estrutura; falhas preservam os campos para nova tentativa.
+- Ao abrir um formulário da estrutura, a página revela o painel e posiciona o foco na descrição para editar capítulos ou no título nas demais ações. A edição identifica o capítulo no cabeçalho; cancelar retorna o foco ao botão de origem.
+- Os botões da obra e do editor preservam o preenchimento original da identidade do Trama, com ícones nas ações da estrutura. A alternativa de contornos por função foi avaliada e revertida por preferência visual do usuário.
+- A estrutura diferencia “Escrever capítulo” (abre o editor com aquisição da reserva) de “Editar descrição” (formulário de título e descrição). O título do capítulo mantém o acesso à leitura. Ações de adicionar e editar usam ícones no estilo do menu.
+- O salvamento apresenta confirmação verde com ícone SVG de círculo e visto e indicador de andamento no status e no botão. O clique manual também confirma quando não há alterações pendentes; o botão fica desabilitado durante o salvamento.
+- A barra de formatação segue a referência visual de editores como Word e Pages: controles compactos, ícones com nomes acessíveis, seletor de estilos e separadores entre grupos, preservando os recursos da V1 e os temas do Trama.
+- [x] Instalar `@tiptap/react`, `@tiptap/pm` e `@tiptap/starter-kit` na versão estável 3.32.0, fixada e sob MIT.
+- [x] Abrir o capítulo pelo título na estrutura e apresentar leitura própria, preservando negrito, itálico, títulos, listas e links. A descrição anterior continua separada e não é migrada automaticamente.
+- [x] Somente o responsável abre a edição. Conteúdo salvo como JSONB na tabela separada `chapter_drafts`, sem carregar o texto completo nas listas de estrutura.
+- [x] Validar no servidor a árvore do documento e os formatos permitidos. Limite inicial: 1 MiB de JSON UTF-8 por capítulo, até 20.000 nós e profundidade 30. Não equivale a um número fixo de caracteres. Imagens, anexos, HTML arbitrário e links com protocolos incompatíveis são rejeitados; a colagem pelo editor mantém apenas o esquema aceito.
+- [x] Salvamento automático e manual com revisão crescente, reserva exclusiva por aba, transação no banco e resposta 409 para conflitos. Requisições de salvamento da mesma tela são serializadas; digitação durante uma requisição permanece pendente para o próximo salvamento.
+- [x] Recuperação local em IndexedDB, com escolha explícita de recuperar ou descartar. Se a revisão do servidor mudou, o aviso pede comparar os textos antes de recuperar. Falhas de armazenamento local têm aviso; falhas de sessão/reserva pausam a edição sem descartar o texto e oferecem reabertura.
+- [x] Cobertura de API para leitura/escrita autorizada, isolamento entre obras, organizador removido, validação, reserva concorrente, renovação, expiração, liberação e revisão antiga. Testes unitários verificam o JSON real das extensões, formatos incompatíveis e alterações durante salvamento.
+- [x] Conferir no navegador escrita, salvamento, leitura em negrito, bloqueio de segunda aba e recuperação local após expiração da reserva. Dados usados somente no ambiente descartável de testes.
+
+Implementação: `models/chapterContent.js`, `models/chapterDocument.js`, GET/PUT `/api/v1/works/[id]/chapters/[chapterId]`, POST/DELETE na sub-rota `/lease` e página `/works/[id]/chapters/[chapterId]`. A migration `1792240000000_create-chapter-drafts` foi executada apenas no banco de testes. Em desenvolvimento, a criação da tabela ocorre pelo fluxo habitual de `npm run dev`.
+
+### Validações e evoluções pendentes
+
+- [ ] Validar visualmente tema escuro, celular físico, textos próximos do limite e colagem real de Word/Pages/Google Docs.
+- [ ] Exercitar queda real de rede, fechamento abrupto do navegador e login após expiração de sessão no fluxo completo da interface. A reserva expirada e a recuperação local já foram exercitadas no navegador; respostas concorrentes e falhas de salvamento têm testes automatizados.
+- [x] Leitura contínua em `/works/[id]/read`, acessível pelo botão Ler obra, com sumário e capítulos salvos em ordem editorial. Somente responsável e organizadores ativos consultam. Descrições e alterações locais não salvas ficam fora da leitura; a atualização ocorre ao reabrir a página.
+- [x] Exportar DOCX e PDF do texto atual. DOCX e PDF incluem capa colorida com a mesma cor da miniatura da obra, título centralizado e marca Trama; no DOCX, o título permanece editável. Capas ilustradas e opções avançadas de diagramação permanecem futuras.
 - [ ] Definir posteriormente versões editoriais, responsável e data de cada entrega e vínculo da revisão com a versão correta.
 - [ ] Definir retenção do conteúdo e do histórico ao arquivar obras ou excluir contas.
 
@@ -313,3 +339,14 @@ Ao manter o roadmap, marcar como concluído somente o que estiver implementado e
 ## Padrão visual de ações negativas
 
 Botões de recusar, cancelar e remover usam a cor vermelha do tema, incluindo a recusa de convites, a gestão de participantes e os cancelamentos na administração de usuários. Ações de voltar preservam seu estilo atual.
+
+## Padrão de mensagens de sucesso
+
+Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e convites usam círculo com visto em SVG, verde do tema e texto sem negrito. Os componentes compartilhados ficam em components/shared. Carregamento, erros e avisos preservam sua semântica; o status de cópia só recebe aparência de sucesso após copiar o link.
+
+## TODO para retomar em 18/10/2026
+
+- [ ] Acrescentar sumário com partes, capítulos e páginas nas exportações DOCX e PDF, preservando a capa colorida e o título centralizado já implementados. Conferir a aparência do DOCX em Word/LibreOffice.
+- [ ] Adicionar opção de PDF para leitura em tela com fundo creme #F7F2E9 e texto #30313A, e opção para impressão com fundo branco. Validar contraste, margens, entrelinha e paginação. O fundo atual permanece branco até essa entrega.
+- [ ] Definir campos de autor e coautores na edição da obra, inclusive pessoas sem conta, e incluir os créditos na folha de rosto dos documentos. Não inferir autoria a partir do responsável ou dos organizadores; os créditos não alteram permissões.
+- Revisões, comentários e preparação editorial devem acontecer dentro do Trama em etapas futuras; a exportação não substitui esse fluxo.

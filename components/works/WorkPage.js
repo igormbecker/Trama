@@ -1,9 +1,12 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
 import ParticipantsPanel from "./ParticipantsPanel";
 import StructurePanel from "./StructurePanel";
 import styles from "./works.module.css";
+import useRecordAccess from "components/home/useRecordAccess";
+import WorkDetails from "./WorkDetails";
 
 export default function WorkPage({
   user,
@@ -13,6 +16,7 @@ export default function WorkPage({
   invitations,
 }) {
   const router = useRouter();
+  useRecordAccess(user.id, work.id);
   return (
     <AppLayout
       title={`${work.title} | Trama`}
@@ -23,7 +27,7 @@ export default function WorkPage({
       <section className={styles.workspace} aria-labelledby="work-title">
         <Link href="/works">← Minhas obras</Link>
         {router.query.created === "1" && (
-          <p role="status">Obra criada com sucesso!</p>
+          <SuccessMessage>Obra criada com sucesso!</SuccessMessage>
         )}
         <div className={styles.heading}>
           <p>
@@ -32,13 +36,25 @@ export default function WorkPage({
               : "Você participa como organizador"}
           </p>
           <h1 id="work-title">{work.title}</h1>
+          <Link
+            className={styles.readWorkButton}
+            href={`/works/${work.id}/read`}
+          >
+            <svg
+              className={styles.actionIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 5C8 2 3 3 2 4v16c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Zm0 0v16" />
+            </svg>
+            Ler obra
+          </Link>
         </div>
-        <div className={styles.panel}>
-          <h2>Descrição</h2>
-          <p className={styles.description}>
-            {work.description || "Esta obra ainda não tem descrição."}
-          </p>
-        </div>
+        <WorkDetails work={work} canManage={work.owner_id === user.id} />
         <StructurePanel
           workId={work.id}
           parts={parts}

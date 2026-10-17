@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import AppLayout from "components/app/AppLayout";
 import { useTheme } from "components/theme/ThemeProvider";
@@ -68,11 +69,7 @@ export default function AccountPage({ user }) {
             <p>Seus dados e o seu jeito de ler o Trama.</p>
           </div>
         </div>
-        {notice ? (
-          <p className={styles.success} role="status">
-            {notice}
-          </p>
-        ) : null}
+        {notice ? <SuccessMessage>{notice}</SuccessMessage> : null}
         {error ? (
           <p className={styles.error} role="alert">
             {error}

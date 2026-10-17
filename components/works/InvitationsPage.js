@@ -1,3 +1,4 @@
+import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -77,7 +78,7 @@ export default function InvitationsPage({
         {(error || loadError) && (
           <p role="alert">{error || loadError.message}</p>
         )}
-        {message && <p role="status">{message}</p>}
+        {message && <SuccessMessage>{message}</SuccessMessage>}
         {pendingInvitations.length === 0 ? (
           <div className={styles.emptyState}>
             <h2>Nenhum convite pendente</h2>

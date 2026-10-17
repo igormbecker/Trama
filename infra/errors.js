@@ -118,6 +118,14 @@ export class MethodNotAllowedError extends Error {
   }
 }
 
+export class ConflictError extends ValidationError {
+  constructor(message) {
+    super({ message });
+    this.name = "ConflictError";
+    this.statusCode = 409;
+  }
+}
+
 export class ForbiddenError extends Error {
   constructor() {
     super("Administrator access is required.");

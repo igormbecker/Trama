@@ -10,6 +10,51 @@ beforeAll(async () => {
 
 const baseUrl = "http://127.0.0.1:3002";
 
+test("Updates work details only for its owner and preserves ownership", async () => {
+  const owner = await createAccount();
+  const other = await createAccount();
+  const created = await (await createWork(owner.cookie)).json();
+  const patch = (cookie, input) =>
+    fetch(`${baseUrl}/api/v1/works/${created.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookie ? { Cookie: cookie } : {}),
+      },
+      body: JSON.stringify(input),
+    });
+  expect((await patch(null, { title: "Denied" })).status).toBe(401);
+  expect((await patch(other.cookie, { title: "Denied" })).status).toBe(404);
+  await database.query({
+    text: "UPDATE users SET is_admin = true WHERE id = $1",
+    values: [other.user.id],
+  });
+  expect((await patch(other.cookie, { title: "Denied" })).status).toBe(404);
+  expect(
+    (await patch(owner.cookie, { title: "New", owner_id: other.user.id }))
+      .status,
+  ).toBe(400);
+  expect((await patch(owner.cookie, { title: " " })).status).toBe(400);
+  const response = await patch(owner.cookie, {
+    title: " Updated work ",
+    description: " New description ",
+  });
+  expect(response.status).toBe(200);
+  expect(response.headers.get("cache-control")).toBe("private, no-store");
+  const updated = await response.json();
+  expect(updated).toMatchObject({
+    id: created.id,
+    owner_id: owner.user.id,
+    title: "Updated work",
+    description: "New description",
+    created_at: created.created_at,
+  });
+  const detail = await fetch(`${baseUrl}/api/v1/works/${created.id}`, {
+    headers: { Cookie: owner.cookie },
+  });
+  expect(await detail.json()).toEqual(updated);
+});
+
 async function createAccount() {
   const user = await orchestrator.createUser({});
   const cookie = `trama_session_id=${(await session.create(user.id)).token}`;

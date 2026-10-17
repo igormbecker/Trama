@@ -1,0 +1,178 @@
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import AppLayout from "components/app/AppLayout";
+import useInvitations from "components/works/useInvitations";
+import { getWorkCoverColor } from "components/works/workCover";
+import { readActivity, recentWorks } from "./recentActivity";
+import styles from "./workspace.module.css";
+
+export default function WorkspacePage({ user, works }) {
+  const [recent, setRecent] = useState([]);
+  const [chapter, setChapter] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [historyError, setHistoryError] = useState("");
+  const { data: invitations } = useInvitations(user.id);
+
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      let activity;
+      try {
+        activity = readActivity(window.localStorage, user.id);
+        if (!active) return;
+        setRecent(recentWorks(activity, works));
+        setChapter(null);
+        setHistoryError("");
+        const last = activity.chapter;
+        const work = works.find((work) => work.id === last?.workId);
+        if (!last || !work) return;
+        const response = await fetch(
+          `/api/v1/works/${encodeURIComponent(work.id)}/chapters/${encodeURIComponent(last.chapterId)}`,
+          { credentials: "same-origin", cache: "no-store" },
+        );
+        if (!active) return;
+        if (!response.ok) {
+          if (![401, 404].includes(response.status))
+            setHistoryError(
+              "Não foi possível carregar o último capítulo. Você pode abrir a obra pela lista abaixo.",
+            );
+          return;
+        }
+        const content = await response.json();
+        if (active) setChapter({ work, ...content.chapter });
+      } catch {
+        if (active)
+          setHistoryError(
+            "O histórico está indisponível neste momento. Você pode continuar por Minhas obras.",
+          );
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      active = false;
+    };
+  }, [user.id, works]);
+
+  return (
+    <AppLayout
+      user={user}
+      activePage="home"
+      title="Seu espaço | Trama"
+      description="Retome seus capítulos e suas obras recentes."
+    >
+      <section className={styles.workspace} aria-labelledby="workspace-title">
+        <header className={styles.heading}>
+          <p>Olá, {user.name}.</p>
+          <h1 id="workspace-title">Seu espaço</h1>
+          <p>O próximo capítulo começa de onde você parou.</p>
+        </header>
+        {invitations?.length > 0 && (
+          <aside className={styles.invitation}>
+            <Link href="/invitations">
+              Você tem {invitations.length}{" "}
+              {invitations.length === 1
+                ? "convite para responder"
+                : "convites para responder"}{" "}
+              →
+            </Link>
+          </aside>
+        )}
+        <section
+          className={styles.resume}
+          aria-labelledby="resume-title"
+          aria-busy={loading}
+        >
+          <h2 id="resume-title">Continue de onde parou</h2>
+          {loading ? (
+            <p role="status">Carregando seus últimos acessos…</p>
+          ) : chapter ? (
+            <>
+              <p className={styles.workTitle}>{chapter.work.title}</p>
+              <h3>
+                {chapter.part_position}.{chapter.position}. {chapter.title}
+              </h3>
+              <p>{chapter.part_title}</p>
+              <div className={styles.actions}>
+                <Link
+                  className={styles.primary}
+                  href={`/works/${chapter.work.id}/chapters/${chapter.id}${chapter.work.owner_id === user.id ? "?write=1" : ""}`}
+                >
+                  {chapter.work.owner_id === user.id
+                    ? "Continuar escrevendo"
+                    : "Continuar lendo"}
+                </Link>
+                <Link href={`/works/${chapter.work.id}`}>Abrir obra</Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>
+                {works.length
+                  ? "Abra um capítulo para encontrá-lo aqui na próxima visita."
+                  : "Crie sua primeira obra ou aceite um convite para começar."}
+              </p>
+              <Link
+                className={styles.primary}
+                href={works.length ? "/works" : "/works#create-work-title"}
+              >
+                {works.length
+                  ? "Explorar minhas obras"
+                  : "Criar minha primeira obra"}
+              </Link>
+              {!works.length && (
+                <p>
+                  <Link href="/invitations">Consultar meus convites</Link>
+                </p>
+              )}
+            </>
+          )}
+          {historyError && <p role="status">{historyError}</p>}
+        </section>
+        <section aria-labelledby="recent-title">
+          <div className={styles.sectionHeading}>
+            <h2 id="recent-title">Obras recentes</h2>
+            <Link href="/works">Ver todas as obras</Link>
+          </div>
+          {!loading && !recent.length && (
+            <p>As obras que você acessar aparecerão aqui.</p>
+          )}
+          <ul className={styles.recentList}>
+            {recent.map((work) => (
+              <li key={work.id}>
+                <div
+                  className={styles.cover}
+                  style={{ backgroundColor: getWorkCoverColor(work.id) }}
+                  aria-hidden="true"
+                >
+                  <span>{work.title.split(":")[0]}</span>
+                </div>
+                <div>
+                  <h3>
+                    <Link href={`/works/${work.id}`}>{work.title}</Link>
+                  </h3>
+                  <p>
+                    {work.owner_id === user.id
+                      ? "Você é o responsável"
+                      : "Você participa como organizador"}
+                  </p>
+                </div>
+                <Link
+                  className={styles.openWork}
+                  href={`/works/${work.id}`}
+                  aria-label={`Abrir obra ${work.title}`}
+                >
+                  Abrir obra →
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className={styles.note}>
+            Seus acessos recentes são lembrados para esta conta neste navegador.
+          </p>
+        </section>
+      </section>
+    </AppLayout>
+  );
+}
