@@ -1,11 +1,25 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import useInvitations from "./useInvitations";
 import { respondToMyInvitation } from "./participantsClient";
 import styles from "./works.module.css";
+import { formatInvitationDate } from "./invitationDate";
 
-export default function InvitationsPage({ user, invitations }) {
+const statusLabels = {
+  pending: "Pendente",
+  accepted: "Aceito",
+  declined: "Recusado",
+  canceled: "Cancelado",
+  expired: "Expirado",
+};
+
+export default function InvitationsPage({
+  user,
+  invitations,
+  sentInvitations = [],
+}) {
   const router = useRouter();
   const {
     data: pendingInvitations = [],
@@ -51,10 +65,15 @@ export default function InvitationsPage({ user, invitations }) {
         <div className={styles.heading}>
           <h1 id="invitations-title">Meus convites</h1>
           <p>
-            Convites pendentes para o e-mail da sua conta. Aceite para acessar a
-            obra como organizador.
+            Acompanhe os convites recebidos e os enviados nas obras pelas quais
+            você é responsável.
           </p>
         </div>
+        <h2>Recebidos</h2>
+        <p>
+          Convites pendentes para o e-mail da sua conta. Aceite para acessar a
+          obra como organizador.
+        </p>
         {(error || loadError) && (
           <p role="alert">{error || loadError.message}</p>
         )}
@@ -73,13 +92,7 @@ export default function InvitationsPage({ user, invitations }) {
               <li key={invitation.id} className={styles.panel}>
                 <h2>{invitation.work_title}</h2>
                 <p>Papel: Organizador · Acesso de consulta à obra</p>
-                <p>
-                  Válido até{" "}
-                  {new Date(invitation.expires_at).toLocaleDateString("pt-BR", {
-                    timeZone: "UTC",
-                  })}{" "}
-                  (UTC).
-                </p>
+                <p>Válido até {formatInvitationDate(invitation.expires_at)}.</p>
                 <div
                   className={styles.actions}
                   aria-busy={busyId === invitation.id}
@@ -104,6 +117,45 @@ export default function InvitationsPage({ user, invitations }) {
             ))}
           </ul>
         )}
+        <section
+          id="sent-invitations"
+          className={styles.sentInvitations}
+          aria-labelledby="sent-invitations-title"
+        >
+          <h2 id="sent-invitations-title">Enviados</h2>
+          <p>
+            Histórico dos convites das suas obras, incluindo os aceitos,
+            recusados, cancelados e expirados.
+          </p>
+          {sentInvitations.length === 0 ? (
+            <p>Nenhum convite enviado nas suas obras.</p>
+          ) : (
+            <ul className={styles.workList}>
+              {sentInvitations.map((invitation) => (
+                <li key={invitation.id} className={styles.panel}>
+                  <h3>
+                    <Link href={`/works/${invitation.work_id}`}>
+                      {invitation.work_title}
+                    </Link>
+                  </h3>
+                  <p>
+                    {invitation.email} · {statusLabels[invitation.status]}
+                  </p>
+                  <p>
+                    Enviado em {formatInvitationDate(invitation.created_at)}.
+                  </p>
+                  {invitation.status === "pending" && (
+                    <Link
+                      href={`/works/${invitation.work_id}#participants-title`}
+                    >
+                      Gerenciar na obra
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </section>
     </AppLayout>
   );

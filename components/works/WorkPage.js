@@ -2,9 +2,16 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
 import ParticipantsPanel from "./ParticipantsPanel";
+import StructurePanel from "./StructurePanel";
 import styles from "./works.module.css";
 
-export default function WorkPage({ user, work, participants, invitations }) {
+export default function WorkPage({
+  user,
+  work,
+  parts,
+  participants,
+  invitations,
+}) {
   const router = useRouter();
   return (
     <AppLayout
@@ -32,6 +39,11 @@ export default function WorkPage({ user, work, participants, invitations }) {
             {work.description || "Esta obra ainda não tem descrição."}
           </p>
         </div>
+        <StructurePanel
+          workId={work.id}
+          parts={parts}
+          canManage={work.owner_id === user.id}
+        />
         {work.owner_id === user.id && (
           <ParticipantsPanel
             workId={work.id}

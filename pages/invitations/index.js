@@ -16,6 +16,9 @@ export async function getServerSideProps({ req, res }) {
         invitations: JSON.parse(
           JSON.stringify(await workInvitation.findPendingForAccount(user.id)),
         ),
+        sentInvitations: JSON.parse(
+          JSON.stringify(await workInvitation.findSentForOwner(user.id)),
+        ),
       },
     };
   } catch (error) {

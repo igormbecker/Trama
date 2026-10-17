@@ -99,6 +99,48 @@ test("Requires authentication and shows an empty state", async () => {
   ).toContain("Nenhum convite pendente");
 });
 
+test("Sent invitation history is visible only to the work owner and closed invitations stay off the work page", async () => {
+  const owner = await account();
+  const guest = await account();
+  const invitation = await invite(
+    owner,
+    guest.email,
+    "Histórico privado de convites",
+  );
+  await workInvitation.respond(invitation.token, guest.id, {
+    action: "accept",
+  });
+  const canceled = await workInvitation.create(invitation.work_id, owner.id, {
+    email: "canceled-history@trama.test",
+  });
+  await workInvitation.cancel(invitation.work_id, canceled.id, owner.id);
+  const pending = await workInvitation.create(invitation.work_id, owner.id, {
+    email: "pending-history@trama.test",
+  });
+  const ownerHtml = await (await request("/invitations", owner)).text();
+  expect(ownerHtml).toContain("Enviados");
+  expect(ownerHtml).toContain("Histórico privado de convites");
+  expect(ownerHtml).toContain("canceled-history@trama.test");
+  expect(ownerHtml).toContain("Aceito");
+  expect(ownerHtml).toContain("Cancelado");
+  expect(ownerHtml).not.toContain(invitation.token);
+  expect(ownerHtml).not.toContain(pending.token);
+  expect(ownerHtml).not.toContain("token_hash");
+  const guestHtml = await (await request("/invitations", guest)).text();
+  expect(guestHtml).not.toContain("canceled-history@trama.test");
+  const admin = { cookie: await orchestrator.createAdministratorCookie() };
+  expect(await (await request("/invitations", admin)).text()).not.toContain(
+    "canceled-history@trama.test",
+  );
+  const workHtml = await (
+    await request(`/works/${invitation.work_id}`, owner)
+  ).text();
+  expect(workHtml).toContain("pending-history@trama.test");
+  expect(workHtml).not.toContain("canceled-history@trama.test");
+  expect(workHtml).toContain('aria-label="Remover ');
+  expect(workHtml).toContain(">Remover</button>");
+});
+
 test.each(["accept", "decline"])(
   "Responds by id with action %s and preserves single consumption across links and the list",
   async (action) => {
