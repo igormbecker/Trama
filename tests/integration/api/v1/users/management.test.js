@@ -80,8 +80,38 @@ test("Lists users without exposing password hashes", async () => {
   body.forEach((entry) => expect(entry).not.toHaveProperty("password"));
 });
 
-test("Public registration cannot grant administrator privileges", async () => {
-  const response = await request("/api/v1/users", "POST", undefined, {
+test.each([
+  [undefined, 401],
+  ["invalid", 401],
+  ["reader", 403],
+])(
+  "Rejects registration without administrator access: %s",
+  async (cookie, status) => {
+    const before = await database.query(
+      "SELECT count(*)::int AS count FROM users",
+    );
+    const response = await request(
+      "/api/v1/users",
+      "POST",
+      cookie === "reader" ? readerCookie : cookie,
+      {
+        name: "Blocked account",
+        username: "blocked",
+        email: "blocked@trama.test",
+        password: "example-password",
+      },
+    );
+    expect(response.status).toBe(status);
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    const after = await database.query(
+      "SELECT count(*)::int AS count FROM users",
+    );
+    expect(after.rows[0].count).toBe(before.rows[0].count);
+  },
+);
+
+test("Administrators create ordinary accounts without granting privileges", async () => {
+  const response = await request("/api/v1/users", "POST", adminCookie, {
     name: "Ordinary account",
     username: "notadmin",
     email: "notadmin@trama.test",

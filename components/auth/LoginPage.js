@@ -143,9 +143,9 @@ export default function LoginPage() {
               {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
           </form>
-          <Link className={styles.backLink} href="/register">
-            Ainda não tem conta? Criar sua conta
-          </Link>
+          <p className={styles.formDescription}>
+            O acesso é restrito. Solicite sua conta ao administrador do Trama.
+          </p>
         </div>
       </section>
     </HomeLayout>

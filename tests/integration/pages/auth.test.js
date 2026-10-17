@@ -124,18 +124,18 @@ describe("Authentication pages", () => {
 });
 
 describe("Registration page", () => {
-  test("Offers registration from login and shows the account creation form", async () => {
+  test("Explains restricted access without offering public registration", async () => {
     const login = await fetch("http://127.0.0.1:3002/login");
-    expect(await login.text()).toContain('href="/register"');
+    expect(await login.text()).not.toContain('href="/register"');
     const response = await fetch("http://127.0.0.1:3002/register");
     expect(response.status).toBe(200);
     const html = await response.text();
-    expect(html).toContain("Criar sua conta");
+    expect(html).toContain("O cadastro público está fechado.");
     for (const field of ["name", "username", "email", "password"]) {
-      expect(html).toContain(`for="${field}"`);
+      expect(html).not.toContain(`for="${field}"`);
     }
-    expect(html).toContain('autoComplete="new-password"');
-    expect(html).toMatch(/<form[^>]*method="post"/);
+    expect(html).not.toContain('autoComplete="new-password"');
+    expect(html).not.toMatch(/<form[^>]*method="post"/);
     expect(html).toContain('href="/login"');
   });
 

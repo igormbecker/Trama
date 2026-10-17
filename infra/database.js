@@ -17,13 +17,21 @@ async function query(queryObject) {
   }
 }
 
-async function getNewClient() {
+async function getNewClient({ direct = false } = {}) {
+  const connectionString = direct
+    ? process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL
+    : process.env.DATABASE_URL;
+  const connectionOptions = connectionString
+    ? { connectionString }
+    : {
+        host: process.env.POSTGRES_HOST,
+        port: process.env.POSTGRES_PORT,
+        user: process.env.POSTGRES_USER,
+        database: process.env.POSTGRES_DB,
+        password: process.env.POSTGRES_PASSWORD,
+      };
   const client = new Client({
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT,
-    user: process.env.POSTGRES_USER,
-    database: process.env.POSTGRES_DB,
-    password: process.env.POSTGRES_PASSWORD,
+    ...connectionOptions,
     ssl: getSSLValues(),
   });
 
