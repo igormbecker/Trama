@@ -105,7 +105,7 @@ describe("Authentication pages", () => {
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("/works");
+    expect(response.headers.get("location")).toBe("/home");
   });
 
   test("Keeps the login page accessible when its cookie has expired", async () => {
@@ -156,6 +156,6 @@ describe("Registration page", () => {
       headers: { Cookie: `trama_session_id=${createdSession.token}` },
     });
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("/works");
+    expect(response.headers.get("location")).toBe("/home");
   });
 });
