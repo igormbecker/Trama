@@ -5,6 +5,7 @@ import AppLayout from "components/app/AppLayout";
 import ParticipantsPanel from "./ParticipantsPanel";
 import StructurePanel from "./StructurePanel";
 import styles from "./works.module.css";
+import useRecordAccess from "components/home/useRecordAccess";
 
 export default function WorkPage({
   user,
@@ -14,6 +15,7 @@ export default function WorkPage({
   invitations,
 }) {
   const router = useRouter();
+  useRecordAccess(user.id, work.id);
   return (
     <AppLayout
       title={`${work.title} | Trama`}

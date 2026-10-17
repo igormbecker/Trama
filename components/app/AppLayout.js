@@ -30,6 +30,20 @@ export default function AppLayout({
           <p className={styles.name}>{user.name}</p>
           <nav aria-label="Menu da conta" className={styles.menu}>
             <Link
+              href="/home"
+              aria-current={activePage === "home" ? "page" : undefined}
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Seu espaço
+            </Link>
+            <Link
               href="/works"
               aria-current={activePage === "works" ? "page" : undefined}
             >

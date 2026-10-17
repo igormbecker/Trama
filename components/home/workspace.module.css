@@ -1,0 +1,136 @@
+.workspace {
+  max-width: 1160px;
+  padding: 45px 5% 85px;
+  margin: auto;
+}
+.heading {
+  margin-bottom: 36px;
+}
+.heading h1 {
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 600;
+  margin: 10px 0 14px;
+}
+.heading p,
+.resume p,
+.recentList p,
+.note {
+  color: var(--muted);
+}
+.resume {
+  padding: 32px;
+  background: var(--preview-paper);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  margin-bottom: 40px;
+  overflow-wrap: anywhere;
+}
+.resume h2,
+.sectionHeading h2 {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 0 20px;
+}
+.resume h3 {
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.3;
+  margin: 12px 0;
+  font-weight: 600;
+}
+.resume .workTitle {
+  color: var(--accent);
+  margin: 0;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 24px;
+}
+.workspace .primary {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--paper);
+  text-decoration: none;
+}
+.invitation {
+  padding: 14px 18px;
+  background: var(--selected);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+.sectionHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.sectionHeading a,
+.openWork {
+  color: var(--accent);
+  font-size: 16px;
+}
+.recentList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recentList li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.recentList h3 {
+  margin: 0 0 4px;
+  font-weight: 500;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.recentList p {
+  margin: 0;
+  font-size: 15px;
+}
+.cover {
+  height: 68px;
+  border-radius: 2px 5px 5px 2px;
+  border-left: 4px solid rgb(255 255 255 / 0.25);
+  color: #fff;
+  padding: 8px 4px;
+  overflow: hidden;
+}
+.cover span {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.note {
+  margin-top: 20px;
+  font-size: 14px;
+}
+@media (max-width: 600px) {
+  .workspace {
+    padding: 30px 6% 45px;
+  }
+  .resume {
+    padding: 24px 20px;
+  }
+  .recentList li {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 14px;
+  }
+  .openWork {
+    grid-column: 2;
+  }
+}

@@ -34,7 +34,7 @@ export default function LoginPage() {
       await signIn(email, password);
       refreshUser().catch(() => {});
       setPassword("");
-      await router.replace("/works");
+      await router.replace("/home");
     } catch (error) {
       setError(error.message);
     } finally {

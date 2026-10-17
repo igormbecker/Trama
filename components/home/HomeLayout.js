@@ -75,6 +75,10 @@ export default function HomeLayout({
 }) {
   const { theme, setTheme } = useTheme();
   const { isAuthenticated } = useAuth();
+  const brandPath = isAuthenticated ? "/home" : "/";
+  const brandLabel = isAuthenticated
+    ? "Trama — Seu espaço"
+    : "Trama — página inicial";
   const router = useRouter();
   const statusReturnPath =
     router.pathname === "/status" ? "/" : router.asPath || "/";
@@ -96,8 +100,8 @@ export default function HomeLayout({
       <header className={styles.header}>
         <Link
           className={styles.productBrand}
-          href="/"
-          aria-label="Trama — página inicial"
+          href={brandPath}
+          aria-label={brandLabel}
         >
           <TramaMark />
           <span>trama</span>
@@ -129,8 +133,8 @@ export default function HomeLayout({
         <div className={styles.footerTop}>
           <Link
             className={styles.productBrand}
-            href="/"
-            aria-label="Trama — página inicial"
+            href={brandPath}
+            aria-label={brandLabel}
           >
             <TramaMark />
             <span>trama</span>
