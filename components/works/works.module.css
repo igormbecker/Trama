@@ -242,6 +242,27 @@
   flex-wrap: wrap;
   gap: 16px;
 }
+.actionIcon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: -4px;
+  flex-shrink: 0;
+}
+.panel .writeButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--paper);
+  text-decoration: none;
+}
+.writeButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
 @media (max-width: 720px) {
   .memberRow {
     align-items: flex-start;
@@ -286,6 +307,21 @@
 .structure > h2 {
   font-size: 28px;
   margin: 32px 0 20px;
+}
+.structureForm {
+  scroll-margin-top: 24px;
+}
+.panel .savedNotice {
+  scroll-margin-top: 24px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--approved-bg);
+  color: var(--approved-ink);
+  font-weight: 400;
+}
+.savedNotice:focus-visible {
+  outline: 2px solid var(--approved-ink);
+  outline-offset: 3px;
 }
 .chapter {
   border-top: 1px solid var(--line);
