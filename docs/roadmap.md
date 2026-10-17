@@ -23,6 +23,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] API de migrations protegida: GET e POST exigem sessão válida e administrador, sem cache. A preparação inicial do banco é feita pelo comando de migrations.
 - [x] Menu autenticado com Minhas obras, Minha conta e Usuários para administradores.
 - [x] Primeira versão de obras: criar, listar e abrir obras privadas e bloquear exclusão de contas responsáveis por obras.
+- [x] Minhas obras apresenta miniaturas de capas com título e marca Trama, em uma paleta de cores definida pelo identificador da obra. A cor permanece estável entre atualizações, contas e temas, sem imagens ou novos dados no banco.
 - [x] Participantes e convites do MVP: responsável convida organizadores por link, com aceite pelo e-mail correspondente e acesso de consulta revogável.
 - [x] Administração de usuários: listar, buscar na lista, adicionar, editar e remover.
 - [x] Edição de perfil administrativo, bloqueio de exclusão da própria conta e proteção para manter ao menos um administrador.
@@ -102,6 +103,8 @@ A migration foi executada somente no banco de testes nesta entrega. A aplicaçã
 
 ### Entrega implementada
 
+- [x] Datas de envio e validade dos convites exibem data, hora e minuto em `America/Sao_Paulo` (horário de Brasília), no formato `16/10/2026 às 14:47`, sem o sufixo UTC. O fuso explícito mantém a apresentação consistente entre servidor e navegador; os valores persistidos e as regras de expiração não mudam.
+- [x] Painel da obra com botão vermelho compacto "Remover" ao lado do organizador, maior espaçamento antes do título Organizadores e somente convites pendentes. O histórico de enviados fica em `/invitations`, separado dos recebidos e visível apenas ao responsável pelas obras; inclui aceitos, recusados, cancelados e expirados, sem tokens ou hashes. A obra oferece um link para esse histórico; pendentes continuam sendo gerenciados na obra.
 - [x] Página `/invitations` (Meus convites) no menu da conta, com contador de pendentes, título da obra, papel, validade, aceite e recusa em vermelho. A lista usa o e-mail atual da conta e exibe somente convites pendentes e válidos; sair da página não exige recuperar o link. Aceitar abre a obra e recusar remove o item da lista. Listagem, isolamento por conta, consumo único entre lista e link, concorrência, estado vazio, navegação, temas e largura de celular foram verificados no ambiente isolado de testes.
 - [x] Criar migrations de participantes e convites com chaves estrangeiras, unicidade de participação por obra/conta e apenas um convite pendente por obra/e-mail.
 - [x] Implementar criação, listagem e cancelamento de convites, com validação de responsável no model.
@@ -138,6 +141,8 @@ Referência criativa para a obra piloto: [Memórias do Futuro e seus quatro cap�
 Implementação: tabelas `work_parts` e `chapters`, regras em `models/workStructure.js`, interface em `components/works/StructurePanel.js`. As rotas ficam em `/api/v1/works/[id]/parts` e `/api/v1/works/[id]/parts/[partId]/chapters`: GET lista, POST cria e PATCH na coleção reordena por `{ ids }`. PATCH por identificador edita os dados. As APIs exigem sessão e usam cache privado sem armazenamento. Mutações usam transação e trava por obra, com posições únicas por pai. A migration `1792230000000_create-work-structure` foi aplicada no banco isolado de testes e no desenvolvimento local, criando apenas as novas tabelas.
 
 A criação de parte e capítulo, edição de capítulo e ordenação foram conferidas no navegador com dados descartáveis. Ainda falta conferir os novos controles no tema escuro e em largura de celular e simular falhas de rede/sessão na interface. Nenhum editor rico foi instalado ou implementado nesta etapa.
+
+Descrições longas de capítulos têm altura visual limitada e rolagem própria: até 320 px (ou 50% da altura da janela) e, em telas estreitas, até 240 px (ou 45% da altura). Título e ações ficam fora dessa área. A região é identificada e acessível por teclado. Isso não altera o limite de 5.000 caracteres nem substitui o futuro conteúdo no editor rico.
 
 ### Próximas definições
 

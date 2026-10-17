@@ -203,7 +203,16 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
                     {part.position}.{chapter.position}. {chapter.title}
                   </h4>
                   {chapter.description && (
-                    <p className={styles.description}>{chapter.description}</p>
+                    <div
+                      className={styles.chapterDescription}
+                      role="region"
+                      aria-label={`Descrição de ${chapter.title}`}
+                      tabIndex={0}
+                    >
+                      <p className={styles.description}>
+                        {chapter.description}
+                      </p>
+                    </div>
                   )}
                   {canManage && (
                     <div className={styles.actions}>

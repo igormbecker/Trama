@@ -122,6 +122,54 @@
   padding: 0;
   margin: 0;
 }
+.workCard {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+.bookCover {
+  box-sizing: border-box;
+  min-height: 120px;
+  padding: 14px 10px 12px 14px;
+  border-left: 5px solid rgb(255 255 255 / 0.22);
+  border-radius: 1px 4px 4px 1px;
+  box-shadow: 3px 4px 8px rgb(0 0 0 / 0.12);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+.bookCover strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.bookCover span {
+  font-size: 12px;
+}
+.workCardContent {
+  min-width: 0;
+}
+@media (max-width: 480px) {
+  .workCard {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 14px;
+  }
+  .bookCover {
+    min-height: 100px;
+    padding: 10px 6px 10px 9px;
+  }
+  .bookCover strong {
+    font-size: 11px;
+  }
+}
 .preview {
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -142,6 +190,9 @@
   margin-top: 28px;
   margin-bottom: 12px;
 }
+.panel h3.organizersTitle {
+  margin-top: 40px;
+}
 .memberRow {
   display: flex;
   align-items: center;
@@ -158,6 +209,22 @@
   font-size: 14px;
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+.memberRow.organizerRow {
+  justify-content: flex-start;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.panel .removeButton {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+.sentInvitations {
+  margin-top: 40px;
+  scroll-margin-top: 24px;
 }
 .inviteLink,
 .confirmation {
@@ -228,6 +295,22 @@
 .chapter h4 {
   font-size: 20px;
   margin: 0 0 12px;
+}
+.chapterDescription {
+  max-height: min(320px, 50vh);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding-right: 12px;
+  margin-bottom: 20px;
+}
+.chapterDescription:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+@media (max-width: 720px) {
+  .chapterDescription {
+    max-height: min(240px, 45vh);
+  }
 }
 .structure .actions {
   margin-bottom: 20px;

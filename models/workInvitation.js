@@ -129,6 +129,15 @@ async function findPendingForAccount(userId) {
   });
   return result.rows;
 }
+async function findSentForOwner(userId) {
+  const result = await database.query({
+    text: `SELECT i.id, i.work_id, i.email, i.status, i.created_at, i.expires_at, i.updated_at, w.title AS work_title
+      FROM work_invitations i JOIN works w ON w.id = i.work_id
+      WHERE w.owner_id = $1 ORDER BY i.created_at DESC, i.id DESC`,
+    values: [userId],
+  });
+  return result.rows.map(toPublic);
+}
 async function respond(token, userId, input) {
   return respondToReference(token, userId, input, findForUser);
 }
@@ -183,6 +192,7 @@ const workInvitation = {
   findAll,
   findForUser,
   findPendingForAccount,
+  findSentForOwner,
   respond,
   respondById,
   cancel,

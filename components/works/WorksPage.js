@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import styles from "./works.module.css";
+import { getWorkCoverColor } from "./workCover";
 
 export default function WorksPage({ user, works }) {
   const router = useRouter();
@@ -92,14 +93,27 @@ export default function WorksPage({ user, works }) {
         ) : (
           <ul className={styles.workList}>
             {works.map((work) => (
-              <li key={work.id} className={styles.panel}>
-                <h2>
-                  <Link href={`/works/${work.id}`}>{work.title}</Link>
-                </h2>
-                <p className={styles.preview}>
-                  {work.description || "Sem descrição."}
-                </p>
-                <Link href={`/works/${work.id}`}>Abrir obra →</Link>
+              <li
+                key={work.id}
+                className={`${styles.panel} ${styles.workCard}`}
+              >
+                <div
+                  className={styles.bookCover}
+                  style={{ backgroundColor: getWorkCoverColor(work.id) }}
+                  aria-hidden="true"
+                >
+                  <strong>{work.title.split(":")[0]}</strong>
+                  <span>trama</span>
+                </div>
+                <div className={styles.workCardContent}>
+                  <h2>
+                    <Link href={`/works/${work.id}`}>{work.title}</Link>
+                  </h2>
+                  <p className={styles.preview}>
+                    {work.description || "Sem descrição."}
+                  </p>
+                  <Link href={`/works/${work.id}`}>Abrir obra →</Link>
+                </div>
               </li>
             ))}
           </ul>

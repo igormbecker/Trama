@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   copyInvitationLink,
   inviteOrganizer,
@@ -30,6 +31,9 @@ export default function ParticipantsPanel({
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [removalTarget, setRemovalTarget] = useState(null);
+  const pendingInvitations = invitations.filter(
+    (invitation) => invitation.status === "pending",
+  );
 
   async function perform(operation, successMessage) {
     if (isBusy) return;
@@ -154,21 +158,25 @@ export default function ParticipantsPanel({
           </p>
         </div>
       )}
-      <h3>Organizadores</h3>
+      <h3 className={styles.organizersTitle}>Organizadores</h3>
       {participants.length === 0 ? (
         <p>Ainda não há organizadores nesta obra.</p>
       ) : (
         <ul className={styles.workList}>
           {participants.map((participant) => (
-            <li key={participant.user_id} className={styles.memberRow}>
+            <li
+              key={participant.user_id}
+              className={`${styles.memberRow} ${styles.organizerRow}`}
+            >
               <span>{participant.name} · Organizador</span>
               <button
                 type="button"
                 disabled={isBusy}
-                className={styles.dangerButton}
+                className={`${styles.dangerButton} ${styles.removeButton}`}
+                aria-label={`Remover ${participant.name}`}
                 onClick={() => setRemovalTarget(participant)}
               >
-                Remover {participant.name}
+                Remover
               </button>
             </li>
           ))}
@@ -203,16 +211,21 @@ export default function ParticipantsPanel({
           </div>
         </div>
       )}
-      <h3>Convites</h3>
+      <h3>Convites pendentes</h3>
       <p>
         Gerar outro convite para o mesmo e-mail invalida o link pendente
         anterior.
       </p>
-      {invitations.length === 0 ? (
-        <p>Nenhum convite enviado.</p>
+      <p>
+        <Link href="/invitations#sent-invitations">
+          Ver histórico de convites enviados
+        </Link>
+      </p>
+      {pendingInvitations.length === 0 ? (
+        <p>Nenhum convite pendente nesta obra.</p>
       ) : (
         <ul className={styles.workList}>
-          {invitations.map((invitation) => (
+          {pendingInvitations.map((invitation) => (
             <li key={invitation.id} className={styles.memberRow}>
               <span>
                 {invitation.email} · {statusLabels[invitation.status]}

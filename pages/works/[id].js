@@ -36,7 +36,11 @@ export async function getServerSideProps({ req, res, params }) {
           ),
         ),
         participants: JSON.parse(JSON.stringify(participants)),
-        invitations: JSON.parse(JSON.stringify(invitations)),
+        invitations: JSON.parse(
+          JSON.stringify(
+            invitations.filter((invitation) => invitation.status === "pending"),
+          ),
+        ),
       },
     };
   } catch (error) {

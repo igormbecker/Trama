@@ -7,6 +7,7 @@ import AppLayout from "components/app/AppLayout";
 import { respondToInvitation } from "./participantsClient";
 import styles from "./works.module.css";
 import useInvitations from "./useInvitations";
+import { formatInvitationDate } from "./invitationDate";
 
 export default function InvitationPage({ user, invitation }) {
   const router = useRouter();
@@ -72,13 +73,7 @@ export default function InvitationPage({ user, invitation }) {
               Você foi convidado para consultar esta obra como organizador. O
               responsável continua gerenciando participantes e convites.
             </p>
-            <p>
-              Válido até{" "}
-              {new Date(invitation.expires_at).toLocaleDateString("pt-BR", {
-                timeZone: "UTC",
-              })}{" "}
-              (UTC).
-            </p>
+            <p>Válido até {formatInvitationDate(invitation.expires_at)}.</p>
             {error && <p role="alert">{error}</p>}
             <div className={styles.actions} aria-busy={isBusy}>
               <button
