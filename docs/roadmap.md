@@ -14,6 +14,10 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 
 ## O que já está implementado
 
+- [x] Exportação da obra salva em DOCX editável e PDF de leitura, organizada por partes e capítulos. Botões na leitura completa; GET /api/v1/works/[id]/export?format=docx|pdf exige acesso atual à obra e usa cache privado. Geração em memória, sem guardar arquivos no banco. PDF com Inter estática incorporada, somente a marca Trama no rodapé e número da página. DOCX com estilos editáveis, A4 e numeração. Revisão/comentários/preparação continuam planejados dentro do Trama; importar arquivos permanece fora do escopo. Conferência visual do DOCX pendente em Word/LibreOffice (renderizador indisponível no ambiente).
+
+- [x] Menu autenticado recolhível pelo cabeçalho, com transição para a esquerda e expansão do conteúdo. O controle permanece disponível ao ocultar, informa o estado e impede foco nos links ocultos; respeita preferência por movimento reduzido.
+
 - [x] Responsável edita título e descrição da obra nos detalhes, por `PATCH /api/v1/works/[id]`, com os mesmos limites da criação, cache privado e confirmação visual. Organizadores e administradores sem responsabilidade sobre a obra não podem editar; transferência e arquivamento continuam pendentes.
 - [x] Entrada autenticada em `/home` (“Seu espaço”), com retomada do último capítulo, até cinco obras acessadas recentemente e aviso de convites pendentes. Histórico local por conta e navegador, com apenas identificadores e sem conteúdo ou tokens. Obras são filtradas pela lista autorizada atual e capítulos consultados pela API antes da exibição. O editor mantém reserva e recuperação existentes. A lista completa e criação continuam em `/works`; login, menu e marca levam à nova entrada. Sincronização de acessos entre dispositivos permanece futura.
 - [x] Ambiente local separado do Curso.Dev: aplicação na porta 3001 e PostgreSQL de desenvolvimento na 5433, com projeto Compose e volume próprios.
@@ -204,8 +208,8 @@ Implementação: `models/chapterContent.js`, `models/chapterDocument.js`, GET/PU
 
 - [ ] Validar visualmente tema escuro, celular físico, textos próximos do limite e colagem real de Word/Pages/Google Docs.
 - [ ] Exercitar queda real de rede, fechamento abrupto do navegador e login após expiração de sessão no fluxo completo da interface. A reserva expirada e a recuperação local já foram exercitadas no navegador; respostas concorrentes e falhas de salvamento têm testes automatizados.
-- [ ] Ampliar a leitura para navegação sequencial por todos os capítulos da obra, sem depender do editor.
-- [ ] Planejar posteriormente PDF com aparência de livro e capa. Exportação não faz parte da V1 atual.
+- [x] Leitura contínua em `/works/[id]/read`, acessível pelo botão Ler obra, com sumário e capítulos salvos em ordem editorial. Somente responsável e organizadores ativos consultam. Descrições e alterações locais não salvas ficam fora da leitura; a atualização ocorre ao reabrir a página.
+- [x] Exportar DOCX e PDF do texto atual. DOCX e PDF incluem capa colorida com a mesma cor da miniatura da obra, título centralizado e marca Trama; no DOCX, o título permanece editável. Capas ilustradas e opções avançadas de diagramação permanecem futuras.
 - [ ] Definir posteriormente versões editoriais, responsável e data de cada entrega e vínculo da revisão com a versão correta.
 - [ ] Definir retenção do conteúdo e do histórico ao arquivar obras ou excluir contas.
 
@@ -339,3 +343,10 @@ Botões de recusar, cancelar e remover usam a cor vermelha do tema, incluindo a 
 ## Padrão de mensagens de sucesso
 
 Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e convites usam círculo com visto em SVG, verde do tema e texto sem negrito. Os componentes compartilhados ficam em components/shared. Carregamento, erros e avisos preservam sua semântica; o status de cópia só recebe aparência de sucesso após copiar o link.
+
+## TODO para retomar em 18/10/2026
+
+- [ ] Acrescentar sumário com partes, capítulos e páginas nas exportações DOCX e PDF, preservando a capa colorida e o título centralizado já implementados. Conferir a aparência do DOCX em Word/LibreOffice.
+- [ ] Adicionar opção de PDF para leitura em tela com fundo creme #F7F2E9 e texto #30313A, e opção para impressão com fundo branco. Validar contraste, margens, entrelinha e paginação. O fundo atual permanece branco até essa entrega.
+- [ ] Definir campos de autor e coautores na edição da obra, inclusive pessoas sem conta, e incluir os créditos na folha de rosto dos documentos. Não inferir autoria a partir do responsável ou dos organizadores; os créditos não alteram permissões.
+- Revisões, comentários e preparação editorial devem acontecer dentro do Trama em etapas futuras; a exportação não substitui esse fluxo.
