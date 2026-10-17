@@ -1,7 +1,7 @@
 {
-  "name": "bectec.website",
-  "version": "1.0.0",
-  "description": "Repositório do projeto desenvolvido no curso.dev",
+  "name": "trama.website",
+  "version": "0.0.1",
+  "description": "Um novo espaço para a produção editorial. Produto em desenvolvimento.",
   "main": "index.js",
   "scripts": {
     "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && (trap 'npm run services:stop' INT TERM ; next dev --port 3001)",
