@@ -21,8 +21,9 @@ export default function App({
   return (
     <>
       <Head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico?v=trama" sizes="any" />
+        <link rel="icon" type="image/png" href="/favicon.png?v=trama" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       </Head>
       <style jsx global>{`
         body {
