@@ -276,10 +276,27 @@ Usar `pgm.func("timezone('utc', now())")` nos defaults de data atual, conforme p
 
 ## Pendências de conta e preferências
 
-- [ ] Recuperação de senha: fluxo de e-mail e tokens com expiração e uso único.
+### Base de e-mails — primeira implementação em 18/10/2026
+
+- [x] Centralizar envio em `infra/email.js`: Resend nos ambientes Vercel production/preview e MailCatcher no desenvolvimento e testes, sem depender da API autenticada.
+- [x] Gerar mensagens HTML e texto simples com React Email, identidade do Trama e assinatura Bectec; escapar textos e validar links de ação.
+- [x] Isolar MailCatcher local (SMTP 1026/painel 1081) e de testes (1027/1082), dentro dos projetos Compose próprios, somente em loopback.
+- [x] Bloquear destinatários de preview fora da lista explícita `EMAIL_PREVIEW_RECIPIENTS`; sem lista, bloquear todos os envios. Desenvolvimento e testes nunca usam Resend, mesmo com credenciais herdadas.
+- [x] Usuário confirmou o cadastro de destinatários de teste em `EMAIL_PREVIEW_RECIPIENTS`, somente no ambiente Preview da Vercel; envio real ainda pendente de validação.
+- [ ] Validar envio real pelo Resend e aparência nas caixas Gmail/Outlook após conectar os fluxos; revisar o aviso de privacidade para o novo provedor antes dos envios reais.
+- [ ] Implementar convite de acesso à conta com definição inicial da senha pelo destinatário, mantendo cadastro público fechado e aceite pessoal dos documentos.
+- [ ] Conectar envio automático aos convites para obras, com tratamento de falhas e reenvio.
+
+Configuração confirmada pelo usuário: domínio `etrama.bectec.com.br` verificado, `RESEND_API_KEY` própria por ambiente e `EMAIL_FROM` configurado em Production e Preview. Nenhuma chave consta no código. A implementação local não significa deploy nem envio real confirmado. Detalhes e uso interno em [docs/email.md](email.md). Sem fila durável ou repetição automática nesta etapa; os futuros fluxos devem aguardar o envio e usar idempotência por evento.
+
+### Próximos fluxos de conta
+
+- [x] Recuperação de senha: `/forgot-password`, `/reset-password`, link no login e POST/PATCH `/api/v1/password-recovery`, com token aleatório de uso único válido por 15 minutos e somente hash no banco. Senha de 8–128 caracteres, confirmação obrigatória, consumo transacional, invalidação de links e sessões da conta e aviso após a troca. Resposta de pedido genérica, limite de um pedido/minuto e cinco/hora por endereço; envio via `waitUntil`. Personificação não permite recuperar senhas. Aceite pendente não bloqueia recuperação nem é fabricado por ela. Detalhes em [docs/email.md](email.md).
+- [ ] Aplicar a migration `1792270000000_create-password-recovery` no desenvolvimento e nos ambientes remotos antes de habilitar a recuperação; aplicada somente no banco de testes nesta entrega. Validar entrega real no preview, restrições de destinatários e aparência em Gmail/Outlook; não houve deploy.
 - [ ] Definir confirmação de e-mail e verificação ao alterar o endereço.
 - [ ] Avaliar exigência de senha atual ou nova autenticação para mudanças sensíveis.
-- [ ] Definir invalidação de outras sessões após troca ou recuperação de senha.
+- [x] Invalidar todas as sessões da conta e sessões que a personificam após recuperação de senha.
+- [ ] Definir invalidação de outras sessões após troca de senha pelos fluxos de conta/administração existentes.
 - [ ] Avaliar encerramento de todas as sessões e consulta de dispositivos.
 - [ ] Persistir a preferência de tema por usuário no banco, desejo já informado pelo usuário.
 - [ ] Definir a precedência entre preferência da conta e cookie, incluindo login em outro dispositivo e logout.

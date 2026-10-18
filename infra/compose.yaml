@@ -1,6 +1,12 @@
 ﻿name: trama
 
 services:
+  mailcatcher:
+    image: "sj26/mailcatcher:v0.11.0"
+    ports:
+      - "127.0.0.1:1026:1025"
+      - "127.0.0.1:1081:1080"
+
   database:
     image: "postgres:16.0-alpine3.18"
     env_file:

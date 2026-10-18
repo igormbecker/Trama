@@ -40,6 +40,8 @@ O fluxo para contas existentes foi implementado por autorização posterior do u
 
 ## Versão e provas
 
+Pendência adicionada com a integração de e-mails: revisar a transparência sobre Resend (endereços, mensagens e metadados de entrega) antes do uso real. A região de envio selecionada não comprova localização de todo o tratamento do provedor. Não alterar `infra/legal/2026-10-18-v1.json` já aceito; se houver alteração dos documentos públicos, criar nova versão. A recuperação adiciona registros de limitação por hash de endereço e tokens temporários; a política operacional de limpeza e a retenção desses registros continuam pendentes, sem rotina automática implementada.
+
 - A versão ativa está em `infra/legal/2026-10-18-v1.json`. Não editar uma versão já aceita: criar novo arquivo e identificador e atualizar o model para a nova versão.
 - Os hashes SHA-256 cobrem os textos exatos. Na primeira aceitação, a transação preserva os textos e hashes em `legal_document_releases` e grava conta/data/versão em `legal_acceptances`; repetições não alteram a primeira data. Um conflito de conteúdo com o mesmo identificador é recusado.
 - Páginas protegidas redirecionam pendências para o aceite; APIs retornam `LegalAcceptanceRequiredError` (403). GET da própria conta, consulta/registro de aceite, documentos, contato, status, login e logout preservam os caminhos necessários. Personificação não aceita por terceiros e só inicia quando administrador e conta representada aceitaram.
