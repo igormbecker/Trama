@@ -117,6 +117,8 @@ export const contactLink = `mailto:${contactEmail}?subject=Vamos%20conversar%20s
 
 ## Banco, configurações e migrations
 
+- `vercel.json` executa `npm run migrations:deploy && npm run build`. O script `infra/scripts/run-deploy-migrations.js` exige ambiente Vercel production/preview e `DATABASE_URL_UNPOOLED` direta do Neon, sem fallback nem carregamento de `.env.development`. Usa TLS, trava nativa com espera limitada e transação; falha impede build. Não desabilitar a trava nem aplicar `down` automaticamente. Migrations devem ser compatíveis com o deploy anterior; falha posterior no build não desfaz migrations concluídas. Consulte `docs/deployment-migrations.md` e valide o próximo deploy antes de afirmar funcionamento remoto.
+
 - O Compose roda PostgreSQL e MailCatcher; o Next.js executa no Ubuntu. O MailCatcher local do Trama usa SMTP 1026 e painel 1081; o exclusivo de testes usa SMTP 1027 e painel 1082, todos em loopback.
 - O banco local do Trama usa `127.0.0.1:5433`, banco `trama_dev`, usuário `trama_user` e o arquivo `.env.development`. A porta interna do PostgreSQL continua sendo `5432`.
 - Para campos de data nas migrations, use `pgm.func("timezone('utc', now())")` como padrão de data atual. Para expiração, derive desse padrão e preserve o intervalo definido pela regra de negócio.

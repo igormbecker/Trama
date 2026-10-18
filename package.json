@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "next build",
+    "migrations:deploy": "node infra/scripts/run-deploy-migrations.js",
     "start": "next start --port 3001",
     "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && (trap 'npm run services:stop' INT TERM ; next dev --port 3001)",
     "test": "node infra/scripts/run-tests.js",
