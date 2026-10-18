@@ -34,4 +34,6 @@ router.put(async (request, response) =>
     ),
 );
 export const config = { api: { bodyParser: { sizeLimit: "1100kb" } } };
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);

@@ -33,4 +33,6 @@ router.post(async (request, response) =>
       ),
     ),
 );
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);

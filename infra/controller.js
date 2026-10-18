@@ -1,3 +1,6 @@
+import { randomUUID } from "node:crypto";
+import session from "models/session.js";
+import impersonation from "models/impersonation.js";
 import {
   InternalServerError,
   MethodNotAllowedError,
@@ -60,7 +63,60 @@ function clearSessionCookie(response) {
   });
 }
 
+// Record metadata only; never persist request bodies, cookies, or query strings.
+function withImpersonationAudit(handler) {
+  return async (request, response) => {
+    let context;
+    const requestId = randomUUID();
+    const track =
+      !["GET", "HEAD", "OPTIONS"].includes(request.method) ||
+      /\/export(?:\?|$)/u.test(request.url || "");
+    if (track && request.cookies?.trama_session_id) {
+      try {
+        const current = await session.findOneValidByToken(
+          request.cookies.trama_session_id,
+        );
+        if (current.impersonated_user_id) context = current;
+        if (context)
+          await impersonation.record(context, "request_started", {
+            request_id: requestId,
+            method: request.method,
+            path: (request.url || "")
+              .split("?")[0]
+              .replace(/[a-f0-9]{96}/giu, "[token]"),
+          });
+      } catch (error) {
+        if (!(error instanceof UnauthorizedError))
+          return onErrorHandler(error, request, response);
+      }
+    }
+    try {
+      return await handler(request, response);
+    } finally {
+      if (context) {
+        try {
+          await impersonation.record(
+            context,
+            request.method === "DELETE" &&
+              request.url?.split("?")[0] === "/api/v1/sessions"
+              ? "logout"
+              : "request_finished",
+            {
+              request_id: requestId,
+              method: request.method,
+              status_code: response.statusCode,
+            },
+          );
+        } catch {
+          console.error("Could not record impersonation request outcome.");
+        }
+      }
+    }
+  };
+}
+
 const controller = {
+  withImpersonationAudit,
   setSessionCookie,
   clearSessionCookie,
   errorHandlers: {

@@ -34,9 +34,11 @@ Essa autorização não permite comercializar a obra, publicá-la ao público, u
 
 O responsável pela obra escolhe quem convidar e deve ter autorização para informar o e-mail do destinatário para essa finalidade. Convites não devem ser enviados de forma abusiva. Atualmente, os links são compartilhados manualmente pelo responsável.
 
-**Conceder acesso permite que o participante conheça e copie o conteúdo disponibilizado. Na configuração atual, organizadores ativos também podem ler e exportar a obra salva.** Antes de convidar alguém, o responsável deve avaliar a confiança nessa pessoa e combinar limites de uso e confidencialidade.
+**Conceder acesso permite que o participante conheça e copie o conteúdo disponibilizado. Na configuração atual, organizadores ativos podem ler a obra salva, mas somente o responsável pode exportá-la pelos botões ou pela API do Trama. Essa restrição não impede capturas ou cópias feitas durante a leitura.** Antes de convidar alguém, o responsável deve avaliar a confiança nessa pessoa e combinar limites de uso e confidencialidade.
 
 A remoção de um participante revoga seu acesso futuro pela plataforma, mas não apaga arquivos, capturas, transcrições ou cópias que ele já tenha obtido. Convites e permissões não concedem, por si só, autorização para publicar ou distribuir a obra fora da colaboração acordada.
+
+Para suporte e reprodução de problemas, administradores podem iniciar uma personificação temporária de uma conta comum, sem conhecer sua senha. Nesse modo, usam as permissões da conta representada e podem acessar obras privadas e executar ações permitidas a ela, inclusive exportar quando essa conta for a responsável. O modo tem aviso visível, prazo de até 15 minutos e registro da identidade administrativa, da conta representada e dos eventos de operação; alterações afetam dados reais. Não permite representar administradores, encadear personificações ou editar dados da conta. A autorização de suporte não permite exploração editorial ou divulgação das obras.
 
 ## 5. Exportação e compartilhamento fora do Trama
 

@@ -20,4 +20,6 @@ router.delete(async (request, response) => {
   );
   return response.status(204).end();
 });
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);

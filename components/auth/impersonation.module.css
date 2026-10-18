@@ -1,0 +1,24 @@
+.banner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 24px;
+  background: #fff2c2;
+  color: #392f11;
+  border-bottom: 1px solid #a68a35;
+}
+.banner p {
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+.banner button {
+  padding: 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.banner button:disabled {
+  cursor: wait;
+}

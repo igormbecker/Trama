@@ -37,11 +37,15 @@ A proposta de enquadramento abaixo deve ser validada por operação antes da pub
 
 ## 4. Quem pode ter acesso
 
-O responsável e os organizadores ativos têm acesso às obras conforme suas permissões, incluindo leitura e exportação. O responsável gerencia convites e participantes. Administradores gerenciam cadastros; esse perfil, por si só, não concede acesso às obras alheias pela interface.
+O responsável e os organizadores ativos podem ler as obras conforme suas permissões. A exportação pelos recursos do Trama é exclusiva do responsável. O responsável gerencia convites e participantes. Administradores gerenciam cadastros; esse perfil não concede acesso direto às obras alheias. Para suporte, administradores podem personificar temporariamente contas comuns e acessar o conteúdo e as operações permitidos à conta representada, sem conhecer sua senha. A personificação dura até 15 minutos, tem aviso e ação de encerramento e não permite editar dados da conta nem usar funções administrativas.
 
 A operação técnica pode exigir acesso restrito por pessoas autorizadas e fornecedores de infraestrutura para hospedagem, banco, suporte e segurança. Isso não equivale a acesso editorial irrestrito ou autorização de publicação. Solicitações de autoridades serão avaliadas conforme sua validade e necessidade.
 
 **Pendente de confirmação operacional:** fornecedores efetivamente usados em produção, entidades contratadas, funções, regiões, suboperadores e condições de acesso. A documentação técnica cita Vercel e Neon, mas esse registro não substitui a conferência dos contratos e das configurações atuais.
+
+A auditoria de personificação registra identificadores do administrador, da conta representada e da sessão, início, encerramento, prazo, método e caminho das operações de alteração e exportação, identificador de correlação e resultado HTTP quando disponível. Não registra corpos das requisições, senhas, cookies, tokens de convite ou conteúdo das obras. A auditoria é usada para atribuição de ações e investigação; sua base legal, retenção e acessos devem ser validados antes da publicação. Inícios e encerramentos explícitos são registrados em transação; uma tentativa registrada não comprova alteração concluída, e falhas no registro do resultado podem deixar a tentativa sem conclusão registrada.
+
+A personificação utiliza a mesma sessão entre abas. Dados locais de navegação e rascunhos da conta representada podem permanecer neste navegador conforme as regras de recuperação; quem presta suporte deve usar dispositivo autorizado e tratar essas cópias com confidencialidade.
 
 ## 5. Processamento fora do Brasil
 
@@ -68,7 +72,7 @@ Quem baixa ou recebe um arquivo pode armazená-lo em outros dispositivos ou serv
 
 ## 8. Conservação e eliminação
 
-**Pendente antes da publicação:** definir e informar os prazos ou critérios objetivos por categoria, incluindo cadastro, textos, convites, sessões expiradas, registros técnicos, atendimento, provas de aceite e backups. Expiração de acesso, cancelamento de convite e remoção de participante não representam exclusão automática dos registros.
+**Pendente antes da publicação:** definir e informar os prazos ou critérios objetivos por categoria, incluindo cadastro, textos, convites, sessões expiradas, registros técnicos, atendimento, provas de aceite, auditoria de personificação e backups. Expiração de acesso, cancelamento de convite e remoção de participante não representam exclusão automática dos registros.
 
 Os dados devem permanecer somente pelo período necessário às finalidades justificadas e às hipóteses legais de conservação. Retenções excepcionais devem ter fundamento, acesso limitado e duração definida. Cópias de backup exigem ciclo de expiração próprio a ser informado; não há promessa de apagamento instantâneo de toda cópia.
 

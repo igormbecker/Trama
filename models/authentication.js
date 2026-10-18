@@ -62,7 +62,21 @@ async function authenticateSession(token) {
   const storedSession = await session.findOneValidByToken(token);
 
   try {
-    return await user.findOneById(storedSession.user_id);
+    const actor = await user.findOneById(storedSession.user_id);
+    if (!storedSession.impersonated_user_id) return actor;
+    if (
+      !actor.is_admin ||
+      new Date(storedSession.impersonation_expires_at) <= new Date()
+    )
+      throw new UnauthorizedError();
+    const represented = await user.findOneById(
+      storedSession.impersonated_user_id,
+    );
+    return {
+      ...represented,
+      is_admin: false,
+      impersonation: { administrator_id: actor.id },
+    };
   } catch (error) {
     if (error instanceof NotFoundError) {
       throw new UnauthorizedError();

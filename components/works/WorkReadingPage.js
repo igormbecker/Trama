@@ -27,7 +27,9 @@ export default function WorkReadingPage({ user, work, parts }) {
       <section id="reading-top" className={styles.workspace}>
         <Link href={`/works/${work.id}`}>← Voltar à obra</Link>
         <h1>{work.title}</h1>
-        <ExportWorkButtons workId={work.id} disabled={!parts.length} />
+        {work.owner_id === user.id ? (
+          <ExportWorkButtons workId={work.id} disabled={!parts.length} />
+        ) : null}
         <p>
           Texto salvo até o momento. Alterações ainda não salvas no editor não
           aparecem nesta leitura.

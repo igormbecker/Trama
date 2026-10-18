@@ -81,7 +81,7 @@ Entregar uma primeira fatia utilizável, do banco à interface, sem tentar const
 - Na primeira entrega, as obras serão privadas e somente o responsável terá acesso direto à listagem e aos detalhes de suas obras.
 - O administrador global não terá acesso editorial direto automático a todas as obras. Essa permissão poderá ser revista futuramente, preservando a distinção entre administração do sistema e responsabilidade pela obra.
 - Outros participantes poderão colaborar na gestão conforme seus papéis, a definir na entrega de participantes.
-- A personificação de usuários para suporte foi aceita como entrega futura, separada da primeira versão de obras. Ela permitirá acesso administrativo indireto às obras privadas, usando as permissões do usuário representado.
+- A personificação de usuários para suporte foi implementada em uma entrega separada da primeira versão de obras. Ela permite acesso administrativo indireto às obras privadas, usando as permissões do usuário representado; implementação descrita na seção de personificação.
 
 - O título será obrigatório, com até 255 caracteres; a descrição será opcional, com até 5.000 caracteres. Títulos repetidos serão permitidos.
 - A exclusão de uma conta será bloqueada enquanto ela for responsável por obras, preservando os dados.
@@ -281,22 +281,21 @@ Usar `pgm.func("timezone('utc', now())")` nos defaults de data atual, conforme p
 
 A sessão atual expira em 24 horas sem renovação automática. Não alterar essa decisão silenciosamente. A preferência de tema atual é do navegador, não da conta; a futura persistência pode sincronizar no login sem consultar o banco a cada navegação.
 
-## Personificação de usuários para suporte — entrega futura
+## Personificação de usuários para suporte
 
-Permitir que administradores reproduzam problemas navegando com as permissões de outro usuário, sem conhecer sua senha. A implementação não faz parte da primeira entrega de obras.
+Implementada em 18/10/2026 para administradores reproduzirem problemas com as permissões de contas comuns, sem conhecer suas senhas. A sessão mantém o administrador como titular e guarda a conta representada separadamente; outros logins permanecem independentes. O modo vale para todas as abas que compartilham a mesma sessão.
 
-Direção proposta para detalhar antes da implementação:
+- [x] Iniciar pela ação Personificar em Usuários, com confirmação e aviso de dados reais. Não permite representar a própria conta, outros administradores ou encadear personificações.
+- [x] GET/POST/DELETE `/api/v1/impersonation`, com cache privado e sem armazenamento. POST inicia e DELETE encerra; a sessão original é validada no banco. O prazo é de até 15 minutos, limitado à expiração original, sem renovação automática.
+- [x] Aplicar identidade e permissões da conta representada, sempre sem perfil administrativo; validar o perfil atual do administrador a cada autenticação. Edição de conta, senha e funções administrativas ficam bloqueadas pela API.
+- [x] Aviso global com nome, alerta de alterações reais e ação de retorno. O aviso é consultado ao carregar, ao recuperar foco e a cada 15 segundos. Início e encerramento recarregam a página para limpar estado React/SWR da identidade anterior. Salvar o trabalho antes de mudar de modo.
+- [x] Expiração ou remoção da conta representada bloqueiam novas autenticações nesse modo; nunca restauram privilégios administrativos silenciosamente. Encerrar explicitamente exige sessão original vigente e perfil administrativo atual. Se a sessão expirar ou o administrador perder o perfil, sair e autenticar novamente.
+- [x] Migration aditiva `1792250000000_add-session-impersonation` acrescenta dados na sessão e tabela `impersonation_audit`. O identificador da conta representada não usa exclusão com SET NULL, para sua remoção não restaurar acidentalmente o administrador. A auditoria preserva identificadores mesmo após exclusão de contas.
+- [x] Registrar início/encerramento explícitos na transação, tentativas de alterações e exportações e resultado HTTP com identificador de correlação. Não guardar corpo, conteúdo, cookies, query strings ou tokens de convite. A gravação da tentativa precede a operação; falha nela bloqueia a requisição. Resultado é gravado após o handler; se essa etapa falhar, permanece a tentativa e um erro operacional, sem presumir conclusão. A expiração é determinada pelo prazo registrado; não há tarefa agendada para um evento de encerramento automático.
+- [x] Testes de autorização, concorrência, atribuição das alterações, expiração, revogação, logout, retorno e proteção de exportações. Interface do aviso também tem teste de renderização.
+- [ ] Definir retenção e acesso operacional à auditoria e concluir a revisão jurídica das minutas antes de publicá-las. Não há painel de auditoria nesta entrega.
 
-- [ ] Restringir o início da personificação a administradores e definir quais contas podem ser representadas.
-- [ ] Preservar a identidade do administrador e a do usuário representado na sessão e na auditoria.
-- [ ] Exibir aviso permanente com o usuário representado e uma ação para encerrar e retornar à conta administrativa.
-- [ ] Aplicar as permissões do usuário representado, sem herdar privilégios administrativos durante a personificação.
-- [ ] Registrar início, encerramento e alterações relevantes com o administrador que executou a ação.
-- [ ] Bloquear troca de senha, alteração de perfil administrativo e personificação encadeada nesse modo.
-- [ ] Definir prazo curto, encerramento e revogação do acesso.
-- [ ] Testar autorização, expiração, retorno à conta administrativa e identificação correta das ações.
-
-Esse recurso permite acesso administrativo indireto ao conteúdo privado e deverá ser comunicado como regra do produto. Ele ajuda a reproduzir problemas de dados e permissões; não reproduz necessariamente o navegador ou dispositivo do usuário.
+O recurso permite acesso administrativo indireto ao conteúdo privado; as minutas dos Termos e do Aviso de Privacidade refletem essa regra. Não reproduz necessariamente navegador ou dispositivo do usuário. Rascunhos locais e histórico da conta representada seguem as regras existentes por conta e navegador, inclusive permanência de cópias pendentes após logout.
 
 ## Preparação para publicação e operação
 
@@ -376,3 +375,8 @@ Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e 
 - [ ] Registrar no servidor usuário, data/hora e versões imutáveis dos documentos aceitos. Comunicar mudanças relevantes e avaliar novo aceite quando necessário, preservando o histórico. Separar aceite dos Termos e ciência do Aviso de consentimentos opcionais: recusar marketing não bloqueia o serviço.
 
 O fluxo está aprovado para o TODO, mas ainda não foi implementado. As minutas não foram publicadas; a abertura do cadastro público e a publicação continuam dependendo de autorização própria.
+
+## Exportação exclusiva do responsável — 18/10/2026
+
+- [x] Botões DOCX/PDF visíveis somente quando a conta efetiva é responsável pela obra. A API exige responsabilidade e retorna 404 para organizadores, administradores sem responsabilidade e demais contas sem autorização, preservando a leitura para organizadores ativos.
+- [x] Durante personificação, exportação usa a conta representada: disponível somente se ela for a responsável. Minutas legais atualizadas; restringir o download não impede capturas ou cópias do texto durante leitura autorizada.

@@ -13,6 +13,7 @@ Responsável informada pelo usuário: Becker Tecnologia e Desenvolvimento de Sof
 
 - Confirmar identificação jurídica completa e endereço; verificar obrigações de identificação do fornecedor e de encarregado ou canal de privacidade conforme o enquadramento real.
 - Validar cada base legal, inclusive criação administrativa de conta, convite de pessoa ainda não cadastrada e eventual tratamento de dados de terceiros nas obras. Separar dados comuns de dados sensíveis quando necessário.
+- Validar a finalidade, a base legal, os acessos e a retenção da auditoria de personificação; conferir divulgação clara do acesso administrativo indireto e procedimentos de suporte e sigilo. A implementação não substitui essa avaliação.
 - Conferir fornecedores de produção, contratos, registros técnicos, regiões, suboperadores, acessos técnicos e transferências internacionais. Não publicar garantias de criptografia ou auditoria que não tenham sido verificadas.
 - Definir critérios ou prazos de retenção e descarte por categoria, inclusive backups e logs; implementar o que for necessário para cumprir o que será informado. Expiração de sessão não equivale a exclusão do registro.
 - Definir procedimento de encerramento e atendimento a titulares, inclusive contas responsáveis por obras: hoje a exclusão dessas contas é bloqueada e não há transferência implementada. Não apresentar esse limite técnico como exceção geral à LGPD.
