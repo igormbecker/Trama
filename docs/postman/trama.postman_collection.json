@@ -1,0 +1,1422 @@
+{
+  "info": {
+    "_postman_id": "dc3454b6-b43e-4838-b2e2-b48f12fad601",
+    "name": "trama",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Trama: prd, hml e localhost, mantendo a organização solicitada. Sem Bearer: login devolve cookie trama_session_id e o Postman o mantém por host. Senhas e cookies não são preenchidos por este arquivo. Substitua o e-mail fictício admin@example.com pela conta do ambiente. Homologação usa o último preview Trama conhecido, não Curso.Dev. Não executar tudo pelo Runner: há migrations e alterações de usuários. 401=sem sessão; 403=permissão/aceite pendente; 404=usuário inexistente ou URL de preview desatualizada; HTML/login da Vercel=Deployment Protection, não login do Trama. Nada é enviado ao importar."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://trama.bectec.com.br",
+      "type": "string",
+      "description": "Origem de produção, sem barra final."
+    },
+    {
+      "key": "hml_url",
+      "value": "https://trama-git-codex-export-summar-b024de-igor-m-becker-jrs-projects.vercel.app",
+      "type": "string",
+      "description": "Último preview do Trama identificado no painel. Atualize quando usar outro deployment. Pode exigir autenticação da Vercel."
+    },
+    {
+      "key": "localhost_url",
+      "value": "http://localhost:3001",
+      "type": "string",
+      "description": "Desenvolvimento local. Não aponta para o servidor descartável de testes."
+    },
+    {
+      "key": "prd_email",
+      "value": "admin@example.com",
+      "type": "string",
+      "description": "E-mail de login. Ajuste para a conta administrativa deste ambiente."
+    },
+    {
+      "key": "prd_password",
+      "value": "",
+      "type": "string",
+      "description": "Senha de login: preencher somente no seu Postman; não compartilhar ou exportar preenchida."
+    },
+    {
+      "key": "prd_username",
+      "value": "usuario.exemplo",
+      "type": "string",
+      "description": "Nome de usuário alvo de GET/PATCH administrativos. Troque pelo username desejado."
+    },
+    {
+      "key": "prd_new_user_password",
+      "value": "",
+      "type": "string",
+      "description": "Senha para criação da conta de exemplo. Não é a senha do administrador."
+    },
+    {
+      "key": "hml_email",
+      "value": "admin@example.com",
+      "type": "string",
+      "description": "E-mail de login. Ajuste para a conta administrativa deste ambiente."
+    },
+    {
+      "key": "hml_password",
+      "value": "",
+      "type": "string",
+      "description": "Senha de login: preencher somente no seu Postman; não compartilhar ou exportar preenchida."
+    },
+    {
+      "key": "hml_username",
+      "value": "usuario.exemplo",
+      "type": "string",
+      "description": "Nome de usuário alvo de GET/PATCH administrativos. Troque pelo username desejado."
+    },
+    {
+      "key": "hml_new_user_password",
+      "value": "",
+      "type": "string",
+      "description": "Senha para criação da conta de exemplo. Não é a senha do administrador."
+    },
+    {
+      "key": "localhost_email",
+      "value": "admin@example.com",
+      "type": "string",
+      "description": "E-mail de login. Ajuste para a conta administrativa deste ambiente."
+    },
+    {
+      "key": "localhost_password",
+      "value": "",
+      "type": "string",
+      "description": "Senha de login: preencher somente no seu Postman; não compartilhar ou exportar preenchida."
+    },
+    {
+      "key": "localhost_username",
+      "value": "usuario.exemplo",
+      "type": "string",
+      "description": "Nome de usuário alvo de GET/PATCH administrativos. Troque pelo username desejado."
+    },
+    {
+      "key": "localhost_new_user_password",
+      "value": "",
+      "type": "string",
+      "description": "Senha para criação da conta de exemplo. Não é a senha do administrador."
+    }
+  ],
+  "item": [
+    {
+      "name": "prd",
+      "description": "Ambiente prd. Origem: {{base_url}}. Ordem sugerida: POST sessions → GET user → GET migrations. As requisições de escrita devem ser enviadas individualmente após conferir alvo e body.",
+      "item": [
+        {
+          "name": "prd - /api/v1/sessions",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/sessions",
+            "description": "LOGIN — execute primeiro. O Postman armazena o cookie da resposta no cookie jar deste host. Configure as credenciais nas variáveis da collection; o script monta o JSON com escape correto. Não imprime nem copia o token para variáveis compartilhadas.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{prd_email}}\",\n  \"password\": \"{{prd_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const email = pm.variables.get(\"prd_email\");",
+                  "const password = pm.variables.get(\"prd_password\");",
+                  "if (!email || !password) {",
+                  "  throw new Error(\"Preencha prd_email e prd_password nas variáveis da collection antes de enviar.\");",
+                  "}",
+                  "pm.request.body.update(JSON.stringify({ email, password }, null, 2));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sessão com cookie e prazo de validade\", function () {",
+                  "  const session = pm.response.json();",
+                  "  pm.expect(session.token).to.match(/^[a-f0-9]{96}$/);",
+                  "  pm.expect(session.expires_at).to.be.a(\"string\");",
+                  "  pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"trama_session_id=\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/user",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/user",
+            "description": "Confere a identidade autenticada. Para administrar usuários ou migrations, a conta precisa ter is_admin=true. GET da própria conta não exige aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/status",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/status",
+            "description": "Status público da aplicação e do PostgreSQL. Não exige login.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/migrations",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/migrations",
+            "description": "LISTAR — exige administrador com aceite vigente. Lista migrations pendentes sem aplicá-las. [] significa nenhuma pendência.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/migrations",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/migrations",
+            "description": "APLICAR — altera o banco deste ambiente. Confira a URL e execute GET migrations antes. Sem body. 201=aplicou migrations; 200=nenhuma pendência. Não rode a collection inteira como teste automático.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200, 201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/users",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/users",
+            "description": "Lista contas. Exige administrador com aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/users",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/users",
+            "description": "CRIAR CONTA — altera dados. Exemplo preenchido para edição antes do envio. Defina a senha em prd_new_user_password. Cria conta comum e não registra aceite legal.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pessoa de exemplo\",\n  \"username\": \"pessoa.exemplo\",\n  \"email\": \"pessoa@example.invalid\",\n  \"password\": \"{{prd_new_user_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const password = pm.variables.get(\"prd_new_user_password\");",
+                  "if (!password) throw new Error(\"Preencha prd_new_user_password para criar a conta.\");",
+                  "const body = JSON.parse(pm.request.body.raw);",
+                  "body.password = password;",
+                  "pm.request.body.update(JSON.stringify(body, null, 2));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/users/{{prd_username}}",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/users/{{prd_username}}",
+            "description": "Consulta o perfil do username definido em prd_username. Exige administrador com aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/users/{{prd_username}}",
+          "request": {
+            "method": "PATCH",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/users/{{prd_username}}",
+            "description": "EDITAR CONTA — altera dados do username definido em prd_username. O exemplo edita somente nome/e-mail: ajuste antes de enviar. Para alterar senha, acrescente password e password_confirmation coincidentes. Não promove administradores automaticamente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nome atualizado\",\n  \"email\": \"pessoa.atualizada@example.invalid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "prd - /api/v1/sessions",
+          "request": {
+            "method": "DELETE",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/v1/sessions",
+            "description": "LOGOUT — encerra somente a sessão deste cookie e remove o cookie. Não remove usuários.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [204]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([204]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "hml",
+      "description": "Ambiente hml. Origem: {{hml_url}}. Ordem sugerida: POST sessions → GET user → GET migrations. As requisições de escrita devem ser enviadas individualmente após conferir alvo e body.",
+      "item": [
+        {
+          "name": "hml - /api/v1/sessions",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/sessions",
+            "description": "LOGIN — execute primeiro. O Postman armazena o cookie da resposta no cookie jar deste host. Configure as credenciais nas variáveis da collection; o script monta o JSON com escape correto. Não imprime nem copia o token para variáveis compartilhadas.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{hml_email}}\",\n  \"password\": \"{{hml_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const email = pm.variables.get(\"hml_email\");",
+                  "const password = pm.variables.get(\"hml_password\");",
+                  "if (!email || !password) {",
+                  "  throw new Error(\"Preencha hml_email e hml_password nas variáveis da collection antes de enviar.\");",
+                  "}",
+                  "pm.request.body.update(JSON.stringify({ email, password }, null, 2));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sessão com cookie e prazo de validade\", function () {",
+                  "  const session = pm.response.json();",
+                  "  pm.expect(session.token).to.match(/^[a-f0-9]{96}$/);",
+                  "  pm.expect(session.expires_at).to.be.a(\"string\");",
+                  "  pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"trama_session_id=\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/user",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/user",
+            "description": "Confere a identidade autenticada. Para administrar usuários ou migrations, a conta precisa ter is_admin=true. GET da própria conta não exige aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/status",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/status",
+            "description": "Status público da aplicação e do PostgreSQL. Não exige login.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/migrations",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/migrations",
+            "description": "LISTAR — exige administrador com aceite vigente. Lista migrations pendentes sem aplicá-las. [] significa nenhuma pendência.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/migrations",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/migrations",
+            "description": "APLICAR — altera o banco deste ambiente. Confira a URL e execute GET migrations antes. Sem body. 201=aplicou migrations; 200=nenhuma pendência. Não rode a collection inteira como teste automático.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200, 201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/users",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/users",
+            "description": "Lista contas. Exige administrador com aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/users",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/users",
+            "description": "CRIAR CONTA — altera dados. Exemplo preenchido para edição antes do envio. Defina a senha em hml_new_user_password. Cria conta comum e não registra aceite legal.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pessoa de exemplo\",\n  \"username\": \"pessoa.exemplo\",\n  \"email\": \"pessoa@example.invalid\",\n  \"password\": \"{{hml_new_user_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const password = pm.variables.get(\"hml_new_user_password\");",
+                  "if (!password) throw new Error(\"Preencha hml_new_user_password para criar a conta.\");",
+                  "const body = JSON.parse(pm.request.body.raw);",
+                  "body.password = password;",
+                  "pm.request.body.update(JSON.stringify(body, null, 2));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/users/{{hml_username}}",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/users/{{hml_username}}",
+            "description": "Consulta o perfil do username definido em hml_username. Exige administrador com aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/users/{{hml_username}}",
+          "request": {
+            "method": "PATCH",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/users/{{hml_username}}",
+            "description": "EDITAR CONTA — altera dados do username definido em hml_username. O exemplo edita somente nome/e-mail: ajuste antes de enviar. Para alterar senha, acrescente password e password_confirmation coincidentes. Não promove administradores automaticamente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nome atualizado\",\n  \"email\": \"pessoa.atualizada@example.invalid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "hml - /api/v1/sessions",
+          "request": {
+            "method": "DELETE",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{hml_url}}/api/v1/sessions",
+            "description": "LOGOUT — encerra somente a sessão deste cookie e remove o cookie. Não remove usuários.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [204]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([204]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "localhost",
+      "description": "Ambiente localhost. Origem: {{localhost_url}}. Ordem sugerida: POST sessions → GET user → GET migrations. As requisições de escrita devem ser enviadas individualmente após conferir alvo e body.",
+      "item": [
+        {
+          "name": "localhost - /api/v1/sessions",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/sessions",
+            "description": "LOGIN — execute primeiro. O Postman armazena o cookie da resposta no cookie jar deste host. Configure as credenciais nas variáveis da collection; o script monta o JSON com escape correto. Não imprime nem copia o token para variáveis compartilhadas.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{localhost_email}}\",\n  \"password\": \"{{localhost_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const email = pm.variables.get(\"localhost_email\");",
+                  "const password = pm.variables.get(\"localhost_password\");",
+                  "if (!email || !password) {",
+                  "  throw new Error(\"Preencha localhost_email e localhost_password nas variáveis da collection antes de enviar.\");",
+                  "}",
+                  "pm.request.body.update(JSON.stringify({ email, password }, null, 2));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sessão com cookie e prazo de validade\", function () {",
+                  "  const session = pm.response.json();",
+                  "  pm.expect(session.token).to.match(/^[a-f0-9]{96}$/);",
+                  "  pm.expect(session.expires_at).to.be.a(\"string\");",
+                  "  pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"trama_session_id=\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/user",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/user",
+            "description": "Confere a identidade autenticada. Para administrar usuários ou migrations, a conta precisa ter is_admin=true. GET da própria conta não exige aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/status",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/status",
+            "description": "Status público da aplicação e do PostgreSQL. Não exige login.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/migrations",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/migrations",
+            "description": "LISTAR — exige administrador com aceite vigente. Lista migrations pendentes sem aplicá-las. [] significa nenhuma pendência.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/migrations",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/migrations",
+            "description": "APLICAR — altera o banco deste ambiente. Confira a URL e execute GET migrations antes. Sem body. 201=aplicou migrations; 200=nenhuma pendência. Não rode a collection inteira como teste automático.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200, 201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/users",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/users",
+            "description": "Lista contas. Exige administrador com aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/users",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/users",
+            "description": "CRIAR CONTA — altera dados. Exemplo preenchido para edição antes do envio. Defina a senha em localhost_new_user_password. Cria conta comum e não registra aceite legal.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pessoa de exemplo\",\n  \"username\": \"pessoa.exemplo\",\n  \"email\": \"pessoa@example.invalid\",\n  \"password\": \"{{localhost_new_user_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const password = pm.variables.get(\"localhost_new_user_password\");",
+                  "if (!password) throw new Error(\"Preencha localhost_new_user_password para criar a conta.\");",
+                  "const body = JSON.parse(pm.request.body.raw);",
+                  "body.password = password;",
+                  "pm.request.body.update(JSON.stringify(body, null, 2));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [201]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/users/{{localhost_username}}",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/users/{{localhost_username}}",
+            "description": "Consulta o perfil do username definido em localhost_username. Exige administrador com aceite vigente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/users/{{localhost_username}}",
+          "request": {
+            "method": "PATCH",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/users/{{localhost_username}}",
+            "description": "EDITAR CONTA — altera dados do username definido em localhost_username. O exemplo edita somente nome/e-mail: ajuste antes de enviar. Para alterar senha, acrescente password e password_confirmation coincidentes. Não promove administradores automaticamente.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nome atualizado\",\n  \"email\": \"pessoa.atualizada@example.invalid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [200]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        },
+        {
+          "name": "localhost - /api/v1/sessions",
+          "request": {
+            "method": "DELETE",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{localhost_url}}/api/v1/sessions",
+            "description": "LOGOUT — encerra somente a sessão deste cookie e remove o cookie. Não remove usuários.\n\nAutenticação por cookie trama_session_id, recebido automaticamente ao executar o login no mesmo domínio. Não usa Bearer."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status esperado: [204]\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([204]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": false
+          }
+        }
+      ]
+    }
+  ]
+}
