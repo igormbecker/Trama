@@ -16,14 +16,20 @@ import {
   HeightRule,
   VerticalAlign,
   BorderStyle,
+  Bookmark,
+  InternalHyperlink,
+  SimpleField,
+  TableOfContents,
+  TabStopType,
+  LeaderType,
 } from "docx";
 import PDFDocument from "pdfkit";
 import { getWorkCoverColor } from "./workCover.js";
 
 export function exportBlocks(reading) {
   const blocks = [];
-  const heading = (text, level, pageBreak = false) =>
-    blocks.push({ level, pageBreak, runs: [{ text }] });
+  const heading = (text, level, pageBreak = false, sectionId) =>
+    blocks.push({ level, pageBreak, sectionId, runs: [{ text }] });
   function inline(node) {
     if (node.type === "hardBreak") return { text: "\n" };
     const marks = node.marks || [];
@@ -58,13 +64,25 @@ export function exportBlocks(reading) {
     } else (node.content || []).forEach((child) => visit(child, depth));
   }
   heading(reading.work.title, 1);
+  if (reading.work.description?.trim()) {
+    heading("Descrição da obra", 2, true);
+    for (const text of reading.work.description.trim().split(/\r?\n/u)) {
+      blocks.push({ level: 0, runs: [{ text }] });
+    }
+  }
   for (const part of reading.parts) {
-    heading(`${part.position}. ${part.title}`, 2, true);
+    heading(
+      `${part.position}. ${part.title}`,
+      2,
+      true,
+      `export_section_${part.position}`,
+    );
     part.chapters.forEach((chapter, index) => {
       heading(
         `${part.position}.${chapter.position}. ${chapter.title}`,
         3,
         index > 0,
+        `export_section_${part.position}_${chapter.position}`,
       );
       visit(chapter.document);
     });
@@ -81,29 +99,41 @@ export async function generateDocx(reading) {
     HeadingLevel.HEADING_3,
     HeadingLevel.HEADING_4,
   ];
-  const children = exportBlocks(reading)
-    .slice(1)
-    .map(
-      (block) =>
-        new Paragraph({
-          heading: headings[block.level],
-          pageBreakBefore: block.pageBreak,
-          spacing: { after: block.level ? 240 : 120, line: 360 },
-          indent: block.depth ? { left: block.depth * 360 } : undefined,
-          keepNext: Boolean(block.level),
-          children: block.runs.map((run) => {
-            const text = new TextRun({
-              text: run.text,
-              bold: run.bold,
-              italics: run.italic,
-              break: run.text === "\n" ? 1 : undefined,
-            });
-            return run.href
-              ? new ExternalHyperlink({ link: run.href, children: [text] })
-              : text;
-          }),
-        }),
-    );
+  const blocks = exportBlocks(reading);
+  const sections = blocks.filter((block) => block.sectionId);
+  const children = blocks.slice(1).map(
+    (block) =>
+      new Paragraph({
+        heading: block.sectionId ? undefined : headings[block.level],
+        style: block.sectionId
+          ? block.level === 2
+            ? "ExportPart"
+            : "ExportChapter"
+          : undefined,
+        pageBreakBefore: block.pageBreak,
+        spacing: { after: block.level ? 240 : 120, line: 360 },
+        indent: block.depth ? { left: block.depth * 360 } : undefined,
+        keepNext: Boolean(block.level),
+        children: block.sectionId
+          ? [
+              new Bookmark({
+                id: block.sectionId,
+                children: [new TextRun(block.runs[0].text)],
+              }),
+            ]
+          : block.runs.map((run) => {
+              const text = new TextRun({
+                text: run.text,
+                bold: run.bold,
+                italics: run.italic,
+                break: run.text === "\n" ? 1 : undefined,
+              });
+              return run.href
+                ? new ExternalHyperlink({ link: run.href, children: [text] })
+                : text;
+            }),
+      }),
+  );
   const coverColor = getWorkCoverColor(
     reading.work.id || reading.work.title,
   ).slice(1);
@@ -156,10 +186,67 @@ export async function generateDocx(reading) {
       }),
     ],
   });
+  const contents = new TableOfContents("Sumário", {
+    stylesWithLevels: [
+      { styleName: "ExportPart", level: 1 },
+      { styleName: "ExportChapter", level: 2 },
+    ],
+    hyperlink: true,
+    beginDirty: true,
+    contentChildren: sections.map(
+      (block) =>
+        new Paragraph({
+          indent: { left: block.level === 3 ? 360 : 0 },
+          spacing: { after: 120 },
+          tabStops: [
+            {
+              type: TabStopType.RIGHT,
+              position: 9026,
+              leader: LeaderType.DOT,
+            },
+          ],
+          children: [
+            new InternalHyperlink({
+              anchor: block.sectionId,
+              children: [new TextRun(block.runs[0].text)],
+            }),
+            new TextRun({ text: "\t" }),
+            new SimpleField(`PAGEREF ${block.sectionId} \\h`, "—"),
+          ],
+        }),
+    ),
+  });
+  const firstSection = blocks.findIndex((block) => block.sectionId);
+  children.splice(
+    firstSection === -1 ? children.length : firstSection - 1,
+    0,
+    new Paragraph({
+      children: [new TextRun({ text: "Sumário", bold: true, size: 32 })],
+      pageBreakBefore: true,
+      keepNext: true,
+      spacing: { after: 240 },
+    }),
+    contents,
+  );
   children.unshift(cover);
   const document = new Document({
     title: reading.work.title,
+    features: { updateFields: true },
     styles: {
+      paragraphStyles: [
+        {
+          id: "ExportPart",
+          name: "ExportPart",
+          basedOn: "Heading1",
+          next: "Normal",
+        },
+        {
+          id: "ExportChapter",
+          name: "ExportChapter",
+          basedOn: "Heading2",
+          next: "Normal",
+        },
+      ],
       default: {
         document: {
           run: { font: "Times New Roman", size: 24, color: "000000" },
@@ -233,8 +320,43 @@ export function generatePdf(reading) {
       pdf.registerFont(name, buffer),
     );
     const blocks = exportBlocks(reading);
+    const sections = blocks.filter((block) => block.sectionId);
+    const firstSection = blocks.findIndex((block) => block.sectionId);
+    blocks.splice(firstSection === -1 ? blocks.length : firstSection, 0, {
+      kind: "contents",
+    });
+    const contentsRows = [];
     let cursorY = 64;
     for (const block of blocks) {
+      if (block.kind === "contents") {
+        function contentsPage() {
+          pdf.addPage();
+          pdf
+            .font("bold")
+            .fontSize(19)
+            .fillColor("#202020")
+            .text("Sumário", 64, 64);
+          cursorY = 115;
+        }
+        contentsPage();
+        for (const section of sections) {
+          const left = section.level === 3 ? 80 : 64;
+          const width = pdf.page.width - left - 110;
+          pdf.font(section.level === 2 ? "bold" : "regular").fontSize(11);
+          const height =
+            pdf.heightOfString(section.runs[0].text, { width }) + 12;
+          if (cursorY + height > pdf.page.height - 84) contentsPage();
+          contentsRows.push({
+            section,
+            page: pdf.bufferedPageRange().count - 1,
+            y: cursorY,
+            left,
+            width,
+          });
+          cursorY += height;
+        }
+        continue;
+      }
       if (block.level === 1) {
         const width = 340;
         const height = 560;
@@ -290,6 +412,10 @@ export function generatePdf(reading) {
         pdf.addPage();
         cursorY = 64;
       }
+      if (block.sectionId) {
+        block.pageNumber = pdf.bufferedPageRange().count;
+        pdf.addNamedDestination(block.sectionId, "XYZ", left, cursorY, null);
+      }
       for (const run of block.runs) {
         const font =
           block.level || run.bold
@@ -333,6 +459,23 @@ export function generatePdf(reading) {
         }
       }
       cursorY += lineHeight + (block.level ? 12 : 8);
+    }
+    for (const row of contentsRows) {
+      pdf.switchToPage(row.page);
+      pdf
+        .font(row.section.level === 2 ? "bold" : "regular")
+        .fontSize(11)
+        .fillColor("#202020");
+      pdf.text(row.section.runs[0].text, row.left, row.y, {
+        width: row.width,
+        goTo: row.section.sectionId,
+      });
+      pdf.text(`${row.section.pageNumber}`, pdf.page.width - 100, row.y, {
+        width: 36,
+        align: "right",
+        lineBreak: false,
+        goTo: row.section.sectionId,
+      });
     }
     const range = pdf.bufferedPageRange();
     for (let index = range.start; index < range.start + range.count; index++) {

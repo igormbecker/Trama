@@ -359,7 +359,8 @@ Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e 
 
 ## TODO para retomar em 18/10/2026
 
-- [ ] Acrescentar sumário com partes, capítulos e páginas nas exportações DOCX e PDF, preservando a capa colorida e o título centralizado já implementados. Conferir a aparência do DOCX em Word/LibreOffice.
+- [x] Exportações incluem a descrição da obra preenchida após a capa e sumário com partes e capítulos antes do texto, preservando a capa colorida. No PDF, as páginas são calculadas na geração e as entradas têm links internos. No DOCX, o sumário tem entradas visíveis, links e campos de página, com atualização solicitada ao abrir; até atualizar os campos no Word/LibreOffice, as páginas aparecem como “—”. Descrições dos capítulos continuam fora da exportação.
+- [ ] Conferir a aparência e a atualização dos campos do sumário DOCX em Word/LibreOffice; renderizador indisponível neste ambiente. A geração e a estrutura do arquivo são verificadas por testes unitários.
 - [ ] Adicionar opção de PDF para leitura em tela com fundo creme #F7F2E9 e texto #30313A, e opção para impressão com fundo branco. Validar contraste, margens, entrelinha e paginação. O fundo atual permanece branco até essa entrega.
 - [ ] Definir campos de autor e coautores na edição da obra, inclusive pessoas sem conta, e incluir os créditos na folha de rosto dos documentos. Não inferir autoria a partir do responsável ou dos organizadores; os créditos não alteram permissões.
 - Revisões, comentários e preparação editorial devem acontecer dentro do Trama em etapas futuras; a exportação não substitui esse fluxo.
