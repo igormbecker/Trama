@@ -1,19 +1,20 @@
 # O envelope esquecido
 
-Parte I — A descoberta da carta
+Parte I — A descoberta da carta · Capítulo 1.1
 
-Em 2050, durante a organização dos pertences da avó, uma jovem encontra um envelope amarelado entre as páginas de um livro de receitas. Não há selo nem remetente. Na frente, apenas uma recomendação escrita a lápis: _“Leia antes de perguntar.”_
+Clara encontrou o envelope numa tarde de 2050, seis dias depois do enterro da avó. Estava sozinha na casa de Helena, separando o que a família guardaria, quando abriu um livro de receitas e viu o papel amarelado entre as páginas. Não havia selo nem remetente. Na frente, alguém escrevera a lápis: _“Leia antes de perguntar.”_
 
-Dentro está uma carta escrita à mão, datada de uma quinta-feira que ainda está a três semanas de chegar. A jovem imagina que seja um engano e procura alguma referência entre as primeiras linhas. Reconhece o nome da rua onde a avó cresceu, uma árvore derrubada muitos anos antes e uma pessoa de quem nunca ouviu falar.
+Dentro havia uma carta escrita à mão, datada de uma quinta-feira que ainda estava a três semanas de chegar. Clara imaginou que fosse um engano. Nas primeiras linhas, reconheceu a rua onde Helena crescera e uma referência à figueira derrubada naquele terreno. A carta também mencionava Ester, uma mulher de quem Clara nunca ouvira falar.
 
-Ela fotografa o papel e pede ajuda à inteligência artificial do celular. A resposta chega em segundos: o sistema identifica a época provável da tinta, sugere a origem do envelope e transcreve quase todo o texto. Quase. No trecho em que a jovem lê uma frase perfeitamente nítida, a transcrição apresenta um espaço vazio.
+Clara fotografou o papel e pediu à inteligência artificial do celular que transcrevesse o texto. O sistema sugeriu uma época para a tinta e uma origem para o envelope, mas apresentou aquelas informações como estimativas. A transcrição veio quase completa. No lugar de uma frase que Clara conseguia ler perfeitamente, havia um espaço vazio.
 
-Tenta outra fotografia, muda a iluminação, aproxima a câmera. Nada. Por fim, digita a frase, palavra por palavra. Antes que consiga enviá-la, ouve o aviso de uma mensagem recebida.
-É do número da avó.
+Clara tirou outra fotografia, mudou a iluminação e aproximou a câmera. O mesmo trecho continuou faltando. Por fim, começou a digitar a frase. Antes de enviá-la, recebeu uma mensagem.
 
-O celular dela está desligado, dentro de uma caixa sobre a mesa.
+Era do número de Helena.
 
-A jovem abriu a conversa.
+O celular da avó estava desligado, dentro de uma caixa sobre a mesa.
+
+Clara abriu a conversa.
 
 **Você abriu o envelope?**
 
@@ -37,11 +38,11 @@ Um ruído veio do corredor.
 
 Não foi uma batida. Pareceu o atrito de uma sola arrastando no piso, seguido pelo pequeno estalo de um joelho. A avó fazia aquele barulho quando se levantava da poltrona.
 
-A jovem ficou com a mão sobre o papel.
+Clara ficou com a mão sobre o papel.
 
 — Quem está aí? — perguntou uma voz, do outro lado da porta.
 
-**Era a voz dela.**
+**Era a voz de Clara.**
 
 A primeira coisa que Clara fez foi prender a respiração.
 
@@ -145,7 +146,7 @@ As mensagens ainda estavam ali.
 
 Clara tocou no campo de resposta. Escreveu _Quem é você?_ e ficou olhando para a pergunta. Depois apagou, letra por letra.
 
-Procurou Lídia nos contatos antigos que a mãe lhe enviara depois do funeral. Encontrou o número acompanhado da anotação “amiga da vó — costura”.
+Clara procurou Lídia nos contatos antigos que sua mãe, Marta, lhe enviara depois do funeral. Encontrou o número acompanhado da anotação “amiga da vó — costura”.
 
 Antes de ligar, retirou a carta do envelope uma última vez.
 
@@ -163,7 +164,7 @@ Aquilo era outra letra.
 
 O número de Lídia chamou duas vezes.
 
-— Alô?
+— Alô? — atendeu Lídia.
 
 Clara se inclinou sobre a mesa.
 
@@ -171,17 +172,17 @@ Clara se inclinou sobre a mesa.
 
 A respiração do outro lado mudou.
 
-— Onde você está?
+— Onde você está? — perguntou Lídia.
 
-— Na padaria da esquina. Eu saí da casa.
+— Na padaria da esquina. Eu saí da casa — respondeu Clara.
 
-— Está vendo a porta daí?
+— Está vendo a porta daí? — perguntou Lídia.
 
 Clara ergueu os olhos. Entre dois carros estacionados, conseguia enxergar o portão da avó.
 
 — Estou.
 
-— Então mude de mesa. Vá para um lugar de onde não consiga ver.
+— Então mude de mesa — disse Lídia. — Vá para um lugar de onde não consiga ver a casa.
 
 Ela se levantou sem recolher o copo d’água que o atendente acabara de trazer. Foi até uma mesa perto do balcão e sentou-se de costas para a rua.
 
@@ -189,7 +190,7 @@ Ela se levantou sem recolher o copo d’água que o atendente acabara de trazer.
 
 A mulher não respondeu à pergunta.
 
-— Traga o envelope também. Não jogue nada fora. Vou esperar no portão.
+— Traga o envelope também — pediu Lídia. — Não jogue nada fora. Vou esperar no portão.
 
 Clara procurou a fotografia com a mão que não estava machucada.
 
@@ -199,11 +200,11 @@ O silêncio durou tanto que ela olhou para a tela, conferindo se a ligação con
 
 — Dona Lídia?
 
-— Você está sozinha, Clara?
+— Você está sozinha, Clara? — perguntou Lídia.
 
 Ela olhou ao redor. O atendente limpava a máquina de café. Duas pessoas dividiam um jornal eletrônico junto à vitrine.
 
-— Estou. Por quê?
+— Estou. Por quê? — respondeu Clara.
 
 Do outro lado, ouviu o som de uma chave girando na fechadura.
 
@@ -215,7 +216,7 @@ Clara sentiu a borda do envelope ceder entre os dedos.
 
 Lídia demorou a responder.
 
-— Eu sei. Você falou uma coisa antes de desligar.
+— Eu sei — disse Lídia. — A pessoa que usou sua voz falou uma coisa antes de desligar.
 
 Na rua, uma bicicleta passou tocando a campainha. Clara esperou que o som desaparecesse.
 

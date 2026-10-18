@@ -6,6 +6,8 @@ O roadmap não autoriza implementar todos os itens de uma vez nem publicar alter
 
 ## Objetivo e referências
 
+A obra piloto “Memórias do Futuro” tem uma versão textual completa em quatro partes e oito capítulos, revisada em 18/10/2026 para tornar ações e falas mais claras. A continuidade e os textos ficam em `docs/example-work.md` e `docs/example-chapter-01.md` a `docs/example-chapter-08.md`. A entrega dos DOCX não significa inserção no banco ou validação do copiar e colar em produção.
+
 O Trama é uma aplicação de gestão editorial colaborativa: organizar obras, pessoas, capítulos, entregas e revisões até a aprovação.
 
 A base técnica segue o Curso.Dev: JavaScript, Next.js com Pages Router, handlers de API, models para regras de negócio, PostgreSQL com pg e migrations. Preserve essa arquitetura e desenvolva comportamentos com TDD.

@@ -1,94 +1,67 @@
 # Obra de exemplo — Memórias do Futuro
 
-Memória de continuidade da obra piloto, atualizada em 17/10/2026 a pedido do usuário. Consulte este arquivo e o capítulo completo antes de continuar a história. Este registro não altera os dados da aplicação nem autoriza implementar funcionalidades.
+Continuidade revisada em 18/10/2026. A história possui uma versão completa em oito capítulos, organizada em quatro partes. Os quatro primeiros capítulos foram revisados para clareza; os quatro finais foram escritos nesta entrega. São textos para revisão do usuário, não uma afirmação de aprovação definitiva ou de inserção na aplicação.
 
-## Título
+## Título e direção
 
-Memórias do Futuro: histórias de um mundo em transformação
+**Memórias do Futuro: histórias de um mundo em transformação.**
 
-## Direção atual da história
+A coletânea inicialmente imaginada sobre tecnologia em 2050 evoluiu para uma história contínua de assombração. O texto trabalha situações domésticas, imitação de vozes, desaparecimento e passagens entre tempos. A tecnologia participa dos acontecimentos e dos registros, mas não explica nem resolve o sobrenatural.
 
-A ideia inicial sobre tecnologia em 2050 evoluiu, por escolha do usuário, para suspense de assombração: situações domésticas reconhecíveis, acontecimentos inexplicáveis e medo construído aos poucos. A tecnologia participa da descoberta, mas não explica nem resolve o sobrenatural. O usuário gostou da leitura sem imagens.
+O usuário pediu ações e diálogos mais fáceis de acompanhar, com identificação de quem fala e de quem participa das cenas. A direção aceita usa linguagem direta, tensão crescente e revelações dosadas, sem reproduzir o estilo específico de um autor contemporâneo. Sem ilustrações.
 
-O livro mencionado pelo usuário, _Quando a luz falha_, de Pietro Tonon Schaff, foi uma referência de atmosfera e de interesse por relatos de assombração, não uma fonte para copiar personagens, cenas ou estilo.
+## Estrutura completa
 
-## O que já foi escrito e entregue
+| Parte                     | Capítulo                            | Texto integral                      | Situação          |
+| ------------------------- | ----------------------------------- | ----------------------------------- | ----------------- |
+| I — A descoberta da carta | 1.1 O envelope esquecido            | [Capítulo 1](example-chapter-01.md) | Revisado          |
+| I — A descoberta da carta | 1.2 A segunda ligação               | [Capítulo 2](example-chapter-02.md) | Revisado          |
+| II — As vozes do passado  | 2.1 A mulher que reconheceu a letra | [Capítulo 3](example-chapter-03.md) | Revisado          |
+| II — As vozes do passado  | 2.2 O nome atrás da parede          | [Capítulo 4](example-chapter-04.md) | Revisado          |
+| III — O que ficou na casa | 3.1 A visitante da recepção         | [Capítulo 5](example-chapter-05.md) | Novo              |
+| III — O que ficou na casa | 3.2 A costura da porta              | [Capítulo 6](example-chapter-06.md) | Novo              |
+| IV — A última resposta    | 4.1 A carta que ainda não existia   | [Capítulo 7](example-chapter-07.md) | Novo              |
+| IV — A última resposta    | 4.2 Do mesmo lado da porta          | [Capítulo 8](example-chapter-08.md) | Novo e conclusivo |
 
-### Parte I — A descoberta da carta
+Os arquivos Markdown são a fonte persistente. Foram preparados oito DOCX individuais e um DOCX integral, com parágrafos editáveis, negritos e itálicos para testar copiar e colar no Tiptap. Os artefatos ficam na pasta de entregas da conversa, fora do repositório. Não depender exclusivamente desses arquivos externos para retomar a história.
 
-**1.1. O envelope esquecido:** capítulo completo escrito e entregue em Word, com aproximadamente 1.629 palavras, negritos e itálicos, para testar copiar e colar no Tiptap. A cópia integral e persistente está em [example-chapter-01.md](example-chapter-01.md). Esse texto é a referência de continuidade; não depender apenas de resumos de conversa ou de arquivos temporários.
+## Personagens e lugares
 
-O usuário já havia inserido um trecho inicial na descrição do capítulo no Trama. Não está confirmado se o capítulo completo do Word já foi colado no editor ou salvo na aplicação.
+- **Clara:** protagonista, neta de Helena e filha de Marta. Seu nome completo existe na carta e em seu documento, mas não foi escrito por extenso na narrativa. Está resfriada e rouca na abertura. Machuca o joelho e a palma da mão ao fugir pela janela; a mão já cicatrizou quase inteiramente três semanas depois.
+- **Marta:** mãe de Clara e filha de Helena. O nome foi definido nesta revisão, substituindo referências ambíguas à mãe. Tinha quinze anos quando Helena lhe falou de uma desaparecida. Participa da investigação e da saída final.
+- **Helena:** avó falecida de Clara. O enterro ocorreu seis dias antes da abertura. Tentou ajudar Ester durante anos. Deixou registros no livro de receitas e confiou a Lídia a chave da casa antiga e a orientação de não esvaziar sua casa antes de Clara encontrar o envelope.
+- **Lídia Martins:** irmã de Ester e amiga de Helena. Seu sobrenome é inferido da família de Ester, mas ela é chamada de Lídia no texto. Mora inicialmente na Rua das Amoreiras, 47. Teme que o bilhete de Ester seja um pedido da presença por outra pessoa; depois descobre que a irmã pedia para não ser abandonada. Não se sacrifica no desfecho.
+- **Ester Martins:** desapareceu em 1998, aos 23 anos. Retorna em 2050 como uma mulher idosa, de aproximadamente 75 anos. Falta parte da ponta de seu dedo médio esquerdo, por acidente antigo numa máquina de costura. A passagem de tempo que experimentou não é inteiramente mensurável. Sua identificação documental continua em andamento no epílogo.
+- **A presença:** imita vozes e aparência, usa lembranças íntimas e tenta atrair pessoas para portas e lugares sem testemunhas. Não recebe nome nem explicação de origem. As personagens descobrem padrões práticos, não um sistema de regras infalível.
+- **Casa de Helena:** residência onde Clara encontra o envelope, foge pela janela e vê o relógio marcar 16h17. Não confundir com a casa da Rua do Cedro.
+- **Rua do Cedro:** casa onde Helena cresceu e Ester desapareceu. O armário dos fundos contém a passagem. A figueira do terreno foi derrubada; o toco permanece. A casa termina fechada e sua venda fica suspensa.
+- **Hotel e hospital:** abrigo e locais de atendimento de Ester. A visitante chega ao hotel por uma passagem, não por uma viagem comum a pé desde a Rua do Cedro.
 
-O capítulo termina com Clara fora da casa, ao telefone com dona Lídia, preparando-se para visitá-la. Lídia afirma que recebeu outra ligação de Clara cinco minutos antes, com a mesma voz, dizendo que levaria uma carta. Clara nega ter ligado. A última fala de Lídia é: **“— Que não viria sozinha.”**
+## Continuidade e resolução dos mistérios
 
-### Parte II — As vozes do passado
+1. Clara encontra a carta no livro de receitas. A data indica uma quinta-feira três semanas à frente. Ela recebe mensagens do número de Helena e escuta a própria voz e a da avó na casa. Foge sem responder à pergunta da presença.
+2. A presença usa telefonemas e vozes para alcançar Lídia e Marta. O envelope e as pessoas ligadas a Helena acompanham a expansão dos acontecimentos; a história não afirma que um único objeto seja um talismã com regras comprovadas.
+3. Lídia reconhece a letra de Ester e conta o desaparecimento em 1998. A data futura coincide com o aniversário do desaparecimento. Foi retirada a afirmação de que a mesma data de 1998 e de 2050 cairia numa quinta-feira, pois os calendários não sustentam essa coincidência.
+4. O pai de Lídia e Ester tirou a fotografia antiga na cozinha da família. A faixa escura atrás de Helena é compatível com Ester parcialmente fora do enquadramento. A imagem não é prova de uma aparição.
+5. Ester retorna ao saguão do hotel com a tesoura de costura. O corpo idoso, o ferimento antigo, as lembranças e a continuidade posterior sustentam sua identidade na narrativa; a presença também reproduz intimidade, portanto uma lembrança isolada não basta para confirmar uma pessoa.
+6. Clara vê uma imitação de Marta na escada do hotel enquanto a mãe verdadeira está no elevador. A jovem pede que o recepcionista telefone para Marta e não abre a porta da escada. A mãe retorna pelo elevador. Os funcionários não localizam uma segunda mulher.
+7. O bolso na contracapa do livro guarda o bilhete de Ester e folhas do caderno de Helena. O pronome em “Não deixem que ela fique sem ninguém” se refere a Ester. O bilhete pede companhia e buscas, não uma vítima substituta.
+8. Helena manteve contato por objetos e papéis na passagem. As vozes nem sempre eram de Ester. A avó anotou aberturas no aniversário do desaparecimento, às 16h17, e viu momentos de outros anos. Não esvaziar a casa preservou a carta que Clara precisava encontrar; a instrução não é apresentada como uma necessidade de alimentar a presença com moradores.
+9. Ester sai temporariamente no hotel, mas um fio azul ligado ao forro do armário ainda a prende à passagem. A linha aparece em seu punho. A volta à Rua do Cedro ocorre na data da carta, com as quatro juntas. Não é uma cura tecnológica nem uma troca de pessoas.
+10. Ester corta as costuras do forro com a tesoura que trouxera. Clara corta um último retalho preso à barra do vestido durante a fuga. Lídia, Ester, Marta e Clara saem vivas, sem responder às perguntas das vozes.
+11. **Autoria da carta:** Ester a escreve no dia do confronto, após conhecer Clara e reconhecer os riscos. A letra, as iniciais e o papel coincidem com o documento encontrado três semanas antes. A abertura alcança a cozinha de Helena em outro momento; Helena recebe o envelope e o guarda. A narrativa assume uma circulação sobrenatural entre tempos, sem tentar explicá-la como viagem tecnológica.
+12. **Origem das mensagens:** Clara, no confronto, usa o celular de Helena enquanto vê a si mesma no passado. Envia as três advertências que a fizeram fugir pela janela. O histórico registra as mensagens na data em que a Clara do início as recebeu. Ela não envia os telefonemas falsos, que pertencem às manifestações da presença.
+13. A transcrição incompleta e a tinta aparentemente velha permanecem efeitos do documento que atravessou a passagem. O texto não oferece uma explicação científica; Clara passa a distinguir o que testemunhou das limitações dos registros.
+14. No epílogo, Lídia e Ester moram juntas, Ester recebe atendimento e a família comunica os fatos à polícia. A casa continua fechada. Os sons comuns ainda assustam Clara. O arco principal termina, sem outra carta ou nova vítima anunciada.
 
-**2.1. A mulher que reconheceu a letra:** capítulo completo escrito em 17/10/2026, disponível em [example-chapter-03.md](example-chapter-03.md) e entregue em Word separado. A descrição abaixo é a sugestão anterior; a cena efetiva ocorre nos fundos de uma farmácia, depois de a presença se manifestar na casa de Lídia.
+## Estado da entrega e próximos cuidados
 
-Descrição já apresentada:
+- A versão textual está completa e aguarda leitura do usuário. Revisões de ritmo, vocabulário e fechamento continuam possíveis.
+- A preocupação central desta revisão foi clareza de sujeitos, deslocamentos e falas. Diálogos de duas pessoas podem manter alternância natural quando o interlocutor estiver evidente.
+- Os textos não foram inseridos ou alterados no Trama, em produção ou em qualquer banco. O usuário testará copiar e colar usando os DOCX.
+- Não existe capítulo posterior ao 4.2 planejado como obrigatório. Uma eventual continuação dependerá de novo pedido.
+- Ao revisar, ler os oito capítulos, não apenas o primeiro ou os resumos antigos. Não tratar hipóteses da presença como fatos comprovados por um manual de regras.
 
-> Seguindo uma pista encontrada no envelope, a jovem visita uma antiga amiga da avó. A mulher reconhece a caligrafia antes mesmo de ler a carta, mas se recusa a dizer de quem é. Durante a conversa, deixa escapar o nome de alguém que desapareceu décadas antes.
+## Histórico da proposta inicial
 
-Na versão completa do primeiro capítulo, a pista é uma fotografia guardada no mesmo livro de receitas. Usar essa continuidade ao desenvolver o próximo capítulo, ajustando a descrição curta se necessário, sem alterar a aplicação automaticamente.
-
-## Personagens e fatos estabelecidos
-
-- **Clara:** protagonista; o nome surgiu na continuação do primeiro capítulo. Seu sobrenome e nome completo ainda não foram definidos, embora a carta contenha seu nome completo. Está resfriada, com a voz rouca; a presença reproduz inclusive essa rouquidão. Machuca o joelho e a palma da mão ao fugir pela janela.
-- **Helena:** avó de Clara, falecida; o enterro ocorreu seis dias antes da descoberta da carta. A casa e os objetos eram dela. Clara passou férias ali quando criança. A voz da avó também é imitada, repetindo uma frase particular dita no hospital.
-- **Dona Lídia:** amiga antiga de Helena, ligada à costura. Mora na **Rua das Amoreiras, 47**. Foi ao enterro, ficou perto do portão e perguntou se a casa já havia sido esvaziada; pareceu aliviada ao saber que não. Reconhece o perigo e orienta Clara a mudar para uma mesa de onde não veja a casa. Promete esperar no portão e pede que leve também o envelope.
-- **A mãe de Clara:** enviou os contatos antigos após o funeral; ainda não tem nome nem participação desenvolvida.
-- **A presença:** identidade e natureza desconhecidas. Imita as vozes de Clara e Helena, produz ruídos no corredor e mexe no puxador da porta. A ligação recebida por Lídia sugere que a imitação não está limitada à casa, mas isso ainda não foi explicado como regra do sobrenatural.
-- **Tempo:** ano de 2050. A carta está datada de uma quinta-feira que chegará em três semanas. A data exata não foi definida. Uma referência anterior da conversa a 2040 não substitui o ano usado no texto aprovado.
-
-## Objetos, pistas e sequência do primeiro capítulo
-
-1. Clara encontra um envelope amarelado dentro de um livro de receitas. Sem selo nem remetente; a lápis: _“Leia antes de perguntar.”_
-2. A carta menciona a rua onde Helena cresceu, uma árvore derrubada e uma pessoa desconhecida de Clara. Esses nomes e a identidade dessa pessoa ainda não foram definidos.
-3. A inteligência artificial transcreve quase tudo, mas deixa vazio um trecho que Clara consegue ler. O trecho revelado depois é: _“Se você está lendo isto, ela já tentou falar com você.”_
-4. Mensagens chegam do número de Helena, embora seu celular esteja desligado numa caixa: **“Você abriu o envelope?”**, **“Não leia o final em voz alta.”** e, depois, **“Saia pela cozinha. Não passe pelo corredor.”** Não foi revelado quem envia essas mensagens nem se essa orientação é confiável.
-5. O final da carta apresenta o nome completo de Clara e a advertência: _“Quando ela perguntar quem está aí, não responda.”_ Do corredor, a voz da própria Clara pergunta quem está ali. Clara não responde à presença.
-6. O quarto era uma varanda fechada; sua janela dá para a passagem lateral, que chega ao tanque e à cozinha. A porta do quarto está trancada. Clara foge pela janela e sai pelos fundos, sem atravessar o corredor.
-7. Ao mover o livro, encontra uma fotografia de Helena jovem com outra mulher numa cozinha desconhecida. Atrás está escrito: _“Lídia. Rua das Amoreiras, 47.”_
-8. A presença passa a usar a voz da avó: **“Você vai me deixar aqui?”**, frase particular do hospital. Na cozinha, o relógio marca quatro e dezessete. Ao olhar a casa já da rua, Clara vê a janela fechada, embora não a tenha fechado.
-9. Na padaria, as mensagens continuam no celular. Clara digita _“Quem é você?”_, mas apaga sem enviar. A carta tem duas letras entrelaçadas no canto inferior; não foram identificadas. Clara percebe que a caligrafia não é a da avó.
-10. Clara liga para Lídia usando o contato enviado pela mãe. Lídia evita explicar de quem é a letra, combina a visita e revela a ligação anterior feita com a voz de Clara. O gancho encerra o capítulo antes da visita.
-
-## O que falta escrever e decidir
-
-- [x] Escrever o capítulo **2.1. A mulher que reconheceu a letra**. A desaparecida é Ester Martins, irmã de Lídia. Ver continuidade dos novos capítulos abaixo.
-- [ ] Confirmar quem escreveu a carta. Lídia reconhece a letra de Ester e interpreta as iniciais como EM, mas isso não comprova a autoria.
-- [ ] Desenvolver a pessoa desconhecida, a árvore e a rua mencionadas na carta; não confundir automaticamente essa rua com o endereço de Lídia.
-- [ ] Explicar gradualmente a data futura, o trecho invisível à transcrição e as mensagens do número de Helena.
-- [ ] Definir a relação de Helena e Lídia com a presença e por que a casa ainda não podia ser esvaziada.
-- [ ] Construir as regras da assombração: imitação de vozes, respostas, leitura em voz alta, alcance fora da casa e consequências de desobedecer. As advertências são pistas; ainda não formam um sistema de regras explicado.
-- [ ] Planejar os capítulos seguintes e o desfecho, sem apresentar ideias ainda não aprovadas como capítulos já escritos.
-
-## Continuação escrita em 17/10/2026
-
-Foram escritos três capítulos novos, entregues em arquivos Word separados, sem inserção ou confirmação de salvamento na aplicação:
-
-- **1.2. A segunda ligação:** [texto integral](example-chapter-02.md). Clara segue pela avenida até Lídia. A mãe recebe uma ligação falsa atribuída a Lídia, que sabe do ferimento. As duas ouvem uma voz dentro da casa de Lídia, primeiro desconhecida, depois igual à de Helena. A mãe chega à rua. Este capítulo encerra a Parte I.
-- **2.1. A mulher que reconheceu a letra:** [texto integral](example-chapter-03.md). As três se abrigam na farmácia. Lídia reconhece a caligrafia de sua irmã **Ester Martins**, desaparecida em **1998**, aos **23 anos**, na casa onde Helena cresceu, na **Rua do Cedro**. A data futura da carta coincide com o dia e mês do desaparecimento, também ocorrido numa quinta-feira. As iniciais parecem ser EM. A mãe de Clara continua sem nome definido. A fotografia foi feita na cozinha da mãe de Lídia; segundo Lídia, Ester estava atrás delas, não era a fotógrafa. A identidade de quem fotografou continua indefinida.
-- **2.2. O nome atrás da parede:** [texto integral](example-chapter-04.md). As três passam a noite num hotel perto do hospital. Lídia tem a chave da casa da Rua do Cedro, entregue por Helena no hospital; combinam ir juntas no dia seguinte. Na lembrança de 1998, Ester tinha uma bicicleta verde deixada na figueira. Uma voz pedia uma tesoura atrás de um armário sem prateleiras. Helena respondeu com o próprio nome à pergunta de quem estava ali. Havia somente uma parede atrás da abertura, embora a voz continuasse. A polícia quebrou a parede e não encontrou nada. Três dias depois chegou um bilhete com a letra de Ester: “Não deixem que ela fique sem ninguém.” Helena guardou o bilhete no livro de receitas; seu paradeiro atual não foi verificado. Sulcos no verso da fotografia revelam parte de outra frase: “... responder com o nome, ela sabe de quem esperar a voz.” No fim, a recepção do hotel anuncia uma visitante chamada Ester Martins, que diz ter trazido a tesoura.
-
-As informações antigas deste arquivo sobre nomes não definidos descrevem o estado ao fim do capítulo 1.1; a continuação acima prevalece para Ester, Rua do Cedro e a figueira. A autoria da carta, a confiabilidade das advertências, a natureza da visitante e o mecanismo das mensagens permanecem mistérios. Os relatos de Lídia e os sulcos são pistas, não comprovação de um sistema completo de regras.
-
-**Próxima cena:** continuar imediatamente após a ligação da recepção, sem saltar automaticamente para a visita planejada à Rua do Cedro. Clara, sua mãe e Lídia estão juntas no quarto de Clara e da mãe. Não está estabelecido que a visitante seja realmente Ester, nem como soube do hotel. Não houve encontro presencial com ela ainda.
-
-## Ideia inicial preservada como histórico
-
-A descrição original da obra era:
-
-Uma coletânea de contos ambientados em 2050, explorando como a tecnologia transforma nossas relações, cidades e escolhas. Cada capítulo acompanha uma pessoa diante de uma pergunta: o que queremos preservar da nossa humanidade enquanto tudo muda?
-
-### Outras ideias antigas sem desenvolvimento
-
-- **A última carta escrita à mão:** uma jovem encontra uma carta que nenhuma inteligência artificial consegue interpretar.
-- **O jardim entre os prédios:** vizinhos transformam um estacionamento abandonado em uma floresta urbana.
-- **O direito de esquecer:** em uma sociedade que registra todas as lembranças, alguém decide apagar um dia da própria vida.
-- **Quando a cidade ficou em silêncio:** uma pane tecnológica faz os moradores voltarem a conversar nas ruas.
-
-## Como retomar
-
-Para continuar a ficção, ler este arquivo e [o primeiro capítulo integral](example-chapter-01.md). Manter nomes, cronologia e pistas; distinguir o que já foi narrado de hipóteses para capítulos futuros. Atualizar esta memória após novas entregas. Não editar o conteúdo no Trama sem pedido do usuário.
+A descrição original era uma coletânea de contos ambientados em 2050 sobre relações, cidades e escolhas. “O jardim entre os prédios”, “O direito de esquecer” e “Quando a cidade ficou em silêncio” foram ideias sugeridas, mas não são contos integralmente escritos nem fazem parte desta história completa de Clara. A referência de atmosfera citada pelo usuário foi _Quando a luz falha_, de Pietro Tonon Schaff; personagens, cenas e texto não foram copiados dessa obra.

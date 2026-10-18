@@ -6,9 +6,9 @@ Clara esperou que dona Lídia dissesse mais alguma coisa. Do outro lado da liga�
 
 — Não venha pela rua da sua avó — disse a mulher. — Pegue a avenida. Tem uma farmácia na esquina da minha casa.
 
-— A senhora viu alguém?
+— A senhora viu alguém? — perguntou Clara.
 
-— Ainda não.
+— Ainda não — respondeu Lídia.
 
 A resposta pareceu pior do que um sim.
 
@@ -20,11 +20,11 @@ Ela assentiu. Era uma pergunta simples. Havia uma resposta simples para ela. Por
 
 No banheiro, lavou o sangue sob uma torneira que desligava antes de terminar. Precisou aproximar a mão três vezes do sensor. O espelho devolveu seu rosto pálido, uma marca de poeira na bochecha e o cabelo preso de qualquer jeito. Atrás dela havia apenas a porta fechada.
 
-Retirou o celular do bolso para avisar à mãe que não dormiria na casa da avó.
+Clara retirou o celular do bolso para avisar a Marta, sua mãe, que não dormiria na casa de Helena.
 
 A conversa com Helena continuava aberta.
 
-Clara saiu daquela tela sem reler as mensagens e escreveu para a mãe. Disse que encontrara dona Lídia e ficaria um pouco com ela. Apagou a parte em que explicava a queda. Não queria inventar uma história que precisasse sustentar depois.
+Clara saiu daquela tela sem reler as mensagens e escreveu para Marta. Disse que estava indo encontrar dona Lídia. Começou a contar que tinha caído, mas apagou essa parte. Precisaria explicar por que usara a janela, e não sabia como fazer isso numa mensagem.
 
 Antes de guardar o aparelho, abriu o registro de chamadas.
 
@@ -46,9 +46,9 @@ Ao chegar ao primeiro cruzamento, o celular tocou.
 
 O alívio fez seu dedo deslizar sobre a tela antes que pensasse.
 
-— Oi.
+— Oi, mãe — disse Clara.
 
-— Você machucou a mão?
+— Você machucou a mão? — perguntou Marta.
 
 Clara parou junto à vitrine de uma ótica.
 
@@ -56,25 +56,25 @@ Na mensagem enviada, não havia uma palavra sobre aquilo.
 
 — Quem te contou?
 
-— A Lídia. Ela me ligou agora. Disse que você estava indo para lá, que tinha caído e precisava de roupa limpa. Estou saindo.
+— A Lídia — respondeu Marta. — Ela me ligou agora. Disse que você estava indo para lá, que tinha caído e precisava de roupa limpa. Estou saindo.
 
 No reflexo do vidro, um ônibus cobriu por um instante a calçada atrás dela.
 
 — Mãe, espera. Não vai à casa da vó.
 
-— Não vou. Vou para a Lídia. Foi o que ela pediu.
+— Não vou — respondeu Marta. — Vou para a Lídia. Foi o que ela pediu.
 
 Clara apertou o celular.
 
 — Me manda uma mensagem quando chegar à farmácia da esquina. Não entra antes de falar comigo.
 
-— O que aconteceu?
+— O que aconteceu? — perguntou Marta.
 
 Ela tentou organizar uma explicação. Uma porta. Uma carta. A própria voz num corredor vazio. Tudo parecia perder o sentido no momento em que ia ser dito.
 
 — Eu explico lá. Por favor.
 
-A mãe concordou com uma hesitação que Clara conhecia desde criança. Era a pausa anterior às perguntas que seriam feitas pessoalmente.
+Marta concordou depois de uma pausa. Clara conhecia aquela hesitação desde criança: a mãe adiava as perguntas, mas faria todas elas pessoalmente.
 
 Faltavam duas ruas.
 
@@ -82,11 +82,11 @@ Clara pensou em ligar de novo para Lídia, mas não queria ouvir outra versão d
 
 Encontrou o número quarenta e sete numa casa baixa, de muro creme. O portão tinha um pequeno remendo de metal perto da fechadura. Lídia estava do lado de fora, com uma bolsa atravessada no corpo e um casaco dobrado sobre o braço, embora o calor ainda subisse do asfalto.
 
-Não sorriu ao vê-la.
+Lídia não sorriu ao ver Clara.
 
-Olhou primeiro para a rua, depois para as mãos de Clara.
+A mulher olhou primeiro para a rua, depois para as mãos de Clara.
 
-— A carta está com você?
+— A carta está com você? — perguntou Lídia.
 
 Clara tocou na bolsa.
 
@@ -94,7 +94,7 @@ Clara tocou na bolsa.
 
 Lídia franziu a testa.
 
-— Não falo com a sua mãe desde o enterro.
+— Não falo com a sua mãe desde o enterro — respondeu Lídia.
 
 Um caminhão pequeno passou entre as duas e a farmácia. A carroceria fazia tanto barulho que Clara esperou antes de responder.
 
@@ -102,11 +102,11 @@ Um caminhão pequeno passou entre as duas e a farmácia. A carroceria fazia tant
 
 Lídia olhou para o curativo. Só então Clara percebeu que o segurava aberto, com a parte adesiva presa ao dedo.
 
-A mulher pegou o pacote e o colocou no bolso do casaco.
+Lídia pegou o pacote de curativos que Clara tentava segurar e o colocou no bolso do casaco.
 
-— Vamos esperar por ela aqui.
+— Vamos esperar sua mãe aqui — disse Lídia.
 
-— A senhora não ia me deixar entrar?
+— A senhora não ia me deixar entrar? — perguntou Clara.
 
 Lídia abriu a boca, mas uma voz veio da casa.
 
@@ -118,17 +118,17 @@ Lídia deixou cair o casaco.
 
 Atrás do portão, a porta da frente estava encostada. Pela fresta, Clara via o canto de um tapete e uma faixa estreita do chão. A casa cheirava a café recém-passado.
 
-— Tem alguém com a senhora?
+— Tem alguém com a senhora? — perguntou Clara.
 
 Lídia se abaixou com dificuldade para recolher o casaco. Quando se levantou, segurou o braço de Clara acima do cotovelo.
 
-— Não era para ter.
+— Não era para ter — respondeu Lídia.
 
 O celular de Clara vibrou.
 
 Uma mensagem da mãe: _Estou na farmácia. Onde vocês estão?_
 
-Ela levantou a mão livre e acenou. Viu a mãe atravessar a rua com uma sacola de roupas, olhando dos dois lados.
+Clara levantou a mão livre e acenou para Marta. A mãe atravessou a rua com uma sacola de roupas, olhando dos dois lados.
 
 Dentro da casa, uma colher tilintou contra a borda de uma xícara.
 
