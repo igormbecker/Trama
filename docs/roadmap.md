@@ -366,3 +366,13 @@ Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e 
 - [ ] Adicionar opção de PDF para leitura em tela com fundo creme #F7F2E9 e texto #30313A, e opção para impressão com fundo branco. Validar contraste, margens, entrelinha e paginação. O fundo atual permanece branco até essa entrega.
 - [ ] Definir campos de autor e coautores na edição da obra, inclusive pessoas sem conta, e incluir os créditos na folha de rosto dos documentos. Não inferir autoria a partir do responsável ou dos organizadores; os créditos não alteram permissões.
 - Revisões, comentários e preparação editorial devem acontecer dentro do Trama em etapas futuras; a exportação não substitui esse fluxo.
+
+## Documentos legais — minutas de 18/10/2026
+
+- [x] Preparadas minutas de [Termos de Uso](terms-of-use.md) e [Aviso de Privacidade](privacy-notice.md), com autoria, convites, exportações, compartilhamento de cópias, dados pessoais e limites legais de responsabilidade. Responsável informada: Becker Tecnologia e Desenvolvimento de Software; contato: imbjr.work@gmail.com.
+- [ ] Resolver as pendências de [revisão e implantação](legal-review.md): identificação jurídica, retenção, fornecedores e transferências, bases legais, atendimento e avaliação jurídica. Faixa etária permanece em definição; não foi adotada restrição automática a maiores de 18 anos nem afirmada adequação do serviço a menores.
+- [ ] Publicar documentos e implementar o fluxo de aceite aprovado em 18/10/2026: no futuro cadastro público, exigir ação explícita e desmarcada por padrão antes de concluir a criação da conta; em contas administrativas e contas antigas sem aceite, solicitar após autenticar e antes de acessar a área de trabalho. A criação administrativa não equivale ao aceite do usuário.
+- [ ] Sem aceite dos Termos, impedir a conclusão do cadastro público ou restringir funcionalidades de contas existentes tanto nas páginas quanto nas APIs. Manter disponíveis documentos, saída e contato, além de um caminho para solicitar recuperação de obras/dados e encerramento da conta. Não apagar dados automaticamente pela recusa.
+- [ ] Registrar no servidor usuário, data/hora e versões imutáveis dos documentos aceitos. Comunicar mudanças relevantes e avaliar novo aceite quando necessário, preservando o histórico. Separar aceite dos Termos e ciência do Aviso de consentimentos opcionais: recusar marketing não bloqueia o serviço.
+
+O fluxo está aprovado para o TODO, mas ainda não foi implementado. As minutas não foram publicadas; a abertura do cadastro público e a publicação continuam dependendo de autorização própria.
