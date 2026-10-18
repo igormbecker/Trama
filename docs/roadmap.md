@@ -232,16 +232,22 @@ Critério de conclusão da V1: uma pessoa autorizada edita o capítulo, acompanh
 
 Importação e exportação continuam como possibilidades futuras. Se forem retomadas, a preferência já discutida é processar os documentos sem armazenar permanentemente os arquivos importados ou exportados. Formatos e eventual suporte a imagens exigem decisão própria.
 
-## 5. Revisão, comentários e aprovação
+## 5. Contribuição e revisão opcionais — V1 definida
 
-- [ ] Validar quem pode iniciar revisão, solicitar ajustes e aprovar.
-- [ ] Implementar comentários e apontamentos vinculados ao capítulo e à versão.
-- [ ] Definir aprovação, aprovação com restrições e reabertura após ajustes.
-- [ ] Impedir transições incompatíveis no servidor.
-- [ ] Registrar autor, data e motivo das mudanças relevantes.
-- [ ] Testar concorrência e preservação do histórico.
+Escopo definido em 18/10/2026. Implementação pendente e adiada a pedido do usuário, que desenvolverá outra funcionalidade antes. Regras completas e referência histórica: [regras editoriais](editorial-rules.md). A definição abaixo substitui o fluxo anterior de revisão e avaliação obrigatórias em etapas separadas.
 
-Critério de conclusão: executar com uma obra piloto o fluxo criar obra → adicionar capítulo → convidar autor → escrever e salvar conteúdo → submeter uma versão para revisão → revisar → aprovar. Usar a experiência desse piloto para ajustar as regras antes de ampliar o produto. A submissão de versões pertence a esta evolução posterior ao rascunho da V1.
+- [x] Definir escrita individual livre, sem aprovação obrigatória, e pedidos opcionais de contribuição ou revisão por capítulo.
+- [x] Definir um pedido ativo por capítulo, uma pessoa participante ativa atribuída por vez e aprovação somente pelo responsável pela obra. Organizador permanece leitor sem atribuição explícita.
+- [x] Definir fluxo comum do pedido: Em escrita → Aguardando aprovação → Aprovada; solicitação de ajustes com mensagem retorna para Em escrita, seguida de reenvio.
+- [ ] Implementar atribuição de contribuição (desenvolver conteúdo) ou revisão (corrigir e melhorar texto existente), com instruções do responsável.
+- [ ] Implementar cópia de trabalho separada do texto atual do capítulo e preservar a versão enviada enquanto aguarda decisão.
+- [ ] Implementar aprovação que incorpora a entrega ao capítulo e preserva o texto anterior para recuperação. Se o capítulo mudou desde o início do pedido, exigir conferência antes da substituição.
+- [ ] Implementar solicitação de ajustes, reenvio e cancelamento pelo responsável sem incorporar o texto pendente.
+- [ ] Validar permissões no servidor, revogação de acesso, transições, concorrência e preservação do histórico.
+
+Fora desta V1: colaboradores simultâneos no mesmo capítulo, revisor e avaliador em etapas obrigatórias separadas, delegação de aprovação, comentários por trecho, prazos, notificações e aprovação com restrições.
+
+Critério de conclusão futuro: escrever sozinho → atribuir contribuição ou revisão → receber entrega → pedir ajustes → receber reenvio → aprovar e incorporar o resultado com recuperação do texto anterior. Verificar cancelamento e conflito com mudanças do responsável. Nenhuma funcionalidade deste novo fluxo está implementada por este registro.
 
 ## 6. Tarefas, painéis e comunicação
 
