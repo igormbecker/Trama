@@ -1,6 +1,7 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import authentication from "models/authentication.js";
+import work from "models/work.js";
 import workReading from "models/workReading.js";
 import { generateDocx, generatePdf } from "models/workExport.js";
 import { ValidationError } from "infra/errors.js";
@@ -16,6 +17,7 @@ router.get(async (request, response) => {
   const format = request.query.format;
   if (!["docx", "pdf"].includes(format))
     throw new ValidationError({ message: "Choose docx or pdf." });
+  await work.requireOwner(request.query.id, request.authenticatedUser.id);
   const reading = await workReading.read(
     request.query.id,
     request.authenticatedUser.id,
@@ -43,4 +45,6 @@ router.get(async (request, response) => {
   );
   response.status(200).send(buffer);
 });
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);

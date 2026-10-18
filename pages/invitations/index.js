@@ -1,7 +1,10 @@
 import InvitationsPage from "components/works/InvitationsPage";
 import authentication from "models/authentication.js";
 import workInvitation from "models/workInvitation.js";
-import { UnauthorizedError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+} from "infra/errors.js";
 
 export default InvitationsPage;
 export async function getServerSideProps({ req, res }) {
@@ -22,6 +25,8 @@ export async function getServerSideProps({ req, res }) {
       },
     };
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError)
       return { redirect: { destination: "/login", permanent: false } };
     throw error;

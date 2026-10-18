@@ -142,3 +142,13 @@ export class ForbiddenError extends Error {
     };
   }
 }
+
+export class LegalAcceptanceRequiredError extends UnauthorizedError {
+  constructor() {
+    super();
+    this.name = "LegalAcceptanceRequiredError";
+    this.message = "Acceptance of the current legal documents is required.";
+    this.statusCode = 403;
+    this.action = "Review the documents at /legal/accept.";
+  }
+}

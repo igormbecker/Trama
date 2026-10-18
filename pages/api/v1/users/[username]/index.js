@@ -14,7 +14,9 @@ router.use(async (request, response, next) => {
 router.get(getHandler);
 router.patch(patchHandler);
 router.delete(deleteHandler);
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);
 
 async function getHandler(request, response) {
   return response

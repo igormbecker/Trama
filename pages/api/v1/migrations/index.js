@@ -16,7 +16,9 @@ router.use(async (request, response, next) => {
 router.get(getHandler);
 router.post(postHandler);
 
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);
 
 async function getHandler(request, response) {
   const pendingMigrations = await migrator.listPendingMigrations();

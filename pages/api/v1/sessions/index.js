@@ -8,7 +8,9 @@ const router = createRouter();
 router.post(postHandler);
 router.delete(deleteHandler);
 
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);
 
 async function postHandler(request, response) {
   response.setHeader("Cache-Control", "private, no-store");

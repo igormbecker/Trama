@@ -175,6 +175,8 @@ describe("POST /api/v1/sessions", () => {
         id: responseBody.id,
         token: responseBody.token,
         user_id: createdUser.id,
+        impersonated_user_id: null,
+        impersonation_expires_at: null,
         expires_at: new Date(responseBody.expires_at),
         created_at: new Date(responseBody.created_at),
         updated_at: new Date(responseBody.updated_at),

@@ -1,7 +1,11 @@
 import authentication from "models/authentication.js";
 import work from "models/work.js";
 import chapterContent from "models/chapterContent.js";
-import { UnauthorizedError, NotFoundError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+  NotFoundError,
+} from "infra/errors.js";
 import ChapterPage from "components/works/ChapterPage";
 
 export default ChapterPage;
@@ -27,6 +31,8 @@ export async function getServerSideProps({ req, res, params }) {
       ),
     };
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError)
       return { redirect: { destination: "/login", permanent: false } };
     if (error instanceof NotFoundError) return { notFound: true };

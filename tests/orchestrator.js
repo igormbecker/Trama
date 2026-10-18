@@ -1,4 +1,5 @@
-﻿import retry from "async-retry";
+﻿import legalAcceptance from "models/legalAcceptance.js";
+import retry from "async-retry";
 import testEnvironment from "infra/test-environment.js";
 import database from "infra/database.js";
 import migrator from "models/migrator.js";
@@ -37,13 +38,20 @@ async function runPendingMigrations() {
 }
 
 async function createUser(userObject) {
-  return await user.create({
+  const createdUser = await user.create({
     name: userObject.name || faker.person.fullName(),
     username:
       userObject.username || faker.internet.username().replace(/[_.-]/g, ""),
     email: userObject.email || faker.internet.email(),
     password: userObject.password || "validpassword",
   });
+  // Test fixtures are accepted by default; production account creation never fabricates acceptance.
+  if (!userObject.skipLegalAcceptance)
+    await legalAcceptance.accept(createdUser, {
+      accepted: true,
+      release_id: legalAcceptance.currentRelease.id,
+    });
+  return createdUser;
 }
 
 async function createAdministratorCookie() {

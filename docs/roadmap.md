@@ -6,6 +6,8 @@ O roadmap não autoriza implementar todos os itens de uma vez nem publicar alter
 
 ## Objetivo e referências
 
+A obra piloto “Memórias do Futuro” tem uma versão textual completa em quatro partes e oito capítulos, revisada em 18/10/2026 para tornar ações e falas mais claras. A continuidade e os textos ficam em `docs/example-work.md` e `docs/example-chapter-01.md` a `docs/example-chapter-08.md`. A entrega dos DOCX não significa inserção no banco ou validação do copiar e colar em produção.
+
 O Trama é uma aplicação de gestão editorial colaborativa: organizar obras, pessoas, capítulos, entregas e revisões até a aprovação.
 
 A base técnica segue o Curso.Dev: JavaScript, Next.js com Pages Router, handlers de API, models para regras de negócio, PostgreSQL com pg e migrations. Preserve essa arquitetura e desenvolva comportamentos com TDD.
@@ -79,7 +81,7 @@ Entregar uma primeira fatia utilizável, do banco à interface, sem tentar const
 - Na primeira entrega, as obras serão privadas e somente o responsável terá acesso direto à listagem e aos detalhes de suas obras.
 - O administrador global não terá acesso editorial direto automático a todas as obras. Essa permissão poderá ser revista futuramente, preservando a distinção entre administração do sistema e responsabilidade pela obra.
 - Outros participantes poderão colaborar na gestão conforme seus papéis, a definir na entrega de participantes.
-- A personificação de usuários para suporte foi aceita como entrega futura, separada da primeira versão de obras. Ela permitirá acesso administrativo indireto às obras privadas, usando as permissões do usuário representado.
+- A personificação de usuários para suporte foi implementada em uma entrega separada da primeira versão de obras. Ela permite acesso administrativo indireto às obras privadas, usando as permissões do usuário representado; implementação descrita na seção de personificação.
 
 - O título será obrigatório, com até 255 caracteres; a descrição será opcional, com até 5.000 caracteres. Títulos repetidos serão permitidos.
 - A exclusão de uma conta será bloqueada enquanto ela for responsável por obras, preservando os dados.
@@ -279,22 +281,21 @@ Usar `pgm.func("timezone('utc', now())")` nos defaults de data atual, conforme p
 
 A sessão atual expira em 24 horas sem renovação automática. Não alterar essa decisão silenciosamente. A preferência de tema atual é do navegador, não da conta; a futura persistência pode sincronizar no login sem consultar o banco a cada navegação.
 
-## Personificação de usuários para suporte — entrega futura
+## Personificação de usuários para suporte
 
-Permitir que administradores reproduzam problemas navegando com as permissões de outro usuário, sem conhecer sua senha. A implementação não faz parte da primeira entrega de obras.
+Implementada em 18/10/2026 para administradores reproduzirem problemas com as permissões de contas comuns, sem conhecer suas senhas. A sessão mantém o administrador como titular e guarda a conta representada separadamente; outros logins permanecem independentes. O modo vale para todas as abas que compartilham a mesma sessão.
 
-Direção proposta para detalhar antes da implementação:
+- [x] Iniciar pela ação Personificar em Usuários, com confirmação e aviso de dados reais. Não permite representar a própria conta, outros administradores ou encadear personificações.
+- [x] GET/POST/DELETE `/api/v1/impersonation`, com cache privado e sem armazenamento. POST inicia e DELETE encerra; a sessão original é validada no banco. O prazo é de até 15 minutos, limitado à expiração original, sem renovação automática.
+- [x] Aplicar identidade e permissões da conta representada, sempre sem perfil administrativo; validar o perfil atual do administrador a cada autenticação. Edição de conta, senha e funções administrativas ficam bloqueadas pela API.
+- [x] Aviso global com nome, alerta de alterações reais e ação de retorno. O aviso é consultado ao carregar, ao recuperar foco e a cada 15 segundos. Início e encerramento recarregam a página para limpar estado React/SWR da identidade anterior. Salvar o trabalho antes de mudar de modo.
+- [x] Expiração ou remoção da conta representada bloqueiam novas autenticações nesse modo; nunca restauram privilégios administrativos silenciosamente. Encerrar explicitamente exige sessão original vigente e perfil administrativo atual. Se a sessão expirar ou o administrador perder o perfil, sair e autenticar novamente.
+- [x] Migration aditiva `1792250000000_add-session-impersonation` acrescenta dados na sessão e tabela `impersonation_audit`. O identificador da conta representada não usa exclusão com SET NULL, para sua remoção não restaurar acidentalmente o administrador. A auditoria preserva identificadores mesmo após exclusão de contas.
+- [x] Registrar início/encerramento explícitos na transação, tentativas de alterações e exportações e resultado HTTP com identificador de correlação. Não guardar corpo, conteúdo, cookies, query strings ou tokens de convite. A gravação da tentativa precede a operação; falha nela bloqueia a requisição. Resultado é gravado após o handler; se essa etapa falhar, permanece a tentativa e um erro operacional, sem presumir conclusão. A expiração é determinada pelo prazo registrado; não há tarefa agendada para um evento de encerramento automático.
+- [x] Testes de autorização, concorrência, atribuição das alterações, expiração, revogação, logout, retorno e proteção de exportações. Interface do aviso também tem teste de renderização.
+- [ ] Definir retenção e acesso operacional à auditoria e concluir a revisão jurídica das minutas antes de publicá-las. Não há painel de auditoria nesta entrega.
 
-- [ ] Restringir o início da personificação a administradores e definir quais contas podem ser representadas.
-- [ ] Preservar a identidade do administrador e a do usuário representado na sessão e na auditoria.
-- [ ] Exibir aviso permanente com o usuário representado e uma ação para encerrar e retornar à conta administrativa.
-- [ ] Aplicar as permissões do usuário representado, sem herdar privilégios administrativos durante a personificação.
-- [ ] Registrar início, encerramento e alterações relevantes com o administrador que executou a ação.
-- [ ] Bloquear troca de senha, alteração de perfil administrativo e personificação encadeada nesse modo.
-- [ ] Definir prazo curto, encerramento e revogação do acesso.
-- [ ] Testar autorização, expiração, retorno à conta administrativa e identificação correta das ações.
-
-Esse recurso permite acesso administrativo indireto ao conteúdo privado e deverá ser comunicado como regra do produto. Ele ajuda a reproduzir problemas de dados e permissões; não reproduz necessariamente o navegador ou dispositivo do usuário.
+O recurso permite acesso administrativo indireto ao conteúdo privado; as minutas dos Termos e do Aviso de Privacidade refletem essa regra. Não reproduz necessariamente navegador ou dispositivo do usuário. Rascunhos locais e histórico da conta representada seguem as regras existentes por conta e navegador, inclusive permanência de cópias pendentes após logout.
 
 ## Preparação para publicação e operação
 
@@ -359,7 +360,26 @@ Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e 
 
 ## TODO para retomar em 18/10/2026
 
-- [ ] Acrescentar sumário com partes, capítulos e páginas nas exportações DOCX e PDF, preservando a capa colorida e o título centralizado já implementados. Conferir a aparência do DOCX em Word/LibreOffice.
+- [x] Exportações incluem a descrição da obra preenchida após a capa e sumário com partes e capítulos antes do texto, preservando a capa colorida. No PDF, as páginas são calculadas na geração e as entradas têm links internos. No DOCX, o sumário tem entradas visíveis, links e campos de página, com atualização solicitada ao abrir; até atualizar os campos no Word/LibreOffice, as páginas aparecem como “—”. Descrições dos capítulos continuam fora da exportação.
+- [ ] Conferir a aparência e a atualização dos campos do sumário DOCX em Word/LibreOffice; renderizador indisponível neste ambiente. A geração e a estrutura do arquivo são verificadas por testes unitários.
 - [ ] Adicionar opção de PDF para leitura em tela com fundo creme #F7F2E9 e texto #30313A, e opção para impressão com fundo branco. Validar contraste, margens, entrelinha e paginação. O fundo atual permanece branco até essa entrega.
 - [ ] Definir campos de autor e coautores na edição da obra, inclusive pessoas sem conta, e incluir os créditos na folha de rosto dos documentos. Não inferir autoria a partir do responsável ou dos organizadores; os créditos não alteram permissões.
 - Revisões, comentários e preparação editorial devem acontecer dentro do Trama em etapas futuras; a exportação não substitui esse fluxo.
+
+## Documentos legais e aceite — 18/10/2026
+
+- [x] Preparadas minutas de [Termos de Uso](terms-of-use.md) e [Aviso de Privacidade](privacy-notice.md), com autoria, convites, exportações, compartilhamento de cópias, dados pessoais e limites legais de responsabilidade. Responsável informada: Becker Tecnologia e Desenvolvimento de Software; contato: imbjr.work@gmail.com.
+- [x] Identificação fornecida: Becker Tecnologia e Desenvolvimento de Software, CNPJ 65.457.811/0001-61, Rua General Salvador Pinheiro, 725, Vila Jardim, Porto Alegre/RS; contato imbjr.work@gmail.com. Vercel e Neon confirmados pelo usuário. Uso por menores exige participação do responsável e avaliação antes da liberação administrativa; não há verificação automática de idade ou autorização parental implementada.
+- [x] Páginas públicas `/terms`, `/privacy` e `/legal/support`, com links no rodapé compartilhado; histórico de documentos aceitos por versão. Cadastro público continua fechado.
+- [x] Aceite obrigatório em `/legal/accept` para contas existentes/administrativas sem aceite atual. Páginas protegidas redirecionam e APIs retornam `LegalAcceptanceRequiredError` (403). Documentos, contato, logout e consulta da própria conta continuam acessíveis. Na recusa, oferecer revisão posterior, contato para recuperação de conteúdo/dados e encerramento, sem apagar dados automaticamente.
+- [x] GET/POST `/api/v1/legal/acceptance` com cache privado. Registrar ação explícita, data e versão, sem IP/dispositivo, com snapshots e hashes SHA-256 em `legal_document_releases` e vínculos em `legal_acceptances`. Aceite é idempotente; não aceitar versão antiga, corpo incompleto ou aceite por personificação. Administrador e conta representada precisam de aceite antes de iniciar personificação.
+- [x] Versão ativa `2026-10-18-v1` em `infra/legal/2026-10-18-v1.json`. Preservar versões publicadas; mudanças exigem novo arquivo/identificador. Nenhum aceite real foi fabricado ou retroagido. Cadastro administrativo não aceita pelo usuário.
+- [ ] Definir política e rotinas de retenção/exclusão para contas, logs, auditoria e backups, conforme decisão do usuário de tratar depois. O aviso descreve critérios e a ausência de prazos numéricos definidos; o aceite não substitui essa entrega. Concluir avaliação jurídica, contratos/transferências, atendimento e proteção de menores conforme [legal-review.md](legal-review.md).
+- [ ] Na futura abertura do cadastro público, integrar aceite explícito antes de concluir o cadastro, preservando a separação entre aceite dos Termos/ciência do Aviso e consentimentos opcionais. Essa abertura não faz parte desta entrega.
+
+Implementação e ativação local não significam publicação remota. As páginas usam textos revisados com as informações fornecidas; a adequação jurídica e as pendências operacionais continuam explícitas.
+
+## Exportação exclusiva do responsável — 18/10/2026
+
+- [x] Botões DOCX/PDF visíveis somente quando a conta efetiva é responsável pela obra. A API exige responsabilidade e retorna 404 para organizadores, administradores sem responsabilidade e demais contas sem autorização, preservando a leitura para organizadores ativos.
+- [x] Durante personificação, exportação usa a conta representada: disponível somente se ela for a responsável. Minutas legais atualizadas; restringir o download não impede capturas ou cópias do texto durante leitura autorizada.

@@ -18,9 +18,11 @@ export default function UsersPage({ user, initialUsers }) {
   const [error, setError] = useState("");
   const [formError, setFormError] = useState("");
   const [notice, setNotice] = useState("");
+  const [representingUser, setRepresentingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
   const [deleteError, setDeleteError] = useState("");
   const dialog = useRef(null);
+  const impersonationTitle = useRef(null);
   const firstInput = useRef(null);
   const addButton = useRef(null);
 
@@ -35,6 +37,10 @@ export default function UsersPage({ user, initialUsers }) {
       dialog.current?.showModal();
     }
   }, [deletingUser]);
+
+  useEffect(() => {
+    if (representingUser) impersonationTitle.current?.focus();
+  }, [representingUser]);
 
   function openForm(selectedUser = null) {
     setEditingUser(selectedUser);
@@ -141,6 +147,31 @@ export default function UsersPage({ user, initialUsers }) {
     }
   }
 
+  async function startImpersonation() {
+    if (isBusy || !representingUser) return;
+    setIsBusy(true);
+    setError("");
+    try {
+      const response = await fetch("/api/v1/impersonation", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: representingUser.id }),
+      });
+      if (!response.ok)
+        throw new Error(
+          "Não foi possível personificar esta conta. Confira sua sessão e o perfil do usuário.",
+        );
+      // Reload to discard React and SWR state from the previous identity.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign("/home");
+    } catch (failure) {
+      setError(failure.message);
+      setIsBusy(false);
+    }
+  }
+
   const query = search.trim().toLocaleLowerCase("pt-BR");
   const filteredUsers = users
     .filter((entry) =>
@@ -174,6 +205,40 @@ export default function UsersPage({ user, initialUsers }) {
             Adicionar usuário
           </button>
         </div>
+        {representingUser ? (
+          <section
+            className={styles.formPanel}
+            aria-labelledby="impersonation-title"
+          >
+            <h2 id="impersonation-title" ref={impersonationTitle} tabIndex={-1}>
+              Personificar {representingUser.name}?
+            </h2>
+            <p>
+              Você usará as permissões desta conta por até 15 minutos. As
+              alterações afetam dados reais e serão registradas com sua
+              identidade administrativa. A mudança vale para todas as abas desta
+              sessão. Antes de continuar, salve o trabalho aberto.
+            </p>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => setRepresentingUser(null)}
+                disabled={isBusy}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className={styles.primaryButton}
+                onClick={startImpersonation}
+                disabled={isBusy}
+              >
+                {isBusy ? "Iniciando…" : "Iniciar personificação"}
+              </button>
+            </div>
+          </section>
+        ) : null}
         {notice ? <SuccessMessage>{notice}</SuccessMessage> : null}
         {error ? (
           <p className={styles.error} role="alert">
@@ -396,6 +461,19 @@ export default function UsersPage({ user, initialUsers }) {
                   </td>
                   <td data-label="Ações">
                     <div className={styles.rowActions}>
+                      {!entry.is_admin && entry.id !== user.id ? (
+                        <button
+                          type="button"
+                          aria-label={`Personificar ${entry.name}`}
+                          disabled={isBusy}
+                          onClick={() => {
+                            setRepresentingUser(entry);
+                            setError("");
+                          }}
+                        >
+                          Personificar
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         aria-label={`Editar ${entry.name}`}

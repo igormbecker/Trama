@@ -1,6 +1,9 @@
 import LoginPage from "components/auth/LoginPage";
 import authentication from "models/authentication.js";
-import { UnauthorizedError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+} from "infra/errors.js";
 
 export default LoginPage;
 
@@ -14,6 +17,8 @@ export async function getServerSideProps({ req, res }) {
       redirect: { destination: "/home", permanent: false },
     };
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError) {
       return { props: {} };
     }

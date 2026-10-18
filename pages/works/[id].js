@@ -4,7 +4,11 @@ import WorkPage from "components/works/WorkPage";
 import authentication from "models/authentication.js";
 import work from "models/work.js";
 import workStructure from "models/workStructure.js";
-import { UnauthorizedError, NotFoundError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+  NotFoundError,
+} from "infra/errors.js";
 
 export default WorkPage;
 
@@ -44,6 +48,8 @@ export async function getServerSideProps({ req, res, params }) {
       },
     };
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError) {
       return { redirect: { destination: "/login", permanent: false } };
     }

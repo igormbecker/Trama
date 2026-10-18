@@ -2,35 +2,35 @@
 
 Parte II — As vozes do passado · Capítulo 2.1
 
-A mãe de Clara chegou perguntando o que havia acontecido. Parou ao ver a mão de Lídia fechada no braço da filha.
+Marta chegou ao portão perguntando o que havia acontecido. A mãe de Clara parou ao ver Lídia segurando o braço da filha.
 
-— Vocês estão me assustando.
+— Vocês estão me assustando — disse Marta.
 
 Da casa não veio mais nenhum som.
 
 Lídia soltou Clara e tirou uma chave da bolsa. Fechou o portão sem entrar, girando a fechadura duas vezes.
 
-— Vamos à farmácia — disse. — Ela precisa limpar essa mão direito.
+— Vamos à farmácia — disse Lídia. — Clara precisa limpar essa mão direito.
 
-Na pequena sala de atendimento, a mãe ficou de pé enquanto a funcionária examinava o arranhão. Clara respondeu às perguntas sobre a queda. Quando precisou dizer onde tinha caído, olhou para Lídia.
+Clara, Marta e Lídia atravessaram a rua e entraram na farmácia. Na sala de atendimento, Marta ficou de pé ao lado da maca enquanto uma funcionária examinava a mão de Clara. A jovem respondeu às perguntas sobre a queda. Quando precisou dizer onde tinha caído, olhou para Lídia.
 
-— Na passagem ao lado da casa da minha avó.
+— Na passagem ao lado da casa da minha avó — respondeu Clara.
 
-— Aquela janela continua emperrando? — perguntou a mãe.
+— Aquela janela continua emperrando? — perguntou Marta.
 
 Clara levantou o rosto.
 
 — Como você sabe que eu passei pela janela?
 
-A mãe puxou uma cadeira, mas não se sentou.
+Marta puxou uma cadeira, mas não se sentou.
 
-— Você fazia isso quando era pequena.
+— Você entrava por ali quando era pequena — explicou Marta.
 
 Só depois que a funcionária saiu para buscar gaze Lídia pediu o envelope.
 
 Clara o retirou da bolsa. A mulher não estendeu a mão de imediato. Inclinou-se para ver a anotação a lápis e levou dois dedos aos lábios, como se tivesse percebido um corte.
 
-— Abra — disse.
+— Abra — pediu Lídia.
 
 Clara colocou a carta sobre a maca forrada de papel. Lídia olhou para as primeiras linhas. Ainda não tivera tempo de lê-las quando afastou a cadeira.
 
@@ -38,57 +38,57 @@ Clara colocou a carta sobre a maca forrada de papel. Lídia olhou para as primei
 
 Lídia olhava para uma palavra no alto da folha.
 
-— Ela fazia o erre assim. Parecia que tinha esquecido de terminar.
+— A pessoa que eu conheci fazia o erre assim — disse Lídia. — Parecia que tinha esquecido de terminar.
 
-— Quem?
+— Quem? — insistiu Clara.
 
-A mãe de Clara se aproximou.
+Marta se aproximou da maca.
 
-— Lídia.
+— Lídia, se você sabe alguma coisa, conte para nós — pediu Marta.
 
-Foi um aviso, e as três entenderam.
+Lídia manteve os olhos na carta.
 
 Clara recolheu a carta antes que alguém tentasse guardá-la.
 
 — Eu ouvi a minha voz atrás de uma porta. O número da vó mandou mensagens. Alguém ligou para vocês fingindo ser outra pessoa. Se vocês sabem alguma coisa, vão me contar.
 
-A funcionária voltou. Durante o curativo, ninguém falou. O ruído da embalagem estéril pareceu excessivamente alto na sala pequena.
+Antes que Lídia respondesse, a funcionária voltou com a gaze. Clara deixou a carta na bolsa e estendeu a mão para terminar o curativo. Marta e Lídia esperaram em silêncio. Na sala pequena, o barulho da embalagem sendo aberta encobriu por um momento os ruídos da farmácia.
 
-Saíram pelos fundos da farmácia, onde havia um banco para funcionários ao lado de vasos vazios. Uma câmera cobria a porta. Lídia escolheu o banco de onde se via toda a passagem.
+Depois do curativo, a funcionária permitiu que Clara, Marta e Lídia esperassem no pátio dos funcionários. As três passaram pela porta dos fundos. Havia um banco comprido ao lado de vasos vazios e uma câmera voltada para a entrada. Lídia se sentou na ponta do banco de onde conseguia observar toda a passagem. Clara ficou ao lado dela; Marta permaneceu de pé, junto à filha.
 
-— A letra é de alguém que eu conheci — disse. — Mas não sei quem escreveu essa carta.
+— Reconheço essa letra — disse Lídia. — Mas isso não prova que a pessoa que eu conheci escreveu esta carta.
 
-— Como pode ser a mesma letra?
+— A senhora acha que alguém imitou? — perguntou Clara.
 
-— Foi o que perguntei da primeira vez.
+— Recebemos outro papel com essa letra, muitos anos atrás — respondeu Lídia. — Na época, eu também não sabia no que acreditar.
 
-A mãe apertou a sacola de roupas contra as pernas.
+Marta apertou a sacola de roupas contra as pernas.
 
 Lídia pediu para ver a fotografia. Segurou-a pelas bordas e a aproximou dos olhos. O polegar parou na imagem de Helena jovem.
 
-— Essa cozinha era da minha mãe. A gente estava fazendo comida para levar à casa da sua bisavó.
+— Essa cozinha era da minha mãe — explicou Lídia. — Helena e eu estávamos fazendo comida para levar à casa da sua bisavó.
 
 Clara apontou para o olhar das duas mulheres, dirigido para fora da imagem.
 
-— Quem tirou?
+— Quem tirou a foto? — perguntou Clara.
 
 Lídia não respondeu.
 
-— A mulher cuja letra a senhora reconheceu?
+— Foi a mulher cuja letra a senhora reconheceu? — insistiu Clara.
 
-— Não. Ela estava atrás de nós.
+— Não — respondeu Lídia. — Essa mulher estava atrás de nós, perto do armário.
 
 Clara pegou a fotografia de volta. Entre Helena e o armário havia uma faixa escura que tomara por uma sombra. O papel era pequeno demais para distinguir qualquer coisa.
 
-— Minha irmã — disse Lídia.
+— A letra é da minha irmã — disse Lídia.
 
-A mãe de Clara baixou os olhos.
+Marta baixou os olhos.
 
-— Como ela se chamava?
+— Como sua irmã se chamava? — perguntou Clara.
 
 Lídia esfregou o polegar contra a costura da bolsa.
 
-— Ester.
+— Ester — respondeu Lídia.
 
 O nome pareceu tocar uma lembrança. Clara abriu a carta e procurou a primeira passagem, aquela que mencionava a rua e a árvore. Lá estava ele. Ester. Na casa da avó, lera sem que significasse nada.
 
@@ -96,7 +96,7 @@ Lídia acompanhou seu movimento.
 
 — Ela desapareceu em mil novecentos e noventa e oito. Tinha vinte e três anos.
 
-— Desapareceu onde?
+— Desapareceu onde? — perguntou Clara.
 
 Uma porta metálica bateu no imóvel vizinho. Lídia esperou.
 
@@ -106,25 +106,25 @@ Clara procurou o endereço na folha. Rua do Cedro, sem número. Ao lado, uma ref
 
 — Minha avó nunca falou de uma irmã sua.
 
-— Falou uma vez — disse a mãe. — Para mim.
+— Helena falou uma vez — disse Marta. — Para mim.
 
 Clara se virou para ela.
 
-— E você não perguntou mais nada?
+— E você não perguntou mais nada, mãe? — disse Clara.
 
-— Sua avó começou a chorar. Eu tinha quinze anos. Achei que fosse uma amiga que tinha morrido.
+— Sua avó começou a chorar — respondeu Marta. — Eu tinha quinze anos. Achei que fosse uma amiga que tinha morrido.
 
 Lídia passou a mão pelo banco, retirando uma folha seca que não atrapalhava ninguém.
 
 — Eu ouvi Ester depois que ela sumiu. Na semana seguinte. Estava no quarto de costura, me chamando para ajudar com um zíper. Era uma coisa que ela dizia sempre. Eu cheguei até a levantar.
 
-— E não era ela?
+— A senhora chegou a ver Ester? — perguntou Clara.
 
-— A polícia ainda estava procurando. Eu queria muito que fosse.
+— Não — respondeu Lídia. — Parei na porta do quarto. A polícia ainda estava procurando minha irmã, e eu tinha medo de descobrir o que estava me chamando.
 
-O telefone da mãe vibrou dentro da sacola. Ela o retirou, conferiu a tela e recusou a chamada.
+O telefone de Marta vibrou dentro da sacola. Ela retirou o aparelho, conferiu a tela e recusou a chamada.
 
-— Número desconhecido — disse, sem que ninguém perguntasse.
+— Número desconhecido — explicou Marta, mostrando a tela à filha.
 
 Clara alisou o canto inferior da carta.
 
@@ -142,14 +142,14 @@ Lídia voltou a olhar para a data.
 
 Seu rosto mudou de um jeito diferente. Não havia surpresa. Havia um reconhecimento cansado.
 
-— Foi numa quinta-feira — disse.
+— Eu conheço esse dia — disse Lídia.
 
-— O quê?
+— De onde? — perguntou Clara.
 
-— O desaparecimento.
+— Ester desapareceu nesse dia do mês — respondeu Lídia. — Em outro ano.
 
-A mãe de Clara virou o telefone, deixando a tela contra a perna.
+Marta virou o telefone, deixando a tela contra a perna.
 
 Lídia continuou olhando para o papel.
 
-— Nesse mesmo dia do mês.
+— A carta está marcada para o aniversário do desaparecimento dela — disse Lídia.

@@ -58,3 +58,19 @@ test("Explains when there are no saved chapters", () => {
   expect(html).toContain("Esta obra ainda não tem texto salvo");
   expect(html).not.toContain("Sumário");
 });
+
+test("Only the owner sees export buttons, including when a reader is an administrator", () => {
+  const props = { work: { ...work, owner_id: "owner" }, parts: [] };
+  const ownerHtml = renderToStaticMarkup(
+    <WorkReadingPage {...props} user={{ id: "owner" }} />,
+  );
+  const organizerHtml = renderToStaticMarkup(
+    <WorkReadingPage {...props} user={{ id: "organizer" }} />,
+  );
+  const adminHtml = renderToStaticMarkup(
+    <WorkReadingPage {...props} user={{ id: "admin", is_admin: true }} />,
+  );
+  expect(ownerHtml).toContain("Exportar PDF");
+  expect(organizerHtml).not.toContain("Exportar PDF");
+  expect(adminHtml).not.toContain("Exportar DOCX");
+});

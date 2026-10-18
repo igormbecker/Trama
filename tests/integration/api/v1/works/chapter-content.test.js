@@ -117,7 +117,7 @@ test("Reads the saved work as a whole and protects the reading page", async () =
   expect(
     (await request(`/api/v1/works/${book.id}/export?format=pdf`, organizer))
       .status,
-  ).toBe(200);
+  ).toBe(404);
   await workParticipant.remove(book.id, organizer.id, owner.id);
   expect((await request(url, organizer)).status).toBe(404);
   expect(

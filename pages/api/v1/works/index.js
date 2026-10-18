@@ -21,4 +21,6 @@ router.post(async (request, response) => {
     .status(201)
     .json(await work.create(request.authenticatedUser.id, request.body));
 });
-export default router.handler(controller.errorHandlers);
+export default controller.withImpersonationAudit(
+  router.handler(controller.errorHandlers),
+);
