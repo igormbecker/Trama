@@ -81,7 +81,11 @@ export default function HomeLayout({
     : "Trama — página inicial";
   const router = useRouter();
   const statusReturnPath =
-    router.pathname === "/status" ? "/" : router.asPath || "/";
+    router.pathname === "/status"
+      ? "/"
+      : router.pathname === "/reset-password"
+        ? "/reset-password"
+        : router.asPath || "/";
 
   return (
     <div className={styles.site} lang="pt-BR" data-theme={theme}>

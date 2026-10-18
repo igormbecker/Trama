@@ -1,6 +1,24 @@
 name: trama-test
 
 services:
+  mailcatcher:
+    image: "sj26/mailcatcher:v0.11.0"
+    ports:
+      - "127.0.0.1:1027:1025"
+      - "127.0.0.1:1082:1080"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "ruby",
+          "-rnet/http",
+          "-e",
+          "exit(Net::HTTP.get_response(URI('http://127.0.0.1:1080/messages')).code == '200' ? 0 : 1)",
+        ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
   database:
     image: "postgres:16.0-alpine3.18"
     env_file:

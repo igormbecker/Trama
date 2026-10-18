@@ -98,6 +98,11 @@ export default function LoginPage() {
               Conta criada! Entre com seu e-mail e senha.
             </SuccessMessage>
           ) : null}
+          {router.query.recovery === "complete" ? (
+            <SuccessMessage>
+              Senha alterada! Entre com sua nova senha.
+            </SuccessMessage>
+          ) : null}
           <form
             method="post"
             onSubmit={handleSubmit}
@@ -143,6 +148,9 @@ export default function LoginPage() {
               {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
           </form>
+          <p className={styles.backLink}>
+            <Link href="/forgot-password">Esqueci minha senha</Link>
+          </p>
           <p className={styles.formDescription}>
             O acesso é restrito. Solicite sua conta ao administrador do Trama.
           </p>

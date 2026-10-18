@@ -232,16 +232,22 @@ Critério de conclusão da V1: uma pessoa autorizada edita o capítulo, acompanh
 
 Importação e exportação continuam como possibilidades futuras. Se forem retomadas, a preferência já discutida é processar os documentos sem armazenar permanentemente os arquivos importados ou exportados. Formatos e eventual suporte a imagens exigem decisão própria.
 
-## 5. Revisão, comentários e aprovação
+## 5. Contribuição e revisão opcionais — V1 definida
 
-- [ ] Validar quem pode iniciar revisão, solicitar ajustes e aprovar.
-- [ ] Implementar comentários e apontamentos vinculados ao capítulo e à versão.
-- [ ] Definir aprovação, aprovação com restrições e reabertura após ajustes.
-- [ ] Impedir transições incompatíveis no servidor.
-- [ ] Registrar autor, data e motivo das mudanças relevantes.
-- [ ] Testar concorrência e preservação do histórico.
+Escopo definido em 18/10/2026. Implementação pendente e adiada a pedido do usuário, que desenvolverá outra funcionalidade antes. Regras completas e referência histórica: [regras editoriais](editorial-rules.md). A definição abaixo substitui o fluxo anterior de revisão e avaliação obrigatórias em etapas separadas.
 
-Critério de conclusão: executar com uma obra piloto o fluxo criar obra → adicionar capítulo → convidar autor → escrever e salvar conteúdo → submeter uma versão para revisão → revisar → aprovar. Usar a experiência desse piloto para ajustar as regras antes de ampliar o produto. A submissão de versões pertence a esta evolução posterior ao rascunho da V1.
+- [x] Definir escrita individual livre, sem aprovação obrigatória, e pedidos opcionais de contribuição ou revisão por capítulo.
+- [x] Definir um pedido ativo por capítulo, uma pessoa participante ativa atribuída por vez e aprovação somente pelo responsável pela obra. Organizador permanece leitor sem atribuição explícita.
+- [x] Definir fluxo comum do pedido: Em escrita → Aguardando aprovação → Aprovada; solicitação de ajustes com mensagem retorna para Em escrita, seguida de reenvio.
+- [ ] Implementar atribuição de contribuição (desenvolver conteúdo) ou revisão (corrigir e melhorar texto existente), com instruções do responsável.
+- [ ] Implementar cópia de trabalho separada do texto atual do capítulo e preservar a versão enviada enquanto aguarda decisão.
+- [ ] Implementar aprovação que incorpora a entrega ao capítulo e preserva o texto anterior para recuperação. Se o capítulo mudou desde o início do pedido, exigir conferência antes da substituição.
+- [ ] Implementar solicitação de ajustes, reenvio e cancelamento pelo responsável sem incorporar o texto pendente.
+- [ ] Validar permissões no servidor, revogação de acesso, transições, concorrência e preservação do histórico.
+
+Fora desta V1: colaboradores simultâneos no mesmo capítulo, revisor e avaliador em etapas obrigatórias separadas, delegação de aprovação, comentários por trecho, prazos, notificações e aprovação com restrições.
+
+Critério de conclusão futuro: escrever sozinho → atribuir contribuição ou revisão → receber entrega → pedir ajustes → receber reenvio → aprovar e incorporar o resultado com recuperação do texto anterior. Verificar cancelamento e conflito com mudanças do responsável. Nenhuma funcionalidade deste novo fluxo está implementada por este registro.
 
 ## 6. Tarefas, painéis e comunicação
 
@@ -270,10 +276,27 @@ Usar `pgm.func("timezone('utc', now())")` nos defaults de data atual, conforme p
 
 ## Pendências de conta e preferências
 
-- [ ] Recuperação de senha: fluxo de e-mail e tokens com expiração e uso único.
+### Base de e-mails — primeira implementação em 18/10/2026
+
+- [x] Centralizar envio em `infra/email.js`: Resend nos ambientes Vercel production/preview e MailCatcher no desenvolvimento e testes, sem depender da API autenticada.
+- [x] Gerar mensagens HTML e texto simples com React Email, identidade do Trama e assinatura Bectec; escapar textos e validar links de ação.
+- [x] Isolar MailCatcher local (SMTP 1026/painel 1081) e de testes (1027/1082), dentro dos projetos Compose próprios, somente em loopback.
+- [x] Bloquear destinatários de preview fora da lista explícita `EMAIL_PREVIEW_RECIPIENTS`; sem lista, bloquear todos os envios. Desenvolvimento e testes nunca usam Resend, mesmo com credenciais herdadas.
+- [x] Usuário confirmou o cadastro de destinatários de teste em `EMAIL_PREVIEW_RECIPIENTS`, somente no ambiente Preview da Vercel; envio real ainda pendente de validação.
+- [ ] Validar envio real pelo Resend e aparência nas caixas Gmail/Outlook após conectar os fluxos; revisar o aviso de privacidade para o novo provedor antes dos envios reais.
+- [ ] Implementar convite de acesso à conta com definição inicial da senha pelo destinatário, mantendo cadastro público fechado e aceite pessoal dos documentos.
+- [ ] Conectar envio automático aos convites para obras, com tratamento de falhas e reenvio.
+
+Configuração confirmada pelo usuário: domínio `etrama.bectec.com.br` verificado, `RESEND_API_KEY` própria por ambiente e `EMAIL_FROM` configurado em Production e Preview. Nenhuma chave consta no código. A implementação local não significa deploy nem envio real confirmado. Detalhes e uso interno em [docs/email.md](email.md). Sem fila durável ou repetição automática nesta etapa; os futuros fluxos devem aguardar o envio e usar idempotência por evento.
+
+### Próximos fluxos de conta
+
+- [x] Recuperação de senha: `/forgot-password`, `/reset-password`, link no login e POST/PATCH `/api/v1/password-recovery`, com token aleatório de uso único válido por 15 minutos e somente hash no banco. Senha de 8–128 caracteres, confirmação obrigatória, consumo transacional, invalidação de links e sessões da conta e aviso após a troca. Resposta de pedido genérica, limite de um pedido/minuto e cinco/hora por endereço; envio via `waitUntil`. Personificação não permite recuperar senhas. Aceite pendente não bloqueia recuperação nem é fabricado por ela. Detalhes em [docs/email.md](email.md).
+- [ ] Aplicar a migration `1792270000000_create-password-recovery` no desenvolvimento e nos ambientes remotos antes de habilitar a recuperação; aplicada somente no banco de testes nesta entrega. Validar entrega real no preview, restrições de destinatários e aparência em Gmail/Outlook; não houve deploy.
 - [ ] Definir confirmação de e-mail e verificação ao alterar o endereço.
 - [ ] Avaliar exigência de senha atual ou nova autenticação para mudanças sensíveis.
-- [ ] Definir invalidação de outras sessões após troca ou recuperação de senha.
+- [x] Invalidar todas as sessões da conta e sessões que a personificam após recuperação de senha.
+- [ ] Definir invalidação de outras sessões após troca de senha pelos fluxos de conta/administração existentes.
 - [ ] Avaliar encerramento de todas as sessões e consulta de dispositivos.
 - [ ] Persistir a preferência de tema por usuário no banco, desejo já informado pelo usuário.
 - [ ] Definir a precedência entre preferência da conta e cookie, incluindo login em outro dispositivo e logout.
@@ -359,6 +382,9 @@ Botões de recusar, cancelar e remover usam a cor vermelha do tema, incluindo a 
 Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e convites usam círculo com visto em SVG, verde do tema e texto sem negrito. Os componentes compartilhados ficam em components/shared. Carregamento, erros e avisos preservam sua semântica; o status de cópia só recebe aparência de sucesso após copiar o link.
 
 ## TODO para retomar em 18/10/2026
+
+- [x] Configuração versionada para aplicar migrations antes do build da Vercel em production e preview, usando exclusivamente `DATABASE_URL_UNPOOLED`, TLS e trava nativa do runner. Falhas interrompem o build. Detalhes em [deployment-migrations.md](deployment-migrations.md).
+- [ ] Validar no próximo deploy de preview o comando de build, a conexão direta do ambiente e as migrations aplicadas; validar concorrência real antes de afirmar a automação remota como confirmada. Esquema deve continuar compatível com o deploy anterior durante o build.
 
 - [x] Exportações incluem a descrição da obra preenchida após a capa e sumário com partes e capítulos antes do texto, preservando a capa colorida. No PDF, as páginas são calculadas na geração e as entradas têm links internos. No DOCX, o sumário tem entradas visíveis, links e campos de página, com atualização solicitada ao abrir; até atualizar os campos no Word/LibreOffice, as páginas aparecem como “—”. Descrições dos capítulos continuam fora da exportação.
 - [ ] Conferir a aparência e a atualização dos campos do sumário DOCX em Word/LibreOffice; renderizador indisponível neste ambiente. A geração e a estrutura do arquivo são verificadas por testes unitários.

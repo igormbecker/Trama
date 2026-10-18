@@ -31,6 +31,8 @@ export default function LegalAcceptanceGuard() {
       "/status",
       "/login",
       "/register",
+      "/forgot-password",
+      "/reset-password",
     ];
     if (data?.required && !publicPages.includes(router.pathname))
       router.replace("/legal/accept");
