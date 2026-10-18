@@ -1,12 +1,12 @@
 # Aviso de Privacidade do Trama
 
-**Minuta para revisão — versão 0.1, de 18/10/2026. Ainda não publicada. Os campos pendentes impedem tratá-la como aviso definitivo.**
+**Versão 2026-10-18-v1 — vigência a partir de 18/10/2026.**
 
 ## 1. Quem responde pelos dados
 
-A responsável pelo Trama é **Becker Tecnologia e Desenvolvimento de Software**. O canal para assuntos de privacidade é **imbjr.work@gmail.com**.
+A responsável pelo Trama é **Becker Tecnologia e Desenvolvimento de Software**, CNPJ **65.457.811/0001-61**, com sede na **Rua General Salvador Pinheiro, 725, Vila Jardim, Porto Alegre/RS**. O canal para assuntos de privacidade é **imbjr.work@gmail.com**.
 
-**Pendente:** confirmar identificação jurídica completa, endereço e eventual identificação do encarregado ou regime aplicável ao canal de atendimento. Informar este e-mail não representa nomeação automática de encarregado.
+O e-mail informado é o canal de privacidade e atendimento; não implica nomeação automática de encarregado.
 
 Este aviso abrange dados de visitantes, contas, convidados e participantes tratados na operação do Trama. Quanto a dados de terceiros inseridos nas obras, os papéis e responsabilidades dependem das decisões efetivamente tomadas por cada envolvido; a Becker não presume ser controladora de todo conteúdo nem transfere integralmente suas obrigações aos autores.
 
@@ -23,16 +23,16 @@ Este aviso abrange dados de visitantes, contas, convidados e participantes trata
 
 A senha é processada para autenticação e armazenada como hash; não se deve interpretar isso como criptografia de todos os demais dados. Os textos podem conter dados pessoais que seus autores decidam inserir. Evite incluir informações sensíveis desnecessárias.
 
-**Pendente de inventário:** metadados tratados pela infraestrutura, como endereço IP, registros de acesso, dispositivo e erros; categorias efetivamente registradas, finalidades, acesso e prazos devem ser confirmados antes da publicação. Não se declara ausência de registros de infraestrutura.
+A hospedagem e o banco podem tratar metadados de conexão e registros técnicos de operação, como IP, acesso e erros, conforme o serviço utilizado. Você pode solicitar esclarecimentos sobre os registros aplicáveis à sua conta pelo canal de privacidade. Não coletamos IP ou dispositivo no registro de aceite descrito neste aviso.
 
 ## 3. Finalidades e fundamentos
 
-A proposta de enquadramento abaixo deve ser validada por operação antes da publicação. Ela não presume que todas as atividades possam usar a mesma base legal.
+Cada operação deve estar vinculada à sua finalidade e fundamento; o aceite dos Termos não substitui essa análise nem autoriza usos irrestritos dos dados.
 
 - Manter a conta e executar as funções solicitadas: execução de contrato ou procedimentos relacionados, quando seus requisitos forem atendidos.
 - Atender obrigações legais e determinações válidas: cumprimento de obrigação aplicável, identificada conforme o caso.
 - Defender direitos em processos: exercício regular de direitos, quando cabível.
-- Prevenir abuso e gerenciar convites a pessoas ainda sem conta: avaliar fundamento específico; eventual legítimo interesse depende de necessidade, avaliação dos impactos e salvaguardas, não apenas da menção neste aviso.
+- Prevenir abuso e gerenciar convites a pessoas ainda sem conta: legítimo interesse, quando atendidos necessidade, expectativas dos envolvidos e salvaguardas; pedidos sobre convites podem ser enviados ao contato informado.
 - Usos opcionais que dependam de consentimento: informar separadamente a finalidade e permitir escolha e revogação. Não se considera o fornecimento do e-mail autorização genérica para marketing.
 
 ## 4. Quem pode ter acesso
@@ -41,15 +41,15 @@ O responsável e os organizadores ativos podem ler as obras conforme suas permis
 
 A operação técnica pode exigir acesso restrito por pessoas autorizadas e fornecedores de infraestrutura para hospedagem, banco, suporte e segurança. Isso não equivale a acesso editorial irrestrito ou autorização de publicação. Solicitações de autoridades serão avaliadas conforme sua validade e necessidade.
 
-**Pendente de confirmação operacional:** fornecedores efetivamente usados em produção, entidades contratadas, funções, regiões, suboperadores e condições de acesso. A documentação técnica cita Vercel e Neon, mas esse registro não substitui a conferência dos contratos e das configurações atuais.
+Utilizamos **Vercel**, para hospedagem e execução da aplicação, e **Neon**, para banco de dados PostgreSQL. Esses serviços participam do tratamento necessário à operação. Informações sobre operações e acessos específicos podem ser solicitadas à Becker.
 
-A auditoria de personificação registra identificadores do administrador, da conta representada e da sessão, início, encerramento, prazo, método e caminho das operações de alteração e exportação, identificador de correlação e resultado HTTP quando disponível. Não registra corpos das requisições, senhas, cookies, tokens de convite ou conteúdo das obras. A auditoria é usada para atribuição de ações e investigação; sua base legal, retenção e acessos devem ser validados antes da publicação. Inícios e encerramentos explícitos são registrados em transação; uma tentativa registrada não comprova alteração concluída, e falhas no registro do resultado podem deixar a tentativa sem conclusão registrada.
+A auditoria de personificação registra identificadores do administrador, da conta representada e da sessão, início, encerramento, prazo, método e caminho das operações de alteração e exportação, identificador de correlação e resultado HTTP quando disponível. Não registra corpos das requisições, senhas, cookies, tokens de convite ou conteúdo das obras. A auditoria é usada para atribuição de ações e investigação; o acesso deve ser limitado às pessoas autorizadas que necessitem dessas informações para suporte e segurança, respeitados os direitos dos envolvidos. Inícios e encerramentos explícitos são registrados em transação; uma tentativa registrada não comprova alteração concluída, e falhas no registro do resultado podem deixar a tentativa sem conclusão registrada.
 
 A personificação utiliza a mesma sessão entre abas. Dados locais de navegação e rascunhos da conta representada podem permanecer neste navegador conforme as regras de recuperação; quem presta suporte deve usar dispositivo autorizado e tratar essas cópias com confidencialidade.
 
 ## 5. Processamento fora do Brasil
 
-A infraestrutura pode envolver armazenamento ou acesso no exterior. **Antes da publicação, identificar países ou regiões e o mecanismo aplicável às transferências internacionais, conferindo contratos e salvaguardas dos fornecedores.** Não se presume que o aceite destes Termos autorize qualquer transferência ou que os dados permaneçam exclusivamente no Brasil.
+A infraestrutura contratada pode envolver armazenamento e processamento fora do Brasil, inclusive nos Estados Unidos. As transferências devem observar os mecanismos e salvaguardas legalmente aplicáveis e as condições contratuais dos fornecedores. Você pode solicitar informações sobre destinos e operações pelo canal de privacidade. Não se presume que aceitar os Termos autorize qualquer transferência ou dispense essas obrigações.
 
 ## 6. Cookies e dados no navegador
 
@@ -62,7 +62,7 @@ A infraestrutura pode envolver armazenamento ou acesso no exterior. **Antes da p
 
 A expiração de cookie ou sessão não significa necessariamente eliminação do registro correspondente no servidor. Em dispositivos compartilhados, considere a permanência de rascunhos locais ao encerrar o uso. A limpeza dos dados do navegador pode impedir sua recuperação.
 
-**Pendente:** verificar cookies ou tecnologias adicionais usados na hospedagem real. Esta minuta não autoriza implantação de publicidade ou rastreamento opcional.
+O uso desses recursos não representa autorização para publicidade ou rastreamento opcional. A implantação de finalidades adicionais exige informação e fundamento próprios.
 
 ## 7. Exportações e compartilhamentos
 
@@ -72,7 +72,9 @@ Quem baixa ou recebe um arquivo pode armazená-lo em outros dispositivos ou serv
 
 ## 8. Conservação e eliminação
 
-**Pendente antes da publicação:** definir e informar os prazos ou critérios objetivos por categoria, incluindo cadastro, textos, convites, sessões expiradas, registros técnicos, atendimento, provas de aceite, auditoria de personificação e backups. Expiração de acesso, cancelamento de convite e remoção de participante não representam exclusão automática dos registros.
+Cadastros, obras e vínculos de colaboração são conservados enquanto necessários para manter a conta e a colaboração solicitada. Após encerramento ou pedido de eliminação, devem ser avaliados os direitos sobre obras compartilhadas e as hipóteses legais de conservação. Registros de aceite guardam conta, data e versão dos documentos, sem IP ou dispositivo; os textos aceitos são preservados para consulta de versões anteriores.
+
+Sessões expiradas, convites, auditoria e registros técnicos não são apagados automaticamente apenas porque o acesso terminou. Sua conservação deve se limitar à operação, segurança, atendimento e obrigações aplicáveis. A definição dos prazos numéricos e das rotinas de rotação de logs e backups está em elaboração; isso não autoriza retenção ilimitada nem restringe pedidos de análise ou eliminação. Registros sujeitos a obrigação legal seguem o prazo correspondente. Você pode solicitar os critérios aplicáveis à sua situação pelo canal informado.
 
 Os dados devem permanecer somente pelo período necessário às finalidades justificadas e às hipóteses legais de conservação. Retenções excepcionais devem ter fundamento, acesso limitado e duração definida. Cópias de backup exigem ciclo de expiração próprio a ser informado; não há promessa de apagamento instantâneo de toda cópia.
 
@@ -92,9 +94,9 @@ Suspeitas devem ser relatadas ao canal de contato. A Becker avaliará contençã
 
 ## 11. Crianças e adolescentes
 
-**Política em definição:** não foi aprovada uma restrição automática a maiores de 18 anos. A admissão de menores exige avaliar capacidade civil, melhor interesse, bases legais e medidas proporcionais de proteção, inclusive requisitos do ECA Digital quando aplicáveis. Esta minuta não declara implementados verificação de idade, representação, assistência, supervisão parental ou consentimento de responsável.
+O uso por menores depende da participação do responsável legal e de avaliação antes da liberação administrativa da conta. O responsável deve contatar a Becker para tratar de representação ou assistência, adequação do acesso e direitos do menor. Aplicam-se o melhor interesse e as proteções específicas exigíveis; a participação do responsável não substitui os deveres da plataforma.
 
-Antes de disponibilizar o serviço a esse público, completar a avaliação e substituir este trecho por informações claras sobre o funcionamento efetivamente adotado, inclusive canal de atendimento a responsáveis. Uma declaração genérica de autorização não resolve, por si só, essas exigências.
+O sistema não verifica idade nem registra automaticamente autorização parental. Não deve ser interpretado que um aceite comum comprove representação ou assistência. Informações de menores e solicitações de responsáveis devem ser tratadas de forma proporcional, evitando coleta desnecessária de documentos.
 
 ## 12. Alterações e contato
 

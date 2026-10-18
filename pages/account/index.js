@@ -1,7 +1,10 @@
 import AccountPage from "components/account/AccountPage";
 import authentication from "models/authentication.js";
 import user from "models/user.js";
-import { UnauthorizedError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+} from "infra/errors.js";
 export default AccountPage;
 
 export async function getServerSideProps({ req, res }) {
@@ -12,6 +15,8 @@ export async function getServerSideProps({ req, res }) {
     );
     return { props: { user: user.toPublic(currentUser) } };
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError) {
       return { redirect: { destination: "/login", permanent: false } };
     }

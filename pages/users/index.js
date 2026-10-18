@@ -1,7 +1,11 @@
 import UsersPage from "components/users/UsersPage";
 import authentication from "models/authentication.js";
 import user from "models/user.js";
-import { UnauthorizedError, ForbiddenError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+  ForbiddenError,
+} from "infra/errors.js";
 
 export default UsersPage;
 
@@ -22,6 +26,8 @@ export async function getServerSideProps({ req, res }) {
       },
     };
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
       return {
         redirect: {

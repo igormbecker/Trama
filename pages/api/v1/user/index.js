@@ -18,6 +18,7 @@ async function getHandler(request, response) {
 
   const authenticatedUser = await authentication.authenticateSession(
     request.cookies?.trama_session_id,
+    { allowPendingLegalAcceptance: true },
   );
 
   return response.status(200).json({

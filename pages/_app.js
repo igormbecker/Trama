@@ -1,3 +1,4 @@
+import LegalAcceptanceGuard from "components/legal/LegalAcceptanceGuard";
 import ImpersonationBanner from "components/auth/ImpersonationBanner";
 import Head from "next/head";
 import { AuthProvider } from "components/auth/AuthProvider";
@@ -42,6 +43,7 @@ export default function App({
           initialUser={pageProps.user}
           hasSessionCookie={hasSessionCookie}
         >
+          <LegalAcceptanceGuard />
           <ImpersonationBanner />
           <Component {...pageProps} />
         </AuthProvider>

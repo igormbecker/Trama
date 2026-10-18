@@ -1,3 +1,4 @@
+import legalAcceptance from "models/legalAcceptance.js";
 import database from "infra/database.js";
 import session from "models/session.js";
 import {
@@ -75,6 +76,8 @@ async function change(token, targetId) {
         targetId === current.user_id
       )
         throw new ForbiddenError();
+      await legalAcceptance.assertAccepted(current.user_id);
+      await legalAcceptance.assertAccepted(targetId);
       const updated = await client.query({
         text: `UPDATE sessions SET impersonated_user_id = $2,
         impersonation_expires_at = LEAST(expires_at, timezone('utc', now()) + interval '15 minutes'),

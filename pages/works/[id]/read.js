@@ -1,6 +1,10 @@
 import authentication from "models/authentication.js";
 import workReading from "models/workReading.js";
-import { UnauthorizedError, NotFoundError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+  NotFoundError,
+} from "infra/errors.js";
 export { default } from "components/works/WorkReadingPage";
 
 export async function getServerSideProps({ req, res, params }) {
@@ -19,6 +23,8 @@ export async function getServerSideProps({ req, res, params }) {
       ),
     };
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError)
       return { redirect: { destination: "/login", permanent: false } };
     if (error instanceof NotFoundError) return { notFound: true };

@@ -153,6 +153,11 @@ export default function HomeLayout({
             <span>Desenvolvido por</span>
             <Brand />
           </div>
+          <nav aria-label="Documentos e contato">
+            <Link href="/terms">Termos de Uso</Link> ·{" "}
+            <Link href="/privacy">Privacidade</Link> ·{" "}
+            <Link href="/legal/support">Contato</Link>
+          </nav>
           <Link
             className={styles.statusLink}
             href={{

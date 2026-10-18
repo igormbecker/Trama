@@ -2,6 +2,7 @@ import authentication from "models/authentication";
 import session from "models/session";
 import user from "models/user";
 
+jest.mock("models/legalAcceptance", () => ({ assertAccepted: jest.fn() }));
 jest.mock("models/session", () => ({ findOneValidByToken: jest.fn() }));
 jest.mock("models/user", () => ({ findOneById: jest.fn() }));
 

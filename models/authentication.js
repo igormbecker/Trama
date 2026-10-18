@@ -1,4 +1,5 @@
-﻿import user from "models/user.js";
+﻿import legalAcceptance from "models/legalAcceptance.js";
+import user from "models/user.js";
 import password from "models/password.js";
 import session from "models/session.js";
 import {
@@ -58,11 +59,16 @@ async function authenticate(providedEmail, providedPassword) {
   }
 }
 
-async function authenticateSession(token) {
+async function authenticateSession(
+  token,
+  { allowPendingLegalAcceptance = false } = {},
+) {
   const storedSession = await session.findOneValidByToken(token);
 
   try {
     const actor = await user.findOneById(storedSession.user_id);
+    if (!allowPendingLegalAcceptance)
+      await legalAcceptance.assertAccepted(actor.id);
     if (!storedSession.impersonated_user_id) return actor;
     if (
       !actor.is_admin ||
@@ -72,6 +78,8 @@ async function authenticateSession(token) {
     const represented = await user.findOneById(
       storedSession.impersonated_user_id,
     );
+    if (!allowPendingLegalAcceptance)
+      await legalAcceptance.assertAccepted(represented.id);
     return {
       ...represented,
       is_admin: false,

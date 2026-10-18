@@ -1,10 +1,8 @@
 # Termos de Uso do Trama
 
-**Minuta para revisão — versão 0.1, de 18/10/2026. Ainda não publicada nem aceita pelos usuários.**
+**Versão 2026-10-18-v1 — vigência a partir de 18/10/2026.**
 
-Responsável pelo serviço: **Becker Tecnologia e Desenvolvimento de Software**, doravante “Becker”. Contato: **imbjr.work@gmail.com**.
-
-Antes da publicação: confirmar identificação jurídica completa e endereço de contato; resolver a política de acesso de menores indicada na seção 2. As pendências e condições de implantação estão em [legal-review.md](legal-review.md).
+Responsável pelo serviço: **Becker Tecnologia e Desenvolvimento de Software**, CNPJ **65.457.811/0001-61**, doravante “Becker”. Sede: **Rua General Salvador Pinheiro, 725, Vila Jardim, Porto Alegre/RS**. Contato: **imbjr.work@gmail.com**.
 
 ## 1. O serviço
 
@@ -18,7 +16,7 @@ O acesso autenticado depende de conta criada por um administrador. A criação d
 
 O usuário deve fornecer informações corretas, manter seus dados atualizados, proteger a senha, evitar compartilhar credenciais e avisar a Becker sobre suspeitas de acesso indevido. A responsabilidade por uma ocorrência será avaliada conforme sua causa e as obrigações legais de cada envolvido; a mera utilização de uma conta não presume culpa exclusiva de seu titular.
 
-**Pendente de decisão antes da publicação:** faixa etária admitida e procedimento de representação ou assistência, quando necessário. A minuta não estabelece restrição automática a maiores de 18 anos, nem declara que o serviço esteja preparado para uso por crianças e adolescentes. A decisão deve considerar capacidade civil, melhor interesse, privacidade, riscos de colaboração e requisitos aplicáveis do ECA Digital. Uma declaração genérica de autorização dos pais não substitui essa avaliação.
+O uso por menores exige participação do responsável legal, com representação ou assistência conforme aplicável. Como o cadastro é administrativo, o responsável deve contatar a Becker antes da liberação da conta para avaliar autorização, adequação do uso e proteção do menor. O aceite por uma conta não comprova, por si só, autorização parental. O Trama não oferece verificação automática de idade ou supervisão parental; essa participação não afasta os deveres legais da plataforma.
 
 ## 3. Obras e direitos autorais
 

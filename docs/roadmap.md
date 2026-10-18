@@ -366,15 +366,18 @@ Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e 
 - [ ] Definir campos de autor e coautores na edição da obra, inclusive pessoas sem conta, e incluir os créditos na folha de rosto dos documentos. Não inferir autoria a partir do responsável ou dos organizadores; os créditos não alteram permissões.
 - Revisões, comentários e preparação editorial devem acontecer dentro do Trama em etapas futuras; a exportação não substitui esse fluxo.
 
-## Documentos legais — minutas de 18/10/2026
+## Documentos legais e aceite — 18/10/2026
 
 - [x] Preparadas minutas de [Termos de Uso](terms-of-use.md) e [Aviso de Privacidade](privacy-notice.md), com autoria, convites, exportações, compartilhamento de cópias, dados pessoais e limites legais de responsabilidade. Responsável informada: Becker Tecnologia e Desenvolvimento de Software; contato: imbjr.work@gmail.com.
-- [ ] Resolver as pendências de [revisão e implantação](legal-review.md): identificação jurídica, retenção, fornecedores e transferências, bases legais, atendimento e avaliação jurídica. Faixa etária permanece em definição; não foi adotada restrição automática a maiores de 18 anos nem afirmada adequação do serviço a menores.
-- [ ] Publicar documentos e implementar o fluxo de aceite aprovado em 18/10/2026: no futuro cadastro público, exigir ação explícita e desmarcada por padrão antes de concluir a criação da conta; em contas administrativas e contas antigas sem aceite, solicitar após autenticar e antes de acessar a área de trabalho. A criação administrativa não equivale ao aceite do usuário.
-- [ ] Sem aceite dos Termos, impedir a conclusão do cadastro público ou restringir funcionalidades de contas existentes tanto nas páginas quanto nas APIs. Manter disponíveis documentos, saída e contato, além de um caminho para solicitar recuperação de obras/dados e encerramento da conta. Não apagar dados automaticamente pela recusa.
-- [ ] Registrar no servidor usuário, data/hora e versões imutáveis dos documentos aceitos. Comunicar mudanças relevantes e avaliar novo aceite quando necessário, preservando o histórico. Separar aceite dos Termos e ciência do Aviso de consentimentos opcionais: recusar marketing não bloqueia o serviço.
+- [x] Identificação fornecida: Becker Tecnologia e Desenvolvimento de Software, CNPJ 65.457.811/0001-61, Rua General Salvador Pinheiro, 725, Vila Jardim, Porto Alegre/RS; contato imbjr.work@gmail.com. Vercel e Neon confirmados pelo usuário. Uso por menores exige participação do responsável e avaliação antes da liberação administrativa; não há verificação automática de idade ou autorização parental implementada.
+- [x] Páginas públicas `/terms`, `/privacy` e `/legal/support`, com links no rodapé compartilhado; histórico de documentos aceitos por versão. Cadastro público continua fechado.
+- [x] Aceite obrigatório em `/legal/accept` para contas existentes/administrativas sem aceite atual. Páginas protegidas redirecionam e APIs retornam `LegalAcceptanceRequiredError` (403). Documentos, contato, logout e consulta da própria conta continuam acessíveis. Na recusa, oferecer revisão posterior, contato para recuperação de conteúdo/dados e encerramento, sem apagar dados automaticamente.
+- [x] GET/POST `/api/v1/legal/acceptance` com cache privado. Registrar ação explícita, data e versão, sem IP/dispositivo, com snapshots e hashes SHA-256 em `legal_document_releases` e vínculos em `legal_acceptances`. Aceite é idempotente; não aceitar versão antiga, corpo incompleto ou aceite por personificação. Administrador e conta representada precisam de aceite antes de iniciar personificação.
+- [x] Versão ativa `2026-10-18-v1` em `infra/legal/2026-10-18-v1.json`. Preservar versões publicadas; mudanças exigem novo arquivo/identificador. Nenhum aceite real foi fabricado ou retroagido. Cadastro administrativo não aceita pelo usuário.
+- [ ] Definir política e rotinas de retenção/exclusão para contas, logs, auditoria e backups, conforme decisão do usuário de tratar depois. O aviso descreve critérios e a ausência de prazos numéricos definidos; o aceite não substitui essa entrega. Concluir avaliação jurídica, contratos/transferências, atendimento e proteção de menores conforme [legal-review.md](legal-review.md).
+- [ ] Na futura abertura do cadastro público, integrar aceite explícito antes de concluir o cadastro, preservando a separação entre aceite dos Termos/ciência do Aviso e consentimentos opcionais. Essa abertura não faz parte desta entrega.
 
-O fluxo está aprovado para o TODO, mas ainda não foi implementado. As minutas não foram publicadas; a abertura do cadastro público e a publicação continuam dependendo de autorização própria.
+Implementação e ativação local não significam publicação remota. As páginas usam textos revisados com as informações fornecidas; a adequação jurídica e as pendências operacionais continuam explícitas.
 
 ## Exportação exclusiva do responsável — 18/10/2026
 

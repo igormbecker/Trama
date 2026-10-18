@@ -1,7 +1,11 @@
 import InvitationPage from "components/works/InvitationPage";
 import authentication from "models/authentication.js";
 import workInvitation from "models/workInvitation.js";
-import { UnauthorizedError, NotFoundError } from "infra/errors.js";
+import {
+  LegalAcceptanceRequiredError,
+  UnauthorizedError,
+  NotFoundError,
+} from "infra/errors.js";
 
 export default InvitationPage;
 export async function getServerSideProps({ req, res, params }) {
@@ -13,6 +17,8 @@ export async function getServerSideProps({ req, res, params }) {
       req.cookies?.trama_session_id,
     );
   } catch (error) {
+    if (error instanceof LegalAcceptanceRequiredError)
+      return { redirect: { destination: "/legal/accept", permanent: false } };
     if (error instanceof UnauthorizedError)
       return { props: { user: null, invitation: null } };
     throw error;
