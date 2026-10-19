@@ -16,6 +16,8 @@ test("Renders the same message and action in HTML and plain text", async () => {
   expect(result.text).toContain(content.paragraphs[0]);
   expect(result.text).toContain(content.actionUrl);
   expect(result.text).toContain("Bectec");
+  expect(result.text).toContain("Software desenvolvido por Bectec");
+  expect(result.text).toContain("Trama · Pessoas, ideias e capítulos.");
 });
 
 test("Escapes content instead of interpreting it as arbitrary HTML", async () => {

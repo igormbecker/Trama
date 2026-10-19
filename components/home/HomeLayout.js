@@ -1,4 +1,5 @@
 import Head from "next/head";
+import BackToTop from "components/shared/BackToTop";
 import { useAuth } from "components/auth/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -88,7 +89,7 @@ export default function HomeLayout({
         : router.asPath || "/";
 
   return (
-    <div className={styles.site} lang="pt-BR" data-theme={theme}>
+    <div id="page-top" className={styles.site} lang="pt-BR" data-theme={theme}>
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -173,6 +174,7 @@ export default function HomeLayout({
           </Link>
         </div>
       </footer>
+      <BackToTop />
     </div>
   );
 }

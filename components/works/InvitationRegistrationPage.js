@@ -60,65 +60,83 @@ export default function InvitationRegistrationPage({ invitation }) {
       >
         <div className={styles.formPanel}>
           <h1 id="registration-title">Criar conta por convite</h1>
-          <p>
+          <p className={styles.formDescription}>
             Você recebeu um convite para participar de {invitation.work_title}{" "}
             como organizador.
           </p>
-          <p>
+          <p className={styles.formDescription}>
             A conta será criada com o e-mail {invitation.email}. Depois de
             entrar e aceitar os documentos atuais, responda ao convite em Meus
             convites.
           </p>
-          {error && <p role="alert">{error}</p>}
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
           <form onSubmit={submit}>
-            <label htmlFor="invited-name">Nome</label>
-            <input
-              id="invited-name"
-              required
-              maxLength={255}
-              value={name}
-              onChange={(event) => setName(event.target.value)}
+            <div className={styles.field}>
+              <label htmlFor="invited-name">Nome</label>
+              <input
+                id="invited-name"
+                required
+                maxLength={255}
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                disabled={busy}
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="invited-username">Nome de usuário</label>
+              <input
+                id="invited-username"
+                required
+                maxLength={30}
+                pattern="[A-Za-z0-9_.-]+"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                disabled={busy}
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="invited-password">Senha</label>
+              <input
+                id="invited-password"
+                type="password"
+                required
+                minLength={8}
+                maxLength={128}
+                autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                disabled={busy}
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="invited-confirmation">Confirme a senha</label>
+              <input
+                id="invited-confirmation"
+                type="password"
+                required
+                minLength={8}
+                maxLength={128}
+                autoComplete="new-password"
+                value={confirmation}
+                onChange={(event) => setConfirmation(event.target.value)}
+                disabled={busy}
+              />
+            </div>
+            <button
+              className={styles.primaryButton}
+              type="submit"
               disabled={busy}
-            />
-            <label htmlFor="invited-username">Nome de usuário</label>
-            <input
-              id="invited-username"
-              required
-              maxLength={30}
-              pattern="[A-Za-z0-9_.-]+"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              disabled={busy}
-            />
-            <label htmlFor="invited-password">Senha</label>
-            <input
-              id="invited-password"
-              type="password"
-              required
-              minLength={8}
-              maxLength={128}
-              autoComplete="new-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              disabled={busy}
-            />
-            <label htmlFor="invited-confirmation">Confirme a senha</label>
-            <input
-              id="invited-confirmation"
-              type="password"
-              required
-              minLength={8}
-              maxLength={128}
-              autoComplete="new-password"
-              value={confirmation}
-              onChange={(event) => setConfirmation(event.target.value)}
-              disabled={busy}
-            />
-            <button type="submit" disabled={busy}>
+            >
               {busy ? "Criando conta…" : "Criar conta"}
             </button>
           </form>
-          <Link href="/login">Já tenho uma conta</Link>
+          <p className={styles.backLink}>
+            <Link href="/login">Já tenho uma conta</Link>
+          </p>
         </div>
       </section>
     </HomeLayout>

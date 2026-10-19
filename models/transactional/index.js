@@ -95,7 +95,19 @@ function MessageEmail({ title, paragraphs, actionLabel, actionUrl }) {
         React.createElement(
           Text,
           { style: { color: "#68626d", fontSize: "12px", lineHeight: "20px" } },
-          "Pessoas, ideias e capítulos. Uma obra construída em conjunto. Bectec — Tecnologia e Desenvolvimento de Software.",
+          "Trama · Pessoas, ideias e capítulos. Uma obra construída em conjunto.",
+        ),
+        React.createElement(
+          Text,
+          {
+            style: {
+              color: "#817b85",
+              fontSize: "11px",
+              lineHeight: "18px",
+              marginTop: "4px",
+            },
+          },
+          "Software desenvolvido por Bectec",
         ),
       ),
     ),

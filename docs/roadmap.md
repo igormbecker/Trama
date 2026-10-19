@@ -137,7 +137,9 @@ A migration foi executada somente no banco de testes nesta entrega. A aplicaçã
 - [x] Cobrir com testes convites antes do cadastro, reenvio, expiração, recusas, cancelamentos, isolamento, remoção e aceites concorrentes.
 - [x] Conferir no navegador geração de link, cadastro posterior, aceite, listagem e detalhes para organizador, remoção e acesso negado após remoção.
 - [ ] Conferir visualmente os novos controles no tema escuro e em celular e simular falhas de rede durante o envio.
-- [ ] Enviar convites por e-mail automaticamente, somente quando essa integração for necessária e escolhida.
+- [x] Enviar convites por e-mail automaticamente pelo serviço transacional; entrega local coberta pelos testes, ainda sem validação real no Resend.
+
+O cadastro pelo link de convite agora usa os campos e o botão do padrão de autenticação. Os seletores do pedido editorial usam as cores dos campos em ambos os temas. O rodapé do e-mail identifica o Trama e credita discretamente a Bectec. A inspeção interativa desses ajustes e a aparência do e-mail em clientes reais ainda precisam de validação.
 
 Implementação: `models/workInvitation.js`, `models/workParticipant.js`, tabela `work_invitations` e tabela `work_participants`. As rotas de gestão ficam em `/api/v1/works/[id]/invitations` e `/api/v1/works/[id]/participants`, com rotas de cancelamento/remoção por identificador. GET/POST `/api/v1/invitations/[token]` consultam e respondem ao convite. Todos os endpoints exigem sessão e usam cache privado sem armazenamento. A página `/invitations/[token]` orienta visitantes a entrar ou se cadastrar e reabrir o link; somente a conta correspondente vê o título da obra e as ações de resposta.
 
@@ -380,6 +382,10 @@ Botões de recusar, cancelar e remover usam a cor vermelha do tema, incluindo a 
 ## Padrão de mensagens de sucesso
 
 Confirmações de conta, usuários, cadastro, obras, estrutura, participantes e convites usam círculo com visto em SVG, verde do tema e texto sem negrito. Os componentes compartilhados ficam em components/shared. Carregamento, erros e avisos preservam sua semântica; o status de cópia só recebe aparência de sucesso após copiar o link.
+
+## Retorno ao topo
+
+O botão de voltar ao topo é compartilhado por todas as páginas via `HomeLayout`, incluindo a área autenticada. Aparece após 300 pixels de rolagem e retorna ao início da página, preservando o ícone, a posição no canto inferior direito e as cores do tema. O componente fica em `components/shared/BackToTop.js`; a leitura da obra usa essa mesma versão.
 
 ## TODO para retomar em 18/10/2026
 
