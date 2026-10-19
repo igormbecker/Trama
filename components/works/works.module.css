@@ -360,6 +360,31 @@
 .structure .actions {
   margin-bottom: 20px;
 }
+.orderActions {
+  display: inline-flex;
+  gap: 8px;
+}
+.workPage .actions {
+  gap: 8px;
+}
+.workPage .panel button,
+.workPage .writeButton,
+.workPage .readWorkButton {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.workPage .actionIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: -3px;
+}
+.structure .orderActions button {
+  width: 44px;
+  padding: 8px;
+}
 .editorialProgress {
   display: flex;
   flex-wrap: wrap;
@@ -407,8 +432,8 @@
 .completedParticipations {
   margin-top: 48px;
 }
-.creditsIntroduction {
-  margin-top: 20px;
+.panel .creditsIntroduction {
+  margin-top: 24px;
 }
 .creditSuggestions {
   display: grid;

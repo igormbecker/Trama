@@ -1,4 +1,5 @@
 .frame {
+  position: relative;
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);
   max-width: 1440px;
@@ -8,6 +9,9 @@
 }
 .frame.menuClosed {
   grid-template-columns: 0 minmax(0, 1fr);
+}
+.menuControl {
+  display: contents;
 }
 .sidebarClip {
   overflow: hidden;
@@ -28,23 +32,62 @@
   opacity: 0;
   visibility: hidden;
 }
-.headerActions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.headerActions .menuToggle {
+.frame .menuToggle {
+  position: absolute;
+  top: 0;
+  left: 230px;
+  z-index: 5;
+  transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: transparent;
+  background: var(--paper);
   color: var(--ink);
   cursor: pointer;
   font-size: 15px;
+  transition: left 240ms ease;
+}
+@media (min-width: 801px) {
+  .menuControl {
+    display: block;
+    position: sticky;
+    top: 12px;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    align-self: start;
+    height: 0;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .menuControl .menuToggle {
+    pointer-events: auto;
+  }
+  .sidebarClip {
+    position: sticky;
+    top: 12px;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--paper);
+  }
+  .sidebar {
+    height: auto;
+  }
+  .content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .frame.menuClosed .menuToggle {
+    left: 22px;
+  }
 }
 .menuToggle:hover {
   background: var(--surface);
@@ -100,6 +143,18 @@
   color: var(--muted);
   font-size: 15px;
 }
+.sidebarLogout {
+  margin-top: 12px;
+}
+.sidebar .sidebarLogout button {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.sidebar .sidebarLogout [role="alert"] {
+  position: static;
+  width: 100%;
+}
 .content {
   min-width: 0;
 }
@@ -108,10 +163,11 @@
   display: none;
 }
 @media (max-width: 800px) {
-  .headerActions .menuToggle {
+  .frame .menuToggle {
     position: fixed;
     top: max(12px, env(safe-area-inset-top));
     left: max(12px, env(safe-area-inset-left));
+    transform: none;
     z-index: 32;
     width: 44px;
     height: 44px;
@@ -119,9 +175,6 @@
     padding: 0;
     background: var(--preview-paper);
     box-shadow: 0 2px 10px #0002;
-  }
-  .menuToggle > span {
-    display: none;
   }
   .floatingBack {
     position: fixed;
@@ -177,9 +230,11 @@
     height: auto;
   }
   .greeting,
-  .name,
-  .role {
+  .name {
     display: none;
+  }
+  .role {
+    margin: 24px 0 12px;
   }
   .menu {
     display: grid;
@@ -189,6 +244,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .frame,
+  .frame .menuToggle,
   .sidebar,
   .sidebarClip {
     transition: none;

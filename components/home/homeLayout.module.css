@@ -121,6 +121,14 @@
 .header nav a:hover {
   text-decoration: underline;
 }
+@media (min-width: 801px) {
+  .header.floatingNavigationHeader {
+    gap: 16px;
+  }
+  .header.floatingNavigationHeader nav {
+    margin-left: 0;
+  }
+}
 .themeControl {
   display: flex;
   align-items: center;
@@ -189,7 +197,7 @@
   line-height: 1.15;
 }
 .companyBrand strong {
-  font-size: 32px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.075em;
   white-space: nowrap;
@@ -198,15 +206,19 @@
   color: var(--accent);
 }
 .companyBrand small {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--accent);
 }
 .statusLink {
   display: inline-flex;
   align-items: center;
   gap: 16px;
-  font-size: 16px;
+  font-size: 14px;
   text-decoration: none;
+}
+.footerBottom nav {
+  font-size: 14px;
+  color: var(--muted);
 }
 .statusLink:hover {
   text-decoration: underline;

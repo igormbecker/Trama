@@ -28,7 +28,10 @@ export default function WorkPage({
       user={user}
       activePage="works"
     >
-      <section className={styles.workspace} aria-labelledby="work-title">
+      <section
+        className={`${styles.workspace} ${styles.workPage}`}
+        aria-labelledby="work-title"
+      >
         <Link href="/works">← Minhas obras</Link>
         {router.query.created === "1" && (
           <SuccessMessage>Obra criada com sucesso!</SuccessMessage>

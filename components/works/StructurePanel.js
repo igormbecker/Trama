@@ -151,7 +151,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
   }
   function orderButtons(items, index, path) {
     return (
-      <>
+      <span className={styles.orderActions}>
         <button
           type="button"
           disabled={isBusy || index === 0}
@@ -168,7 +168,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
         >
           ↓
         </button>
-      </>
+      </span>
     );
   }
   const isChapterForm = Boolean(form?.partId);

@@ -58,41 +58,18 @@ export default function AppLayout({
   );
   const participationCount =
     participations?.filter(needsParticipationAction).length || 0;
+  const menuIconPath = isMobile
+    ? menuOpen
+      ? "m6 6 12 12M6 18 18 6"
+      : "M4 6h16M4 12h16M4 18h16"
+    : menuOpen
+      ? "m11 6-6 6 6 6m8-12-6 6 6 6"
+      : "m5 6 6 6-6 6m8-12 6 6-6 6";
   return (
     <HomeLayout
       title={title}
       description={description}
-      navigation={
-        <div className={styles.headerActions}>
-          <button
-            ref={toggleRef}
-            type="button"
-            className={styles.menuToggle}
-            aria-controls="account-sidebar"
-            aria-expanded={menuOpen}
-            aria-label={menuOpen ? "Ocultar menu" : "Mostrar menu"}
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <path d="M9 4v16" />
-              <path d={menuOpen ? "m16 9-3 3 3 3" : "m13 9 3 3-3 3"} />
-            </svg>
-            <span>{menuOpen ? "Ocultar menu" : "Mostrar menu"}</span>
-          </button>
-          <LogoutButton />
-        </div>
-      }
+      navigation={<></>}
       showThemeControl={false}
       hasFloatingNavigation
     >
@@ -108,6 +85,32 @@ export default function AppLayout({
         </Link>
       )}
       <div className={`${styles.frame} ${menuOpen ? "" : styles.menuClosed}`}>
+        <div className={styles.menuControl}>
+          <button
+            ref={toggleRef}
+            type="button"
+            className={styles.menuToggle}
+            aria-controls="account-sidebar"
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Ocultar menu" : "Mostrar menu"}
+            title={menuOpen ? "Ocultar menu" : "Mostrar menu"}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d={menuIconPath} />
+            </svg>
+          </button>
+        </div>
         {menuOpen && (
           <button
             className={styles.menuBackdrop}
@@ -264,6 +267,9 @@ export default function AppLayout({
             <p className={styles.role}>
               {user.is_admin ? "Administrador" : "Sua conta"}
             </p>
+            <div className={styles.sidebarLogout}>
+              <LogoutButton />
+            </div>
           </aside>
         </div>
         <div className={styles.content}>{children}</div>

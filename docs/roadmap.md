@@ -43,6 +43,8 @@ As migrations até `1792320000000_create-work-credits` foram aplicadas no desenv
 
 Contribuição por cópia, revisão por comentários, indicadores nos capítulos e Minhas participações estão implementados. O contador atualiza a cada 30 segundos, ao recuperar foco e reconectar; não é uma central de notificações ou envio de e-mail editorial.
 
+Seu espaço também destaca até cinco pedidos de revisão/contribuição aguardando ação, com dados iniciais do servidor e atualização pelo mesmo fluxo. O painel ativo abre ao acessar o capítulo como pessoa atribuída. Comentários têm painel lateral persistente no computador e painel inferior expansível no celular, filtros e navegação entre apontamento e trecho. O responsável pode resolver/reabrir comentários, inclusive de revisões anteriores, preservando autor/data de cada ação e sem alterar texto ou parecer. Não requer migration: os metadados ficam no JSONB existente. Conferência visual no navegador e no iPhone físico permanece pendente.
+
 - [ ] Exercitar no navegador correções, nova revisão e consulta de histórico nas duas contas.
 - [ ] Testar seleção/comentários com gestos de smartphone físico, textos longos e seleções entre parágrafos.
 - [ ] Exercitar falhas de rede, remoção da pessoa atribuída e troca/expiração de sessão na interface editorial. Permissões, revogação, transições, concorrência e histórico têm cobertura automatizada; preservar essa proteção.
@@ -92,6 +94,10 @@ Antes do primeiro salvamento dos créditos, contribuições e revisão vêm pree
 Nunca editar textos legais de uma versão já aceita: criar novo arquivo/identificador e preservar o histórico. Personificação não pode aceitar por terceiros; seu acesso indireto a obras privadas precisa continuar refletido nos documentos.
 
 ## 8. Usabilidade e ideias futuras
+
+O botão Sair fica no menu lateral, abaixo do perfil (Administrador ou Sua conta), no computador e no celular. No computador, a lateral e o controle acompanham a rolagem dentro da área autenticada usando sticky, com margem superior de 12 px e rolagem própria se os itens ultrapassarem a altura disponível. O controle fica no alto da divisória, somente com setas duplas indicando recolher/expandir; acompanha o recolhimento e permanece acessível à esquerda. No celular, permanece no canto superior esquerdo, com hambúrguer ao fechar e X ao abrir. A transição de recolhimento e a sobreposição com fundo escurecido no celular são preservadas.
+
+O rodapé usa uma assinatura Bectec menor e links legais no mesmo tamanho do Status do sistema. Todos os botões da tela de detalhes da obra, incluindo leitura, edição, créditos, estrutura e participantes/convites, seguem o tamanho compacto no celular e no computador, com área mínima de toque de 44 px e setas de ordenação agrupadas. Conferência visual nos dois tamanhos e no iPhone físico permanece pendente.
 
 - [ ] Validar teclado, contraste, foco, mensagens e telas pequenas nos fluxos completos, incluindo créditos e participações.
 - [ ] Avaliar custo da renderização global para ler o cookie de tema antes de alterar cache/desempenho.
