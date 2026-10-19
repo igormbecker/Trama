@@ -13,7 +13,10 @@ export default function WorkCreditsPanel({ workId, initialData }) {
     Object.fromEntries(
       groups.map(([group]) => [
         group,
-        (initialData?.credits?.[group] || []).join("\n"),
+        (initialData?.has_saved_credits === false && group !== "authors"
+          ? initialData?.suggestions?.[group] || []
+          : initialData?.credits?.[group] || []
+        ).join("\n"),
       ]),
     ),
   );

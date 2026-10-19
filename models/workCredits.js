@@ -34,16 +34,20 @@ function validate(input) {
   }
   return credits;
 }
-async function findConfirmed(workId) {
+async function findStored(workId) {
   const result = await database.query({
     text: "SELECT document FROM work_credits WHERE work_id = $1",
     values: [workId],
   });
-  return result.rows[0]?.document || emptyCredits();
+  return result.rows[0]?.document || null;
+}
+async function findConfirmed(workId) {
+  return (await findStored(workId)) || emptyCredits();
 }
 async function read(workId, userId) {
   await work.requireOwner(workId, userId);
-  const credits = await findConfirmed(workId);
+  const stored = await findStored(workId);
+  const credits = stored || emptyCredits();
   const result = await database.query({
     text: `SELECT DISTINCT r.kind, u.name, c.title FROM chapter_requests r
       JOIN users u ON u.id = r.assignee_user_id JOIN chapters c ON c.id = r.chapter_id
@@ -57,7 +61,7 @@ async function read(workId, userId) {
     suggestions[row.kind === "review" ? "reviewers" : "contributors"].push(
       `${row.name} — ${row.title}`,
     );
-  return { credits, suggestions };
+  return { credits, suggestions, has_saved_credits: Boolean(stored) };
 }
 async function update(workId, userId, input) {
   await work.requireOwner(workId, userId);

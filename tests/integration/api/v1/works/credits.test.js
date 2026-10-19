@@ -33,6 +33,7 @@ test("Only the owner confirms credits, and historical participants remain sugges
   expect((await request(path)).status).toBe(401);
   expect((await request(path, reviewer)).status).toBe(404);
   const initial = await (await request(path, owner)).json();
+  expect(initial.has_saved_credits).toBe(false);
   expect(initial.credits).toEqual({
     authors: [],
     contributors: [],
@@ -88,7 +89,9 @@ test("Only the owner confirms credits, and historical participants remain sugges
   expect((await request(path, owner, "PUT", credits)).status).toBe(200);
   const saved = await request(path, owner);
   expect(saved.headers.get("cache-control")).toBe("private, no-store");
-  expect((await saved.json()).credits).toEqual(credits);
+  const savedData = await saved.json();
+  expect(savedData.credits).toEqual(credits);
+  expect(savedData.has_saved_credits).toBe(true);
   const exported = await request(
     `/api/v1/works/${book.id}/export?format=docx`,
     owner,

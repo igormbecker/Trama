@@ -64,6 +64,8 @@ Referência da V1: Tiptap MIT 3.32.0, JSONB separado da descrição, limite de 1
 
 PDF/DOCX incluem capa, créditos confirmados, descrição preenchida e sumário. Grupos vazios de créditos são omitidos. O histórico sugere contribuições incorporadas e revisões concluídas; o responsável confirma os nomes.
 
+Antes do primeiro salvamento dos créditos, contribuições e revisão vêm preenchidas com sugestões do histórico, editáveis. A exportação continua usando somente créditos salvos. Após salvar, inclusive grupos deixados vazios, as escolhas são preservadas; novas sugestões podem ser adicionadas pelos botões. Autoria permanece manual.
+
 - [ ] Conferir aparência, paginação dos créditos e atualização do sumário DOCX em Word/LibreOffice. A estrutura tem testes; antes da atualização, campos de página mostram “—”. O renderizador DOCX não está instalado neste ambiente.
 - [ ] Disponibilizar PDF para tela com fundo creme `#F7F2E9` e texto `#30313A`, além de impressão branca. Validar contraste, margens e paginação. O PDF atual é branco.
 - [ ] Validar exportações extensas e créditos longos nos editores finais.
