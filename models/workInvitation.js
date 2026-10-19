@@ -135,6 +135,7 @@ async function createAndSend(workId, ownerId, input) {
   try {
     const content = await renderMessage({
       title: "Convite para participar de uma obra",
+      highlight: invitedWork.title,
       paragraphs: [
         `Você recebeu um convite para participar da obra ${invitedWork.title} como organizador no Trama.`,
         "O convite vale por sete dias. Se ainda não tiver conta, você poderá criá-la pelo link. Se não esperava este convite, ignore a mensagem.",

@@ -360,3 +360,59 @@
 .structure .actions {
   margin-bottom: 20px;
 }
+.editorialProgress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.editorialBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--review-bg);
+  color: var(--review-ink);
+  font-weight: 400;
+}
+.editorialBadge.editorialApproved {
+  background: var(--approved-bg);
+  color: var(--approved-ink);
+}
+
+.participationList {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+.participationCard {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--preview-paper);
+  overflow-wrap: anywhere;
+}
+.participationCard h3 {
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+.participationCard > p {
+  margin-bottom: 16px;
+}
+.completedParticipations {
+  margin-top: 48px;
+}
+.creditsIntroduction {
+  margin-top: 20px;
+}
+.creditSuggestions {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin: 12px 0 24px;
+}

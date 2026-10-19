@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import styles from "./chapter.module.css";
 
 export default function ExportWorkButtons({ workId, disabled }) {
@@ -76,6 +77,11 @@ export default function ExportWorkButtons({ workId, disabled }) {
           </button>
         ))}
       </div>
+      <p>
+        <Link href={`/works/${workId}#work-credits`}>
+          Conferir créditos da obra antes de exportar
+        </Link>
+      </p>
       {busy && (
         <p role="status">Preparando {busy.toUpperCase()} para download…</p>
       )}

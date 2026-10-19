@@ -29,6 +29,19 @@ test("Escapes content instead of interpreting it as arbitrary HTML", async () =>
   expect(result.html).toContain("&lt;script&gt;");
 });
 
+test("Highlights the work title while escaping its text and preserving plain text", async () => {
+  const workTitle = "Memórias & <Futuro>";
+  const result = await renderMessage({
+    ...content,
+    paragraphs: [`Convite para a obra ${workTitle} como organizador.`],
+    highlight: workTitle,
+  });
+  expect(result.html).toContain(
+    "<strong>Memórias &amp; &lt;Futuro&gt;</strong>",
+  );
+  expect(result.text).toContain(workTitle);
+});
+
 test.each([
   "javascript:alert(1)",
   "data:text/html,unsafe",

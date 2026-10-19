@@ -1,9 +1,20 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import HomeLayout from "components/home/HomeLayout";
 import LogoutButton from "components/auth/LogoutButton";
 import useInvitations from "components/works/useInvitations";
+import useParticipations, {
+  needsParticipationAction,
+} from "components/works/useParticipations";
 import styles from "./appLayout.module.css";
+
+function subscribeViewport(onChange) {
+  const viewport = window.matchMedia("(max-width: 800px)");
+  viewport.addEventListener("change", onChange);
+  return () => viewport.removeEventListener("change", onChange);
+}
+const isMobileViewport = () => window.matchMedia("(max-width: 800px)").matches;
+const serverViewport = () => false;
 
 export default function AppLayout({
   user,
@@ -12,13 +23,41 @@ export default function AppLayout({
   description,
   children,
   initialInvitations,
+  initialParticipations,
+  backHref,
+  backLabel = "Voltar",
 }) {
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuChoice, setMenuOpen] = useState(null);
+  const isMobile = useSyncExternalStore(
+    subscribeViewport,
+    isMobileViewport,
+    serverViewport,
+  );
+  const menuOpen = menuChoice ?? !isMobile;
+  const toggleRef = useRef(null);
+  function closeMobileMenu(event) {
+    if (
+      event.target.closest("a") &&
+      window.matchMedia("(max-width: 800px)").matches
+    ) {
+      setMenuOpen(false);
+    }
+  }
+  function closeMenu() {
+    setMenuOpen(false);
+    toggleRef.current?.focus();
+  }
   const { data: invitations, error: invitationsError } = useInvitations(
     user.id,
     initialInvitations,
   );
   const invitationCount = invitationsError ? 0 : invitations?.length || 0;
+  const { data: participations } = useParticipations(
+    user.id,
+    initialParticipations,
+  );
+  const participationCount =
+    participations?.filter(needsParticipationAction).length || 0;
   return (
     <HomeLayout
       title={title}
@@ -26,11 +65,13 @@ export default function AppLayout({
       navigation={
         <div className={styles.headerActions}>
           <button
+            ref={toggleRef}
             type="button"
             className={styles.menuToggle}
             aria-controls="account-sidebar"
             aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? "Ocultar menu" : "Mostrar menu"}
+            onClick={() => setMenuOpen(!menuOpen)}
           >
             <svg
               width="20"
@@ -47,24 +88,51 @@ export default function AppLayout({
               <path d="M9 4v16" />
               <path d={menuOpen ? "m16 9-3 3 3 3" : "m13 9 3 3-3 3"} />
             </svg>
-            {menuOpen ? "Ocultar menu" : "Mostrar menu"}
+            <span>{menuOpen ? "Ocultar menu" : "Mostrar menu"}</span>
           </button>
           <LogoutButton />
         </div>
       }
       showThemeControl={false}
+      hasFloatingNavigation
     >
+      {backHref && (
+        <Link
+          className={styles.floatingBack}
+          href={backHref}
+          aria-label={backLabel}
+          title={backLabel}
+        >
+          <span aria-hidden="true">←</span>
+          <span>Voltar</span>
+        </Link>
+      )}
       <div className={`${styles.frame} ${menuOpen ? "" : styles.menuClosed}`}>
+        {menuOpen && (
+          <button
+            className={styles.menuBackdrop}
+            type="button"
+            aria-label="Fechar menu"
+            onClick={closeMenu}
+          />
+        )}
         <div
           id="account-sidebar"
           className={styles.sidebarClip}
           inert={!menuOpen}
           aria-hidden={!menuOpen}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") closeMenu();
+          }}
         >
           <aside className={styles.sidebar}>
             <p className={styles.greeting}>Seu espaço no Trama</p>
             <p className={styles.name}>{user.name}</p>
-            <nav aria-label="Menu da conta" className={styles.menu}>
+            <nav
+              aria-label="Menu da conta"
+              className={styles.menu}
+              onClick={closeMobileMenu}
+            >
               <Link
                 href="/home"
                 aria-current={activePage === "home" ? "page" : undefined}
@@ -92,6 +160,31 @@ export default function AppLayout({
                   />
                 </svg>
                 Minhas obras
+              </Link>
+              <Link
+                href="/participations"
+                aria-current={
+                  activePage === "participations" ? "page" : undefined
+                }
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M9 5h11M9 12h11M9 19h11M3 5l1 1 2-2M3 12l1 1 2-2M3 19l1 1 2-2"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Minhas participações
+                {participationCount > 0 && (
+                  <span
+                    className={styles.invitationCount}
+                    aria-label={`${participationCount} ${participationCount === 1 ? "pedido aguardando sua ação" : "pedidos aguardando sua ação"}`}
+                  >
+                    {participationCount}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/invitations"

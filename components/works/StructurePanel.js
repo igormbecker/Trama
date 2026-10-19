@@ -10,6 +10,7 @@ import {
 } from "./focusStructureForm";
 import styles from "./works.module.css";
 import SuccessIcon from "components/shared/SuccessIcon";
+import ChapterEditorialStatus from "./ChapterEditorialStatus";
 
 function ActionIcon({ action }) {
   const paths = {
@@ -287,6 +288,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
                       {part.position}.{chapter.position}. {chapter.title}
                     </Link>
                   </h4>
+                  <ChapterEditorialStatus request={chapter.editorial_request} />
                   {chapter.description && (
                     <div
                       className={styles.chapterDescription}

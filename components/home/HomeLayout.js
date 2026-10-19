@@ -73,6 +73,7 @@ export default function HomeLayout({
   description = "Conheça o Trama: uma proposta para conectar pessoas, capítulos e etapas da produção editorial, da organização da obra à aprovação.",
   navigation,
   showThemeControl = true,
+  hasFloatingNavigation = false,
 }) {
   const { theme, setTheme } = useTheme();
   const { isAuthenticated } = useAuth();
@@ -102,7 +103,9 @@ export default function HomeLayout({
       <a className={styles.skipLink} href="#conteudo">
         Pular para o conteúdo
       </a>
-      <header className={styles.header}>
+      <header
+        className={`${styles.header} ${hasFloatingNavigation ? styles.floatingNavigationHeader : ""}`}
+      >
         <Link
           className={styles.productBrand}
           href={brandPath}

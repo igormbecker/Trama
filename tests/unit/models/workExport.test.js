@@ -66,6 +66,33 @@ const reading = {
     },
   ],
 };
+
+test("Places confirmed credits after the cover and before description and contents in both formats", async () => {
+  const credited = {
+    ...reading,
+    work: { ...reading.work, description: "Descrição" },
+    credits: {
+      authors: ["Clara Autora"],
+      contributors: ["Lídia — Capítulo"],
+      reviewers: ["Ana Revisora — Capítulo"],
+    },
+  };
+  const blocks = exportBlocks(credited).map((block) =>
+    block.runs.map((run) => run.text).join(""),
+  );
+  expect(blocks.indexOf("Créditos da obra")).toBe(1);
+  expect(blocks.indexOf("Ana Revisora — Capítulo")).toBeLessThan(
+    blocks.indexOf("Descrição da obra"),
+  );
+  const archive = await JSZip.loadAsync(await generateDocx(credited));
+  const xml = await archive.file("word/document.xml").async("string");
+  expect(xml.indexOf("Clara Autora")).toBeLessThan(xml.indexOf("Sumário"));
+  await generatePdf(credited);
+  const pdf = PDFDocument.mock.results.at(-1).value;
+  expect(pdf.renderedText.some((entry) => entry.text.includes("Clara"))).toBe(
+    true,
+  );
+});
 test("Builds the manuscript in editorial order and preserves inline formatting and list starts", () => {
   const blocks = exportBlocks(reading);
   expect(

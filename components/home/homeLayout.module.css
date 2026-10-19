@@ -1,3 +1,8 @@
+@media (max-width: 800px) {
+  .header.floatingNavigationHeader {
+    padding-top: calc(76px + env(safe-area-inset-top));
+  }
+}
 .site {
   --error-background: #f0d7d2;
   --error-text: #752e2e;
@@ -11,6 +16,10 @@
   --selected: #e8e4ee;
   --approved-bg: #e8f3ec;
   --approved-ink: #2b6548;
+  --approve-button-bg: #286044;
+  --correction-button-bg: #806013;
+  --correction-bg: #f8e6ad;
+  --correction-ink: #72500e;
   --review-bg: #edebfa;
   --review-ink: #56509b;
   --writing-bg: #e8e3da;
@@ -35,6 +44,10 @@
   --selected: #403b48;
   --approved-bg: #303d32;
   --approved-ink: #bed6b5;
+  --approve-button-bg: #326e4f;
+  --correction-button-bg: #896719;
+  --correction-bg: #504124;
+  --correction-ink: #f2d58c;
   --review-bg: #443d50;
   --review-ink: #dbccf0;
   --writing-bg: #403b34;

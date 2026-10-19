@@ -3,6 +3,7 @@ import database from "infra/database.js";
 import work from "models/work.js";
 import chapterContent from "models/chapterContent.js";
 import { validateDocument } from "models/chapterDocument.js";
+import { reviewText } from "models/reviewDocument.js";
 import { ConflictError, NotFoundError, ValidationError } from "infra/errors.js";
 
 function invalid() {
@@ -77,22 +78,24 @@ async function assertAccess(workId, chapterId, userId, client, lock = false) {
   if (
     !isOwner &&
     (current.assignee_user_id !== userId ||
-      !["writing", "waiting"].includes(current.status))
+      (!["writing", "waiting"].includes(current.status) &&
+        current.kind !== "review"))
   )
     throw unavailable();
   return { authorizedWork, current };
 }
 async function read(workId, chapterId, userId, selectedId) {
-  const { authorizedWork, current } = await assertAccess(
-    workId,
-    chapterId,
-    userId,
-    database,
-  );
+  const { authorizedWork, current } =
+    selectedId !== undefined
+      ? {
+          authorizedWork: await work.findOneById(workId, userId),
+          current: null,
+        }
+      : await assertAccess(workId, chapterId, userId, database);
   const isOwner = authorizedWork.owner_id === userId;
   let selected = current;
   if (selectedId !== undefined) {
-    if (!isOwner) throw unavailable();
+    await chapterExists(database, workId, chapterId);
     work.validateId(selectedId);
     const result = await database.query({
       text: "SELECT * FROM chapter_requests WHERE id = $1 AND chapter_id = $2",
@@ -100,12 +103,13 @@ async function read(workId, chapterId, userId, selectedId) {
     });
     if (!result.rowCount) throw unavailable();
     selected = result.rows[0];
+    if (!isOwner && selected.assignee_user_id !== userId) throw unavailable();
   }
   const chapter = await chapterContent.read(workId, chapterId, userId);
   const history = isOwner
     ? (
         await database.query({
-          text: "SELECT id, kind, status, created_at, approved_at, restored_at FROM chapter_requests WHERE chapter_id = $1 ORDER BY created_at DESC, id DESC",
+          text: "SELECT id, kind, status, review_verdict, created_at, approved_at, restored_at FROM chapter_requests WHERE chapter_id = $1 ORDER BY created_at DESC, id DESC",
           values: [chapterId],
         })
       ).rows
@@ -125,6 +129,24 @@ async function read(workId, chapterId, userId, selectedId) {
     history,
     is_owner: isOwner,
   };
+}
+async function findForAssignee(userId) {
+  const result = await database.query({
+    text: `SELECT r.id, r.kind, r.status, r.review_verdict,
+      r.adjustment_message IS NOT NULL AS adjustments_requested,
+      r.created_at, r.updated_at, c.id AS chapter_id, c.title AS chapter_title,
+      w.id AS work_id, w.title AS work_title
+      FROM chapter_requests r JOIN chapters c ON c.id = r.chapter_id
+      JOIN work_parts part ON part.id = c.part_id JOIN works w ON w.id = part.work_id
+      WHERE r.assignee_user_id = $1 AND EXISTS (
+        SELECT 1 FROM work_participants p WHERE p.work_id = w.id
+        AND p.user_id = $1 AND p.removed_at IS NULL
+      )
+      ORDER BY CASE WHEN r.status = 'writing' THEN 0 WHEN r.status = 'waiting' THEN 1 ELSE 2 END,
+        r.updated_at DESC, r.id DESC`,
+    values: [userId],
+  });
+  return result.rows;
 }
 async function create(workId, chapterId, ownerId, input) {
   exactInput(input, ["assignee_user_id", "kind", "instructions"]);
@@ -158,8 +180,8 @@ async function create(workId, chapterId, ownerId, input) {
         values: [chapterId],
       });
       const result = await client.query({
-        text: `INSERT INTO chapter_requests (chapter_id, assignee_user_id, kind, instructions, working_document, base_chapter_revision)
-          VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        text: `INSERT INTO chapter_requests (chapter_id, assignee_user_id, kind, instructions, working_document, base_chapter_revision, review_document)
+          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
         values: [
           chapterId,
           input.assignee_user_id,
@@ -167,6 +189,9 @@ async function create(workId, chapterId, ownerId, input) {
           input.instructions.trim(),
           JSON.stringify(draft.rows[0].document),
           draft.rows[0].revision,
+          input.kind === "review"
+            ? JSON.stringify(draft.rows[0].document)
+            : null,
         ],
       });
       return result.rows[0];
@@ -201,7 +226,8 @@ async function reserve(workId, chapterId, userId, input) {
   exactInput(input, ["token"]);
   if (input.token !== undefined && !validToken(input.token)) throw invalid();
   return mutate(workId, chapterId, userId, async (client, current, isOwner) => {
-    if (isOwner || current.status !== "writing") throw unavailable();
+    if (isOwner || current.kind === "review" || current.status !== "writing")
+      throw unavailable();
     const active =
       current.lease_expires_at &&
       new Date(current.lease_expires_at) > new Date();
@@ -227,7 +253,7 @@ async function save(workId, chapterId, userId, input) {
     throw invalid();
   validateDocument(input.document);
   return mutate(workId, chapterId, userId, async (client, current, isOwner) => {
-    if (isOwner || current.status !== "writing")
+    if (isOwner || current.kind === "review" || current.status !== "writing")
       throw new ConflictError("This request is not editable.");
     if (
       current.lease_token !== input.token ||
@@ -264,12 +290,95 @@ async function act(workId, chapterId, userId, input) {
     "message",
     "expected_chapter_revision",
     "confirm_conflict",
+    "start",
+    "end",
+    "quote",
+    "verdict",
+    "comment_id",
   ]);
   if (
-    !["submit", "adjust", "approve", "cancel", "restore"].includes(input.action)
+    ![
+      "submit",
+      "adjust",
+      "approve",
+      "cancel",
+      "restore",
+      "comment",
+      "remove_comment",
+      "conclude_review",
+    ].includes(input.action)
   )
     throw invalid();
   return mutate(workId, chapterId, userId, async (client, current, isOwner) => {
+    if (
+      ["comment", "remove_comment", "conclude_review"].includes(input.action)
+    ) {
+      if (
+        isOwner ||
+        current.kind !== "review" ||
+        !["writing", "waiting"].includes(current.status)
+      )
+        throw unavailable();
+      const comments = current.review_comments;
+      if (input.action === "comment") {
+        const text = reviewText(current.review_document);
+        if (
+          !Number.isSafeInteger(input.start) ||
+          !Number.isSafeInteger(input.end) ||
+          input.start < 0 ||
+          input.end <= input.start ||
+          input.end > text.length ||
+          input.end - input.start > 2000 ||
+          input.quote !== text.slice(input.start, input.end) ||
+          typeof input.message !== "string" ||
+          !input.message.trim() ||
+          input.message.length > 5000 ||
+          comments.length >= 200
+        )
+          throw invalid();
+        comments.push({
+          id: randomUUID(),
+          start: input.start,
+          end: input.end,
+          quote: input.quote,
+          message: input.message.trim(),
+          created_at: new Date().toISOString(),
+        });
+      } else if (input.action === "remove_comment") {
+        const index = comments.findIndex(
+          (comment) => comment.id === input.comment_id,
+        );
+        if (index < 0) throw invalid();
+        comments.splice(index, 1);
+      } else {
+        if (
+          !["approved", "changes_requested"].includes(input.verdict) ||
+          (input.verdict === "changes_requested" && !comments.length)
+        )
+          throw invalid();
+        const result = await client.query({
+          text: "UPDATE chapter_requests SET status = 'approved', review_verdict = $2, submitted_at = timezone('utc', now()), approved_at = timezone('utc', now()), lease_token = NULL, lease_expires_at = NULL, updated_at = timezone('utc', now()) WHERE id = $1 RETURNING *",
+          values: [current.id, input.verdict],
+        });
+        await client.query({
+          text: "INSERT INTO chapter_request_events (request_id, actor_user_id, action, message) VALUES ($1, $2, 'submitted', $3)",
+          values: [
+            current.id,
+            userId,
+            input.verdict === "approved"
+              ? "Revisão: aprovado."
+              : "Revisão: correções solicitadas.",
+          ],
+        });
+        return result.rows[0];
+      }
+      const result = await client.query({
+        text: "UPDATE chapter_requests SET review_comments = $2, updated_at = timezone('utc', now()) WHERE id = $1 RETURNING *",
+        values: [current.id, JSON.stringify(comments)],
+      });
+      return result.rows[0];
+    }
+    if (current.kind === "review" && input.action !== "cancel") throw invalid();
     if (input.action === "submit") {
       if (isOwner || current.status !== "writing") throw unavailable();
       const result = await client.query({
@@ -387,5 +496,13 @@ async function act(workId, chapterId, userId, input) {
   });
 }
 
-const chapterRequest = { read, create, reserve, save, release, act };
+const chapterRequest = {
+  read,
+  findForAssignee,
+  create,
+  reserve,
+  save,
+  release,
+  act,
+};
 export default chapterRequest;

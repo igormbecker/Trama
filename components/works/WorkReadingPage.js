@@ -11,6 +11,8 @@ export default function WorkReadingPage({ user, work, parts }) {
     <AppLayout
       user={user}
       activePage="works"
+      backHref={`/works/${work.id}`}
+      backLabel="Voltar à obra"
       title={`${work.title} — Leitura | Trama`}
       description="Leitura do texto atual da obra."
     >

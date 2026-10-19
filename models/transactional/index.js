@@ -14,7 +14,13 @@ import {
 } from "react-email";
 import { ValidationError } from "infra/errors.js";
 
-function MessageEmail({ title, paragraphs, actionLabel, actionUrl }) {
+function MessageEmail({
+  title,
+  paragraphs,
+  actionLabel,
+  actionUrl,
+  highlight,
+}) {
   return React.createElement(
     Html,
     { lang: "pt-BR" },
@@ -61,7 +67,22 @@ function MessageEmail({ title, paragraphs, actionLabel, actionUrl }) {
           React.createElement(
             Text,
             { key: index, style: { fontSize: "16px", lineHeight: "26px" } },
-            paragraph,
+            ...(highlight
+              ? paragraph
+                  .split(highlight)
+                  .flatMap((part, partIndex) =>
+                    partIndex === 0
+                      ? [part]
+                      : [
+                          React.createElement(
+                            "strong",
+                            { key: partIndex },
+                            highlight,
+                          ),
+                          part,
+                        ],
+                  )
+              : [paragraph]),
           ),
         ),
         React.createElement(
@@ -132,6 +153,8 @@ export async function renderMessage(content) {
     ![content.title, content.actionLabel].every(
       (value) => typeof value === "string" && value.trim(),
     ) ||
+    (content.highlight !== undefined &&
+      (typeof content.highlight !== "string" || !content.highlight.trim())) ||
     !Array.isArray(content.paragraphs) ||
     !content.paragraphs.length ||
     !content.paragraphs.every(

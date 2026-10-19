@@ -11,7 +11,7 @@ import {
 import ChapterPage from "components/works/ChapterPage";
 
 export default ChapterPage;
-export async function getServerSideProps({ req, res, params }) {
+export async function getServerSideProps({ req, res, params, query }) {
   res.setHeader("Cache-Control", "private, no-store");
   try {
     const user = await authentication.authenticateSession(
@@ -29,6 +29,7 @@ export async function getServerSideProps({ req, res, params }) {
         params.id,
         params.chapterId,
         user.id,
+        query?.requestId,
       );
     } catch (error) {
       if (!(error instanceof NotFoundError)) throw error;

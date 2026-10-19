@@ -1,6 +1,8 @@
 import { useState } from "react";
+import Link from "next/link";
 import ChapterEditor from "./ChapterEditor";
 import ChapterReader from "./ChapterReader";
+import ChapterReview from "./ChapterReview";
 import { chapterRequest } from "./chapterClient";
 import SuccessMessage from "components/shared/SuccessMessage";
 import styles from "./chapter.module.css";
@@ -12,6 +14,19 @@ const statusLabels = {
   canceled: "Cancelada",
 };
 const kindLabels = { contribution: "Contribuição", review: "Revisão" };
+function requestStatus(request) {
+  return request.kind === "review"
+    ? request.review_verdict === "approved"
+      ? "Aprovado"
+      : request.review_verdict === "changes_requested"
+        ? "Correções solicitadas"
+        : request.status === "canceled"
+          ? "Cancelada"
+          : request.status === "approved"
+            ? "Revisão anterior concluída"
+            : "Em revisão"
+    : statusLabels[request.status];
+}
 
 export default function EditorialRequestPanel({
   user,
@@ -19,7 +34,8 @@ export default function EditorialRequestPanel({
   content,
   setContent,
   initialRequestContent,
-  participants,
+  participants = [],
+  children,
 }) {
   const [requestContent, setRequestContent] = useState(initialRequestContent);
   const [assignee, setAssignee] = useState("");
@@ -39,6 +55,27 @@ export default function EditorialRequestPanel({
   const current = requestContent?.request;
   const active = current && ["writing", "waiting"].includes(current.status);
   const assigned = current?.assignee_user_id === user.id && !isOwner;
+  async function reviewAction(input) {
+    if (busy) return false;
+    setBusy(true);
+    setError("");
+    setSuccess("");
+    try {
+      await chapterRequest(path, "PATCH", input);
+      await refresh();
+      setSuccess(
+        input.action === "conclude_review"
+          ? "Parecer enviado ao responsável."
+          : "Comentários atualizados.",
+      );
+      return true;
+    } catch (failure) {
+      setError(failure.message);
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function refresh() {
     const updated = await chapterRequest(path);
@@ -176,246 +213,301 @@ export default function EditorialRequestPanel({
       setError(failure.message);
     }
   }
+  if (!isOwner && !current) return children || null;
+  const assigneeName = assigned
+    ? "Você"
+    : participants.find(
+        (participant) => participant.user_id === current?.assignee_user_id,
+      )?.name;
   return (
-    <section
-      className={styles.editorialPanel}
-      aria-labelledby="editorial-title"
-    >
-      <h2 id="editorial-title">Contribuição e revisão</h2>
-      <p>
-        A escrita do responsável continua livre. Um pedido opcional permite que
-        uma pessoa trabalhe em uma cópia antes da aprovação.
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {success && <SuccessMessage>{success}</SuccessMessage>}
-      {current && (
-        <div className={styles.editorialCard}>
-          <h3>
-            {kindLabels[current.kind]} · {statusLabels[current.status]}
-          </h3>
+    <>
+      <details className={styles.editorialDisclosure}>
+        <summary>
+          {current
+            ? `${kindLabels[current.kind]}${assigneeName ? ` · ${assigneeName}` : ""} · ${requestStatus(current)}`
+            : "Solicitar contribuição ou revisão"}
+        </summary>
+        {assigned && active && (
           <p>
-            <strong>Instruções:</strong> {current.instructions}
+            Você tem um pedido de {kindLabels[current.kind].toLowerCase()} neste
+            capítulo.
           </p>
-          {current.adjustment_message && current.status === "writing" && (
+        )}
+        <p>
+          Contribuições usam uma cópia editável. Revisões usam comentários sobre
+          uma versão fixa do capítulo, sem alterar o texto da obra.
+        </p>
+        {error && <p role="alert">{error}</p>}
+        {success && <SuccessMessage>{success}</SuccessMessage>}
+        {current && (
+          <div className={styles.editorialCard}>
+            <h3>
+              {kindLabels[current.kind]} · {requestStatus(current)}
+            </h3>
             <p>
-              <strong>Ajustes pedidos:</strong> {current.adjustment_message}
+              <strong>Instruções:</strong> {current.instructions}
             </p>
-          )}
-          {assigned &&
-            current.status === "writing" &&
-            (token ? (
-              <ChapterEditor
-                key={token}
-                path={path}
-                userId={user.id}
-                content={requestContent}
-                token={token}
-                draftKey={`${user.id}:${content.chapter.id}:request:${current.id}`}
-                onClose={close}
-                onRestart={restart}
+            {current.kind === "review" && current.review_document && (
+              <ChapterReview
+                request={current}
+                editable={assigned && active}
+                busy={busy}
+                onAction={reviewAction}
+                success={success}
+                error={error}
               />
-            ) : (
-              <div className={styles.editorialActions}>
-                <button type="button" disabled={busy} onClick={start}>
-                  Trabalhar na cópia
-                </button>
-                <button type="button" disabled={busy} onClick={submit}>
-                  Enviar entrega
-                </button>
-              </div>
-            ))}
-          {assigned && current.status === "waiting" && (
-            <p>
-              Sua entrega foi preservada e aguarda a decisão do responsável.
-            </p>
-          )}
-          {isOwner && current.status === "writing" && (
-            <p>
-              A pessoa atribuída está trabalhando em uma cópia. O texto atual do
-              capítulo continua disponível para sua escrita.
-            </p>
-          )}
-          {isOwner && current.status === "waiting" && (
-            <>
-              <h4>Texto enviado</h4>
-              <div className={styles.editorialText}>
-                <ChapterReader document={current.submitted_document} />
-              </div>
-              <h4>Texto atual do capítulo</h4>
-              <div className={styles.editorialText}>
-                <ChapterReader document={content.document} />
-              </div>
-              {content.revision !== current.base_chapter_revision && (
-                <p role="alert">
-                  O capítulo mudou desde o início do pedido. Compare os dois
-                  textos antes de substituir o atual.
-                </p>
-              )}
-              <div className={styles.editorialActions}>
-                <button
-                  type="button"
-                  disabled={
-                    busy ||
-                    conflict ||
-                    content.revision !== current.base_chapter_revision
-                  }
-                  onClick={() => approve()}
-                >
-                  Aprovar e incorporar
-                </button>
-              </div>
-              {(conflict ||
-                content.revision !== current.base_chapter_revision) && (
+            )}
+            {current.adjustment_message && current.status === "writing" && (
+              <p>
+                <strong>Ajustes pedidos:</strong> {current.adjustment_message}
+              </p>
+            )}
+            {current.kind === "contribution" &&
+              assigned &&
+              current.status === "writing" &&
+              (token ? (
+                <ChapterEditor
+                  key={token}
+                  path={path}
+                  userId={user.id}
+                  content={requestContent}
+                  token={token}
+                  draftKey={`${user.id}:${content.chapter.id}:request:${current.id}`}
+                  onClose={close}
+                  onRestart={restart}
+                />
+              ) : (
                 <div className={styles.editorialActions}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={reviewedConflict}
-                      onChange={(event) =>
-                        setReviewedConflict(event.target.checked)
-                      }
-                    />{" "}
-                    Comparei os textos e autorizo substituir o texto atual.
-                  </label>
-                  <button
-                    type="button"
-                    disabled={busy || !reviewedConflict}
-                    onClick={() => approve(true)}
-                  >
-                    Confirmar substituição
+                  <button type="button" disabled={busy} onClick={start}>
+                    Trabalhar na cópia
+                  </button>
+                  <button type="button" disabled={busy} onClick={submit}>
+                    Enviar entrega
                   </button>
                 </div>
+              ))}
+            {current.kind === "contribution" &&
+              assigned &&
+              current.status === "waiting" && (
+                <p>
+                  Sua entrega foi preservada e aguarda a decisão do responsável.
+                </p>
               )}
-              <form onSubmit={adjust}>
-                <label htmlFor="adjustment-message">Solicitar ajustes</label>
-                <textarea
-                  id="adjustment-message"
-                  required
-                  maxLength={5000}
-                  value={message}
-                  onChange={(event) => setMessage(event.target.value)}
-                  disabled={busy}
-                />
-                <button type="submit" disabled={busy}>
-                  Pedir ajustes
-                </button>
-              </form>
-            </>
-          )}
-          {isOwner && active && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => {
-                if (
-                  window.confirm("Cancelar este pedido sem incorporar a cópia?")
-                )
-                  perform(
-                    () => chapterRequest(path, "PATCH", { action: "cancel" }),
-                    "Pedido cancelado.",
-                  );
-              }}
-            >
-              Cancelar pedido
-            </button>
-          )}
-          {isOwner && current.events?.length > 0 && (
-            <details>
-              <summary>Histórico deste pedido</summary>
-              <ol>
-                {current.events.map((event, index) => (
-                  <li key={index}>
-                    {event.action === "submitted"
-                      ? "Entrega enviada"
-                      : event.action === "adjusted"
-                        ? `Ajustes solicitados: ${event.message}`
-                        : event.action === "approved"
-                          ? "Entrega aprovada"
-                          : event.action === "restored"
-                            ? "Texto anterior restaurado"
-                            : "Pedido cancelado"}
-                  </li>
-                ))}
-              </ol>
-            </details>
-          )}
-          {isOwner &&
-            current.status === "approved" &&
-            current.previous_document && (
-              <details>
-                <summary>Texto anterior à aprovação</summary>
-                <div className={styles.editorialText}>
-                  <ChapterReader document={current.previous_document} />
-                </div>
-                {!current.restored_at && (
-                  <>
-                    <h4>Texto atual</h4>
-                    <div className={styles.editorialText}>
-                      <ChapterReader document={content.document} />
-                    </div>
-                    <button type="button" disabled={busy} onClick={restore}>
-                      Restaurar texto anterior
+            {current.kind === "contribution" &&
+              isOwner &&
+              current.status === "writing" && (
+                <p>
+                  A pessoa atribuída está trabalhando em uma cópia. O texto
+                  atual do capítulo continua disponível para sua escrita.
+                </p>
+              )}
+            {current.kind === "contribution" &&
+              isOwner &&
+              current.status === "waiting" && (
+                <>
+                  <h4>Texto enviado</h4>
+                  <div className={styles.editorialText}>
+                    <ChapterReader document={current.submitted_document} />
+                  </div>
+                  <h4>Texto atual do capítulo</h4>
+                  <div className={styles.editorialText}>
+                    <ChapterReader document={content.document} />
+                  </div>
+                  {content.revision !== current.base_chapter_revision && (
+                    <p role="alert">
+                      O capítulo mudou desde o início do pedido. Compare os dois
+                      textos antes de substituir o atual.
+                    </p>
+                  )}
+                  <div className={styles.editorialActions}>
+                    <button
+                      type="button"
+                      disabled={
+                        busy ||
+                        conflict ||
+                        content.revision !== current.base_chapter_revision
+                      }
+                      onClick={() => approve()}
+                      className={styles.approveButton}
+                    >
+                      Aprovar e incorporar
                     </button>
-                  </>
-                )}
+                  </div>
+                  {(conflict ||
+                    content.revision !== current.base_chapter_revision) && (
+                    <div className={styles.editorialActions}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={reviewedConflict}
+                          onChange={(event) =>
+                            setReviewedConflict(event.target.checked)
+                          }
+                        />{" "}
+                        Comparei os textos e autorizo substituir o texto atual.
+                      </label>
+                      <button
+                        type="button"
+                        disabled={busy || !reviewedConflict}
+                        onClick={() => approve(true)}
+                        className={styles.approveButton}
+                      >
+                        Confirmar substituição
+                      </button>
+                    </div>
+                  )}
+                  <form onSubmit={adjust}>
+                    <label htmlFor="adjustment-message">
+                      Solicitar ajustes
+                    </label>
+                    <textarea
+                      id="adjustment-message"
+                      required
+                      maxLength={5000}
+                      value={message}
+                      onChange={(event) => setMessage(event.target.value)}
+                      disabled={busy}
+                    />
+                    <button
+                      className={styles.correctionButton}
+                      type="submit"
+                      disabled={busy}
+                    >
+                      Pedir ajustes
+                    </button>
+                  </form>
+                </>
+              )}
+            {isOwner && active && (
+              <button
+                className={styles.dangerButton}
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  if (window.confirm("Cancelar este pedido editorial?"))
+                    perform(
+                      () => chapterRequest(path, "PATCH", { action: "cancel" }),
+                      "Pedido cancelado.",
+                    );
+                }}
+              >
+                Cancelar pedido
+              </button>
+            )}
+            {isOwner && current.events?.length > 0 && (
+              <details>
+                <summary>Histórico deste pedido</summary>
+                <ol>
+                  {current.events.map((event, index) => (
+                    <li key={index}>
+                      {event.action === "submitted"
+                        ? event.message || "Entrega enviada"
+                        : event.action === "adjusted"
+                          ? `Ajustes solicitados: ${event.message}`
+                          : event.action === "approved"
+                            ? "Entrega aprovada"
+                            : event.action === "restored"
+                              ? "Texto anterior restaurado"
+                              : "Pedido cancelado"}
+                    </li>
+                  ))}
+                </ol>
               </details>
             )}
-        </div>
-      )}
-      {isOwner && !active && participants.length > 0 && (
-        <form className={styles.editorialCard} onSubmit={create}>
-          <h3>Novo pedido por capítulo</h3>
-          <label htmlFor="editorial-assignee">Pessoa participante</label>
-          <select
-            id="editorial-assignee"
-            required
-            value={assignee}
-            onChange={(event) => setAssignee(event.target.value)}
-            disabled={busy}
-          >
-            <option value="">Selecione uma pessoa</option>
-            {participants.map((participant) => (
-              <option key={participant.user_id} value={participant.user_id}>
-                {participant.name}
-              </option>
-            ))}
-          </select>
-          <label htmlFor="editorial-kind">Tipo de pedido</label>
-          <select
-            id="editorial-kind"
-            value={kind}
-            onChange={(event) => setKind(event.target.value)}
-            disabled={busy}
-          >
-            <option value="contribution">Contribuição</option>
-            <option value="review">Revisão</option>
-          </select>
-          <label htmlFor="editorial-instructions">
-            O que precisa ser feito?
-          </label>
-          <textarea
-            id="editorial-instructions"
-            required
-            maxLength={5000}
-            value={instructions}
-            onChange={(event) => setInstructions(event.target.value)}
-            disabled={busy}
-          />
-          <button type="submit" disabled={busy}>
-            Criar pedido
-          </button>
-        </form>
-      )}
+            {isOwner &&
+              current.kind === "contribution" &&
+              current.status === "approved" &&
+              current.previous_document && (
+                <details>
+                  <summary>Texto anterior à aprovação</summary>
+                  <div className={styles.editorialText}>
+                    <ChapterReader document={current.previous_document} />
+                  </div>
+                  {!current.restored_at && (
+                    <>
+                      <h4>Texto atual</h4>
+                      <div className={styles.editorialText}>
+                        <ChapterReader document={content.document} />
+                      </div>
+                      <button type="button" disabled={busy} onClick={restore}>
+                        Restaurar texto anterior
+                      </button>
+                    </>
+                  )}
+                </details>
+              )}
+          </div>
+        )}
+        {isOwner && !active && participants.length === 0 && (
+          <div className={styles.editorialCard}>
+            <h3>Convide alguém para colaborar</h3>
+            <p>
+              Esta obra ainda não tem organizadores ativos. Para solicitar
+              contribuição ou revisão, convide uma pessoa para participar da
+              obra. Após o aceite do convite, ela ficará disponível para receber
+              pedidos por capítulo.
+            </p>
+            <Link href={`/works/${work.id}#participants-title`}>
+              Convidar organizador na obra →
+            </Link>
+          </div>
+        )}
+        {isOwner && !active && participants.length > 0 && (
+          <form className={styles.editorialCard} onSubmit={create}>
+            <h3>Novo pedido por capítulo</h3>
+            <label htmlFor="editorial-assignee">Pessoa participante</label>
+            <select
+              id="editorial-assignee"
+              required
+              value={assignee}
+              onChange={(event) => setAssignee(event.target.value)}
+              disabled={busy}
+            >
+              <option value="">Selecione uma pessoa</option>
+              {participants.map((participant) => (
+                <option key={participant.user_id} value={participant.user_id}>
+                  {participant.name}
+                </option>
+              ))}
+            </select>
+            <label htmlFor="editorial-kind">Tipo de pedido</label>
+            <select
+              id="editorial-kind"
+              value={kind}
+              onChange={(event) => setKind(event.target.value)}
+              disabled={busy}
+            >
+              <option value="contribution">Contribuição</option>
+              <option value="review">Revisão</option>
+            </select>
+            <label htmlFor="editorial-instructions">
+              O que precisa ser feito?
+            </label>
+            <textarea
+              id="editorial-instructions"
+              required
+              maxLength={5000}
+              value={instructions}
+              onChange={(event) => setInstructions(event.target.value)}
+              disabled={busy}
+            />
+            <button type="submit" disabled={busy}>
+              Criar pedido
+            </button>
+          </form>
+        )}
+      </details>
+      {children}
       {isOwner &&
         requestContent?.history?.some((entry) => entry.id !== current?.id) && (
-          <div className={styles.editorialCard}>
-            <h3>Pedidos anteriores</h3>
+          <details className={styles.editorialDisclosure}>
+            <summary>Pedidos anteriores</summary>
             <ul>
               {requestContent.history
                 .filter((entry) => entry.id !== current?.id)
                 .map((entry) => (
                   <li key={entry.id}>
-                    {kindLabels[entry.kind]} · {statusLabels[entry.status]} ·{" "}
+                    {kindLabels[entry.kind]} · {requestStatus(entry)} ·{" "}
                     {new Date(entry.created_at).toLocaleDateString("pt-BR")}{" "}
                     <button type="button" onClick={() => viewHistory(entry.id)}>
                       Ver pedido
@@ -427,6 +519,13 @@ export default function EditorialRequestPanel({
               <div>
                 <h4>Pedido selecionado</h4>
                 <p>{historyDetails.request.instructions}</p>
+                {historyDetails.request.kind === "review" &&
+                  historyDetails.request.review_document && (
+                    <ChapterReview
+                      request={historyDetails.request}
+                      editable={false}
+                    />
+                  )}
                 {historyDetails.request.submitted_document && (
                   <>
                     <h4>Entrega</h4>
@@ -449,8 +548,8 @@ export default function EditorialRequestPanel({
                 )}
               </div>
             )}
-          </div>
+          </details>
         )}
-    </section>
+    </>
   );
 }

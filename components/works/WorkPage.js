@@ -7,6 +7,7 @@ import StructurePanel from "./StructurePanel";
 import styles from "./works.module.css";
 import useRecordAccess from "components/home/useRecordAccess";
 import WorkDetails from "./WorkDetails";
+import WorkCreditsPanel from "./WorkCreditsPanel";
 
 export default function WorkPage({
   user,
@@ -14,11 +15,14 @@ export default function WorkPage({
   parts,
   participants,
   invitations,
+  creditsData,
 }) {
   const router = useRouter();
   useRecordAccess(user.id, work.id);
   return (
     <AppLayout
+      backHref="/works"
+      backLabel="Voltar às obras"
       title={`${work.title} | Trama`}
       description="Detalhes da sua obra no Trama."
       user={user}
@@ -55,6 +59,9 @@ export default function WorkPage({
           </Link>
         </div>
         <WorkDetails work={work} canManage={work.owner_id === user.id} />
+        {work.owner_id === user.id && (
+          <WorkCreditsPanel workId={work.id} initialData={creditsData} />
+        )}
         <StructurePanel
           workId={work.id}
           parts={parts}
