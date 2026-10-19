@@ -64,6 +64,20 @@ export function exportBlocks(reading) {
     } else (node.content || []).forEach((child) => visit(child, depth));
   }
   heading(reading.work.title, 1);
+  const creditGroups = [
+    ["authors", "Autoria"],
+    ["contributors", "Contribuições"],
+    ["reviewers", "Revisão"],
+  ];
+  if (creditGroups.some(([group]) => reading.credits?.[group]?.length)) {
+    heading("Créditos da obra", 2, true);
+    for (const [group, label] of creditGroups) {
+      if (!reading.credits[group]?.length) continue;
+      heading(label, 3);
+      for (const line of reading.credits[group])
+        blocks.push({ level: 0, runs: [{ text: line }] });
+    }
+  }
   if (reading.work.description?.trim()) {
     heading("Descrição da obra", 2, true);
     for (const text of reading.work.description.trim().split(/\r?\n/u)) {

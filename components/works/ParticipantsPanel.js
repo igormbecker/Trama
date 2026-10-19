@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import {
-  copyInvitationLink,
   inviteOrganizer,
   cancelInvitation,
   removeParticipant,
@@ -25,9 +24,6 @@ export default function ParticipantsPanel({
 }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [inviteLink, setInviteLink] = useState("");
-  const [isCopying, setIsCopying] = useState(false);
-  const [copyMessage, setCopyMessage] = useState("");
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -55,29 +51,9 @@ export default function ParticipantsPanel({
   async function handleInvite(event) {
     event.preventDefault();
     await perform(async () => {
-      const invitation = await inviteOrganizer(workId, email);
-      setInviteLink(
-        new URL(`/invitations/${invitation.token}`, window.location.origin)
-          .href,
-      );
+      await inviteOrganizer(workId, email);
       setEmail("");
-      setCopyMessage("");
-    }, "Convite criado. Compartilhe o link com a pessoa convidada.");
-  }
-  async function handleCopyLink(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (isCopying) return;
-    setIsCopying(true);
-    setCopyMessage("");
-    try {
-      await copyInvitationLink(inviteLink);
-      setCopyMessage("Link copiado!");
-    } catch (error) {
-      setCopyMessage(error.message);
-    } finally {
-      setIsCopying(false);
-    }
+    }, "Convite enviado por e-mail. A pessoa poderá abrir o link recebido para responder.");
   }
   async function handleRemoval() {
     await perform(async () => {
@@ -111,58 +87,9 @@ export default function ParticipantsPanel({
           disabled={isBusy}
         />
         <button type="submit" disabled={isBusy}>
-          {isBusy ? "Aguarde…" : "Gerar convite"}
+          {isBusy ? "Aguarde…" : "Enviar convite"}
         </button>
       </form>
-      {inviteLink && (
-        <div className={styles.inviteLink}>
-          <label htmlFor="invite-link">Link para compartilhar</label>
-          <div className={styles.copyLinkRow}>
-            <input
-              id="invite-link"
-              value={inviteLink}
-              readOnly
-              onFocus={(event) => event.target.select()}
-            />
-            <button
-              type="button"
-              onClick={handleCopyLink}
-              className={styles.copyButton}
-              aria-label={isCopying ? "Copiando link" : "Copiar link"}
-              title={isCopying ? "Copiando…" : "Copiar link"}
-              disabled={isBusy || isCopying}
-              aria-busy={isCopying}
-            >
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <rect
-                  x="8"
-                  y="4"
-                  width="12"
-                  height="13"
-                  rx="2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M16 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-            </button>
-          </div>
-          {copyMessage === "Link copiado!" ? (
-            <SuccessMessage>{copyMessage}</SuccessMessage>
-          ) : (
-            <p role="status">{copyMessage}</p>
-          )}
-          <p>
-            Copie este link e envie para a pessoa convidada. Vale por sete dias
-            e exige uma conta com o e-mail informado. Nenhum e-mail é enviado
-            automaticamente.
-          </p>
-        </div>
-      )}
       <h3 className={styles.organizersTitle}>Organizadores</h3>
       {participants.length === 0 ? (
         <p>Ainda não há organizadores nesta obra.</p>
@@ -218,7 +145,7 @@ export default function ParticipantsPanel({
       )}
       <h3>Convites pendentes</h3>
       <p>
-        Gerar outro convite para o mesmo e-mail invalida o link pendente
+        Enviar outro convite para o mesmo e-mail invalida o link pendente
         anterior.
       </p>
       <p>
@@ -243,7 +170,6 @@ export default function ParticipantsPanel({
                   onClick={() =>
                     perform(async () => {
                       await cancelInvitation(workId, invitation.id);
-                      setInviteLink("");
                     }, "Convite cancelado.")
                   }
                 >

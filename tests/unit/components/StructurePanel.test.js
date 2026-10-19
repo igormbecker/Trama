@@ -19,6 +19,36 @@ const parts = [
   },
 ];
 
+test.each([
+  ["review", "writing", null, "Em revisão"],
+  ["contribution", "writing", null, "Em contribuição"],
+  ["contribution", "waiting", null, "Aguardando aprovação"],
+  ["review", "approved", "changes_requested", "Correções solicitadas"],
+  ["review", "approved", "approved", "Aprovado pelo revisor"],
+])("Shows editorial progress for %s / %s", (kind, status, verdict, label) => {
+  const annotated = [
+    {
+      ...parts[0],
+      chapters: [
+        {
+          ...parts[0].chapters[0],
+          editorial_request: {
+            kind,
+            status,
+            review_verdict: verdict,
+            assignee_name: "Alice",
+          },
+        },
+      ],
+    },
+  ];
+  const html = renderToStaticMarkup(
+    <StructurePanel workId="work" parts={annotated} canManage={false} />,
+  );
+  expect(html).toContain(label);
+  expect(html).toContain("Alice");
+});
+
 test("Separates chapter writing from description editing for the owner", () => {
   const html = renderToStaticMarkup(
     <StructurePanel workId="work" parts={parts} canManage />,

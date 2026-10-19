@@ -16,6 +16,8 @@ test("Renders the same message and action in HTML and plain text", async () => {
   expect(result.text).toContain(content.paragraphs[0]);
   expect(result.text).toContain(content.actionUrl);
   expect(result.text).toContain("Bectec");
+  expect(result.text).toContain("Software desenvolvido por Bectec");
+  expect(result.text).toContain("Trama · Pessoas, ideias e capítulos.");
 });
 
 test("Escapes content instead of interpreting it as arbitrary HTML", async () => {
@@ -25,6 +27,19 @@ test("Escapes content instead of interpreting it as arbitrary HTML", async () =>
   });
   expect(result.html).not.toContain("<script>");
   expect(result.html).toContain("&lt;script&gt;");
+});
+
+test("Highlights the work title while escaping its text and preserving plain text", async () => {
+  const workTitle = "Memórias & <Futuro>";
+  const result = await renderMessage({
+    ...content,
+    paragraphs: [`Convite para a obra ${workTitle} como organizador.`],
+    highlight: workTitle,
+  });
+  expect(result.html).toContain(
+    "<strong>Memórias &amp; &lt;Futuro&gt;</strong>",
+  );
+  expect(result.text).toContain(workTitle);
 });
 
 test.each([

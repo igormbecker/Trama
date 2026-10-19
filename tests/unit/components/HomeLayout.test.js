@@ -37,3 +37,11 @@ test("Does not copy a recovery token into the status return URL", () => {
   expect(html).not.toContain("private-recovery-token");
   expect(html).toContain("returnTo=%2Freset-password");
 });
+
+test("Provides one shared back-to-top link, initially hidden at the top", () => {
+  useAuth.mockReturnValue({ isAuthenticated: false });
+  const html = renderToStaticMarkup(<HomeLayout>Content</HomeLayout>);
+  expect(html).toContain('id="page-top"');
+  expect(html.match(/aria-label="Voltar ao topo"/g)).toHaveLength(1);
+  expect(html).toMatch(/<a[^>]*href="#page-top"[^>]*hidden=""/);
+});

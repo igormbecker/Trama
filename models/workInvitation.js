@@ -1,7 +1,30 @@
 import { randomBytes, createHash } from "node:crypto";
 import database from "infra/database.js";
 import work from "models/work.js";
-import { NotFoundError, ValidationError } from "infra/errors.js";
+import email from "infra/email.js";
+import { renderMessage } from "models/transactional/index.js";
+import { validateRegistrationInput } from "models/user.js";
+import password from "models/password.js";
+import { NotFoundError, ValidationError, ServiceError } from "infra/errors.js";
+
+const superseded = Symbol("superseded invitations");
+
+function invitationOrigin() {
+  if (
+    process.env.TRAMA_TEST_SERVER === "true" ||
+    process.env.NODE_ENV === "test"
+  )
+    return "http://127.0.0.1:3002";
+  if (process.env.NODE_ENV === "development") return "http://localhost:3001";
+  if (process.env.VERCEL_ENV === "production")
+    return "https://trama.bectec.com.br";
+  if (
+    process.env.VERCEL_ENV === "preview" &&
+    /^[a-z0-9-]+\.vercel\.app$/i.test(process.env.VERCEL_URL || "")
+  )
+    return `https://${process.env.VERCEL_URL}`;
+  throw new ServiceError({ message: "Invitation origin is not configured." });
+}
 
 function notFound() {
   return new NotFoundError({ message: "Invitation not found or unavailable." });
@@ -70,8 +93,8 @@ async function create(workId, ownerId, input) {
       throw new ValidationError({
         message: "This account already participates in the work.",
       });
-    await client.query({
-      text: "UPDATE work_invitations SET status = 'canceled', updated_at = now() WHERE work_id = $1 AND email = $2 AND status = 'pending'",
+    const previous = await client.query({
+      text: "UPDATE work_invitations SET status = 'canceled', updated_at = now() WHERE work_id = $1 AND email = $2 AND status = 'pending' RETURNING id",
       values: [workId, email],
     });
     const token = randomBytes(48).toString("hex");
@@ -79,8 +102,60 @@ async function create(workId, ownerId, input) {
       text: "INSERT INTO work_invitations (work_id, email, token_hash) VALUES ($1, $2, $3) RETURNING *",
       values: [workId, email, hashToken(token)],
     });
-    return { ...toPublic(result.rows[0]), token };
+    const invitation = { ...toPublic(result.rows[0]), token };
+    Object.defineProperty(invitation, superseded, {
+      value: previous.rows.map((row) => row.id),
+    });
+    return invitation;
   });
+}
+async function undoFailedDelivery(workId, invitation) {
+  return transaction(async (client) => {
+    await lockWork(client, workId);
+    const canceled = await client.query({
+      text: "UPDATE work_invitations SET status = 'canceled', updated_at = now() WHERE id = $1 AND status = 'pending' RETURNING id",
+      values: [invitation.id],
+    });
+    if (!canceled.rowCount || !invitation[superseded]?.length) return;
+    const pending = await client.query({
+      text: "SELECT id FROM work_invitations WHERE work_id = $1 AND email = $2 AND status = 'pending'",
+      values: [workId, invitation.email],
+    });
+    if (pending.rowCount) return;
+    await client.query({
+      text: "UPDATE work_invitations SET status = 'pending', updated_at = now() WHERE id = ANY($1::uuid[]) AND status = 'canceled' AND expires_at > clock_timestamp()",
+      values: [invitation[superseded]],
+    });
+  });
+}
+async function createAndSend(workId, ownerId, input) {
+  const origin = invitationOrigin();
+  const invitedWork = await work.requireOwner(workId, ownerId);
+  const invitation = await create(workId, ownerId, input);
+  try {
+    const content = await renderMessage({
+      title: "Convite para participar de uma obra",
+      highlight: invitedWork.title,
+      paragraphs: [
+        `Você recebeu um convite para participar da obra ${invitedWork.title} como organizador no Trama.`,
+        "O convite vale por sete dias. Se ainda não tiver conta, você poderá criá-la pelo link. Se não esperava este convite, ignore a mensagem.",
+      ],
+      actionLabel: "Abrir convite",
+      actionUrl: `${origin}/invitations/${invitation.token}`,
+    });
+    await email.send({
+      to: invitation.email,
+      subject: "Convite para participar de uma obra no Trama",
+      ...content,
+      idempotencyKey: `invitation/${invitation.id}`,
+    });
+    const { token, ...publicInvitation } = invitation;
+    void token;
+    return publicInvitation;
+  } catch {
+    await undoFailedDelivery(workId, invitation);
+    throw new ServiceError({ message: "Invitation email could not be sent." });
+  }
 }
 async function findAll(workId, ownerId) {
   await work.requireOwner(workId, ownerId);
@@ -98,6 +173,64 @@ async function findForUser(token, userId, executor = database, lock = false) {
     executor,
     lock,
   );
+}
+async function findForRegistration(token, executor = database, lock = false) {
+  const result = await executor.query({
+    text: `SELECT i.id, i.email, i.work_id, i.expires_at, w.title AS work_title
+      FROM work_invitations i JOIN works w ON w.id = i.work_id
+      WHERE i.token_hash = $1 AND i.status = 'pending' AND i.expires_at > clock_timestamp()
+      ${lock ? "FOR UPDATE OF i" : ""}`,
+    values: [hashToken(token)],
+  });
+  if (!result.rowCount) throw notFound();
+  return result.rows[0];
+}
+async function register(token, input) {
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input) ||
+    Object.keys(input).some(
+      (key) =>
+        !["name", "username", "password", "password_confirmation"].includes(
+          key,
+        ),
+    ) ||
+    input.password !== input.password_confirmation
+  )
+    throw new ValidationError({ message: "Invalid registration data." });
+  const invitation = await findForRegistration(token);
+  const values = validateRegistrationInput({
+    ...input,
+    email: invitation.email,
+  });
+  const passwordHash = await password.hash(values.password);
+  try {
+    return await transaction(async (client) => {
+      const current = await findForRegistration(token, client, true);
+      const existing = await client.query({
+        text: "SELECT id FROM users WHERE LOWER(email) = $1",
+        values: [current.email],
+      });
+      if (existing.rowCount)
+        throw new ValidationError({
+          message: "This email already has an account.",
+        });
+      const created = await client.query({
+        text: `INSERT INTO users (name, username, email, password)
+          VALUES ($1, $2, $3, $4)
+          RETURNING id, name, username, email, created_at, updated_at`,
+        values: [values.name, values.username, current.email, passwordHash],
+      });
+      return created.rows[0];
+    });
+  } catch (error) {
+    if (error.code === "23505")
+      throw new ValidationError({
+        message: "Email or username already in use.",
+      });
+    throw error;
+  }
 }
 async function findByIdForUser(id, userId, executor = database, lock = false) {
   if (
@@ -189,8 +322,11 @@ async function cancel(workId, invitationId, ownerId) {
 }
 const workInvitation = {
   create,
+  createAndSend,
   findAll,
   findForUser,
+  findForRegistration,
+  register,
   findPendingForAccount,
   findSentForOwner,
   respond,

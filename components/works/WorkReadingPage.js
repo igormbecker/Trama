@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import AppLayout from "components/app/AppLayout";
 import useRecordAccess from "components/home/useRecordAccess";
 import ChapterReader from "./ChapterReader";
@@ -8,19 +7,12 @@ import styles from "./chapter.module.css";
 
 export default function WorkReadingPage({ user, work, parts }) {
   useRecordAccess(user.id, work.id);
-  const [showBackToTop, setShowBackToTop] = useState(false);
-  useEffect(() => {
-    function updateVisibility() {
-      setShowBackToTop(window.scrollY > 300);
-    }
-    updateVisibility();
-    window.addEventListener("scroll", updateVisibility, { passive: true });
-    return () => window.removeEventListener("scroll", updateVisibility);
-  }, []);
   return (
     <AppLayout
       user={user}
       activePage="works"
+      backHref={`/works/${work.id}`}
+      backLabel="Voltar à obra"
       title={`${work.title} — Leitura | Trama`}
       description="Leitura do texto atual da obra."
     >
@@ -84,28 +76,6 @@ export default function WorkReadingPage({ user, work, parts }) {
         <div className={styles.actions}>
           <Link href={`/works/${work.id}`}>← Voltar à obra</Link>
         </div>
-        {showBackToTop && (
-          <a
-            className={styles.backToTop}
-            href="#reading-top"
-            aria-label="Voltar ao topo"
-            title="Voltar ao topo"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m6 14 6-6 6 6M12 8v12" />
-            </svg>
-          </a>
-        )}
       </section>
     </AppLayout>
   );

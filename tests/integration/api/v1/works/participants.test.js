@@ -1,6 +1,8 @@
 import orchestrator from "tests/orchestrator.js";
 import session from "models/session.js";
 import database from "infra/database.js";
+import email from "infra/email.js";
+import workInvitation from "models/workInvitation.js";
 
 const baseUrl = "http://127.0.0.1:3002";
 beforeAll(async () => {
@@ -30,20 +32,59 @@ async function setup() {
   });
   return { owner, guest, work: await response.json() };
 }
-function invite(work, owner, email) {
-  return request(`/api/v1/works/${work.id}/invitations`, owner, "POST", {
-    email,
-  });
+async function invite(work, owner, email) {
+  const before = await (await fetch("http://127.0.0.1:1082/messages")).json();
+  const response = await request(
+    `/api/v1/works/${work.id}/invitations`,
+    owner,
+    "POST",
+    {
+      email,
+    },
+  );
+  if (response.status !== 201) return response;
+  const invitation = await response.json();
+  const messages = await (await fetch("http://127.0.0.1:1082/messages")).json();
+  const delivered = messages.find(
+    (message) => !before.some((previous) => previous.id === message.id),
+  );
+  const source = await (
+    await fetch(`http://127.0.0.1:1082/messages/${delivered.id}.source`)
+  ).text();
+  const token = source
+    .replace(/=\r?\n/g, "")
+    .match(/\/invitations\/([a-f0-9]{96})/)?.[1];
+  expect(token).toBeTruthy();
+  return {
+    status: response.status,
+    headers: response.headers,
+    json: async () => ({ ...invitation, token }),
+  };
 }
 
 test("Owner invites by email without granting access before acceptance", async () => {
   const { owner, guest, work } = await setup();
-  const response = await invite(work, owner, ` ${guest.email.toUpperCase()} `);
+  const response = await request(
+    `/api/v1/works/${work.id}/invitations`,
+    owner,
+    "POST",
+    { email: ` ${guest.email.toUpperCase()} ` },
+  );
   expect(response.status).toBe(201);
   expect(response.headers.get("cache-control")).toBe("private, no-store");
   const invitation = await response.json();
   expect(invitation.email).toBe(guest.email.toLowerCase());
-  expect(invitation.token).toMatch(/^[a-f0-9]{96}$/);
+  expect(invitation).not.toHaveProperty("token");
+  const messages = await (await fetch("http://127.0.0.1:1082/messages")).json();
+  const delivered = messages.find(
+    (message) =>
+      message.subject === "Convite para participar de uma obra no Trama",
+  );
+  expect(delivered).toBeDefined();
+  const source = await fetch(
+    `http://127.0.0.1:1082/messages/${delivered.id}.source`,
+  );
+  expect(await source.text()).toContain(guest.email.toLowerCase());
   expect(
     new Date(invitation.expires_at) - new Date(invitation.created_at),
   ).toBeCloseTo(7 * 86400000, -3);
@@ -52,12 +93,62 @@ test("Owner invites by email without granting access before acceptance", async (
     text: "SELECT * FROM work_invitations WHERE id = $1",
     values: [invitation.id],
   });
-  expect(JSON.stringify(stored.rows)).not.toContain(invitation.token);
+  expect(stored.rows[0].token_hash).toMatch(/^[a-f0-9]{64}$/);
   const list = await request(`/api/v1/works/${work.id}/invitations`, owner);
   const entries = await list.json();
   expect(entries).toHaveLength(1);
   expect(entries[0]).not.toHaveProperty("token");
   expect(entries[0]).not.toHaveProperty("token_hash");
+});
+
+test("An invitation can create its matching account without granting participation or legal acceptance", async () => {
+  const { owner, work } = await setup();
+  const invitedEmail = "new-organizer@trama.test";
+  const invitation = await (await invite(work, owner, invitedEmail)).json();
+  const path = `/api/v1/invitations/${invitation.token}/register`;
+  const input = {
+    name: "Nova Organizadora",
+    username: "new_organizer",
+    password: "strong-password-123",
+    password_confirmation: "strong-password-123",
+  };
+  const registration = await request(path, null, "POST", input);
+  expect(registration.status).toBe(201);
+  const created = await registration.json();
+  expect(created.email).toBe(invitedEmail);
+  expect(created).not.toHaveProperty("password");
+  expect((await request(path, null, "POST", input)).status).toBe(400);
+  const participation = await database.query({
+    text: "SELECT id FROM work_participants WHERE work_id = $1 AND user_id = $2",
+    values: [work.id, created.id],
+  });
+  expect(participation.rowCount).toBe(0);
+  const acceptance = await database.query({
+    text: "SELECT user_id FROM legal_acceptances WHERE user_id = $1",
+    values: [created.id],
+  });
+  expect(acceptance.rowCount).toBe(0);
+});
+
+test("A failed resend keeps the previous invitation available", async () => {
+  const { owner, guest, work } = await setup();
+  const first = await workInvitation.create(work.id, owner.id, {
+    email: guest.email,
+  });
+  const originalSend = email.send;
+  email.send = async () => {
+    throw new Error("SMTP unavailable");
+  };
+  try {
+    await expect(
+      workInvitation.createAndSend(work.id, owner.id, { email: guest.email }),
+    ).rejects.toThrow("Invitation email could not be sent.");
+  } finally {
+    email.send = originalSend;
+  }
+  expect(
+    (await request(`/api/v1/invitations/${first.token}`, guest)).status,
+  ).toBe(200);
 });
 
 test("Matching account accepts once, sees the work and can be removed without deleting history", async () => {

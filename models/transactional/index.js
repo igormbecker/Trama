@@ -14,7 +14,13 @@ import {
 } from "react-email";
 import { ValidationError } from "infra/errors.js";
 
-function MessageEmail({ title, paragraphs, actionLabel, actionUrl }) {
+function MessageEmail({
+  title,
+  paragraphs,
+  actionLabel,
+  actionUrl,
+  highlight,
+}) {
   return React.createElement(
     Html,
     { lang: "pt-BR" },
@@ -61,7 +67,22 @@ function MessageEmail({ title, paragraphs, actionLabel, actionUrl }) {
           React.createElement(
             Text,
             { key: index, style: { fontSize: "16px", lineHeight: "26px" } },
-            paragraph,
+            ...(highlight
+              ? paragraph
+                  .split(highlight)
+                  .flatMap((part, partIndex) =>
+                    partIndex === 0
+                      ? [part]
+                      : [
+                          React.createElement(
+                            "strong",
+                            { key: partIndex },
+                            highlight,
+                          ),
+                          part,
+                        ],
+                  )
+              : [paragraph]),
           ),
         ),
         React.createElement(
@@ -95,7 +116,19 @@ function MessageEmail({ title, paragraphs, actionLabel, actionUrl }) {
         React.createElement(
           Text,
           { style: { color: "#68626d", fontSize: "12px", lineHeight: "20px" } },
-          "Pessoas, ideias e capítulos. Uma obra construída em conjunto. Bectec — Tecnologia e Desenvolvimento de Software.",
+          "Trama · Pessoas, ideias e capítulos. Uma obra construída em conjunto.",
+        ),
+        React.createElement(
+          Text,
+          {
+            style: {
+              color: "#817b85",
+              fontSize: "11px",
+              lineHeight: "18px",
+              marginTop: "4px",
+            },
+          },
+          "Software desenvolvido por Bectec",
         ),
       ),
     ),
@@ -120,6 +153,8 @@ export async function renderMessage(content) {
     ![content.title, content.actionLabel].every(
       (value) => typeof value === "string" && value.trim(),
     ) ||
+    (content.highlight !== undefined &&
+      (typeof content.highlight !== "string" || !content.highlight.trim())) ||
     !Array.isArray(content.paragraphs) ||
     !content.paragraphs.length ||
     !content.paragraphs.every(

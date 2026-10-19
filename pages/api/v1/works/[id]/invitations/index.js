@@ -26,7 +26,7 @@ router.post(async (request, response) =>
   response
     .status(201)
     .json(
-      await workInvitation.create(
+      await workInvitation.createAndSend(
         request.query.id,
         request.authenticatedUser.id,
         request.body,

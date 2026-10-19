@@ -113,7 +113,7 @@ async function create(userInputValues) {
   }
 }
 
-function validateRegistrationInput(input) {
+export function validateRegistrationInput(input) {
   const invalidInput = () =>
     new ValidationError({
       message: "Invalid registration data.",

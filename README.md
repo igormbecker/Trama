@@ -1,205 +1,109 @@
-# nextjs-api-starter
+# Trama
 
-Base reutilizável em JavaScript com Next.js (Pages Router), PostgreSQL, migrations, usuários e autenticação inicial, desenvolvida a partir dos estudos do curso.dev.
+Aplicação de escrita e colaboração editorial para organizar obras privadas, capítulos, contribuições e revisões. Desenvolvida pela **Bectec — Tecnologia e Desenvolvimento de Software**.
 
-Criada a partir da branch project-template de igormbecker/Curso.Dev. As configurações versionadas em .env.development são exemplos para uso local. Configure credenciais próprias e um PASSWORD_PEPPER exclusivo no ambiente de produção.
+## Funcionalidades
 
-## Continuidade do Trama
+- **Obras:** criação, título e descrição editáveis, partes e capítulos ordenáveis, capas ilustrativas e leitura contínua com sumário.
+- **Escrita:** editor de texto rico com salvamento automático/manual, recuperação local de rascunhos, reserva por aba e proteção contra sobrescritas concorrentes.
+- **Participantes:** convites de organizadores por e-mail, cadastro restrito pelo convite, aceite/recusa em Meus convites e revogação de acesso.
+- **Contribuições:** cópia editável do capítulo, entrega, ajustes e incorporação pelo responsável, preservando o texto anterior para consulta e restauração.
+- **Revisões:** leitura de versão fixa, comentários em trechos selecionados e parecer Aprovado ou Correções solicitadas, sem modificar o capítulo.
+- **Minhas participações:** pedidos atribuídos à conta, separados em andamento e concluídos, com status e contador de ações pendentes atualizado automaticamente.
+- **Exportação:** PDF e DOCX com capa, créditos confirmados, descrição da obra e sumário. O responsável informa a autoria; o histórico apenas sugere colaboradores e revisores.
+- **Conta e administração:** login/logout, recuperação de senha, edição da própria conta, gestão administrativa de usuários e personificação temporária de contas comuns para suporte, com auditoria.
+- **Documentos legais:** Termos de Uso, Aviso de Privacidade e aceite explícito por versão.
+- **Interface:** temas claro/escuro, navegação móvel, menu lateral recolhível, atalhos de retorno e botão para voltar ao topo.
 
-Consulte o [roadmap do Trama](docs/roadmap.md) para o estado das funcionalidades, pendências, decisões em aberto e próximos passos sugeridos. Leia também as orientações de AGENTS.md antes de desenvolver.
+O responsável gerencia a obra, escreve e aprova contribuições. Organizadores ativos consultam; só trabalham em contribuição ou revisão quando recebem um pedido. Papéis de acesso não atribuem autoria. A exportação é exclusiva do responsável.
 
-## Tecnologias e dependências
+O cadastro público está fechado. Contas são criadas por administrador ou convite válido de obra. Sessões expiram em 24 horas, sem renovação automática. Rascunhos e histórico locais não sincronizam entre dispositivos.
 
-As versões abaixo refletem o package.json atual. O Node usado pelo projeto é definido em .nvmrc.
+## Tecnologias e organização
 
-- Node.js: 24.21.0
-- Next.js: 16.3.8 (Pages Router)
-- React e React DOM: 19.3.0
-- PostgreSQL: 16.0-alpine3.18 (Docker)
-- Cliente PostgreSQL para JavaScript: pg@8.23.1
-- Migrações: node-pg-migrate@9.0.0
-- Configuração de ambiente: dotenv@18.0.5 e dotenv-expand@1000.0.0
-- Testes: jest@30.5.2
-- Lint: eslint@9.39.5, eslint-config-next@16.3.8 e eslint-plugin-jest@29.16.6
-- Formatação: prettier@3.9.9
+JavaScript, Next.js com **Pages Router**, React, Tiptap, PostgreSQL, `pg`, `node-pg-migrate`, React Email, Resend, Jest, ESLint e Prettier. O Node está definido em [.nvmrc](.nvmrc); versões de dependências em [package.json](package.json) e [package-lock.json](package-lock.json).
 
-Consulte package.json e package-lock.json para a lista completa e as versões instaladas.
+| Diretório     | Responsabilidade                                |
+| ------------- | ----------------------------------------------- |
+| `pages/`      | Páginas e controllers da API em `pages/api/v1/` |
+| `components/` | Interface                                       |
+| `models/`     | Regras de negócio e permissões                  |
+| `infra/`      | Banco, migrations, e-mails e scripts            |
+| `tests/`      | Testes unitários e de integração                |
+| `docs/`       | Regras, operação, continuidade e pendências     |
 
-## Banco de dados local
+A base nasceu dos estudos do Curso.Dev e preserva a separação entre apresentação, controllers, models e infraestrutura. Não utiliza ORM.
 
-O PostgreSQL de desenvolvimento é iniciado pelo Docker Compose definido em infra/compose.yaml. As variáveis são lidas de .env.development. A aplicação usa as variáveis `POSTGRES_*`; o CLI de migrations usa `DATABASE_URL`, composta a partir dessas mesmas variáveis para manter o destino consistente. Os comandos `migrations:up` e `migrations:down` carregam esse arquivo.
+## Executar localmente
 
-O Trama usa o projeto Compose `trama`, com rede e volume próprios, separados do Curso.Dev. O PostgreSQL atende em `127.0.0.1:5433` no computador e mantém a porta `5432` dentro do container. O banco é `trama_dev`, com usuário `trama_user`. A aplicação usa a porta `3001`; o Curso.Dev pode continuar nas portas `5432` e `3000`. Os testes usam um ambiente separado, descrito abaixo.
-
-Execute os scripts a partir desta pasta. Não sobrescreva o nome do projeto Compose com `-p` ou `COMPOSE_PROJECT_NAME`, nem reutilize as variáveis de banco do Curso.Dev. Variáveis já exportadas no terminal podem prevalecer sobre o arquivo de ambiente.
-
-A suíte usa o banco descartável `trama_test`, em outro container e na porta `5434`. A limpeza dos testes recusa a configuração de desenvolvimento; sua conta e os dados em `trama_dev` são preservados.
-
-```bash
-docker ps -a
-```
-
-Para iniciar o banco em segundo plano:
+No Windows, use Ubuntu/WSL com Docker disponível. Na pasta do projeto:
 
 ```bash
-npm run services:up
+nvm install
+nvm use
+npm install
+npm run dev
 ```
 
-Para parar o banco, preservando o container:
+`npm run dev` inicia PostgreSQL e MailCatcher, aguarda o banco, aplica migrations pendentes e inicia o Next.js em [localhost:3001](http://localhost:3001). Não instala dependências.
+
+As configurações versionadas em `.env.development` e `.env.test` são locais. Configure segredos e credenciais remotos no ambiente apropriado.
+
+| Recurso           | Desenvolvimento                         | Testes                                  |
+| ----------------- | --------------------------------------- | --------------------------------------- |
+| HTTP              | `localhost:3001`                        | `127.0.0.1:3002`                        |
+| PostgreSQL        | `127.0.0.1:5433` / `trama_dev`          | `127.0.0.1:5434` / `trama_test`         |
+| Projeto Compose   | `trama`                                 | `trama-test`                            |
+| SMTP MailCatcher  | `127.0.0.1:1026`                        | `127.0.0.1:1027`                        |
+| Caixa de e-mails  | [localhost:1081](http://localhost:1081) | [localhost:1082](http://localhost:1082) |
+| Diretório Next.js | `.next`                                 | `.next-test`                            |
+
+Desenvolvimento e testes usam MailCatcher mesmo com credenciais Resend herdadas. Para parar os serviços preservando os dados:
 
 ```bash
 npm run services:stop
 ```
 
-Para parar e remover os containers do Compose:
+`services:down` remove containers e preserva o volume. Não use `down --volumes` se precisar conservar o banco.
+
+## Verificações
 
 ```bash
-npm run services:down
+npm run lint:prettier:check
+npm run lint:eslint:check
+npm test
 ```
 
-O volume nomeado `trama_database_data` preserva os dados quando o container é removido com `services:down`. Não use `docker compose down --volumes` se precisar preservar esses dados.
+`npm test` inicia os serviços e o servidor exclusivos de testes, executa Jest em sequência e encerra esse ambiente. Os testes podem recriar o schema de **trama_test**; as verificações de isolamento recusam o banco de desenvolvimento. Não altere a configuração para apontar para outro banco.
 
-Para instalar o cliente psql no Ubuntu:
-
-```bash
-sudo apt install postgresql-client
-```
-
-Para conectar ao banco local:
-
-```bash
-psql --host=127.0.0.1 --username=trama_user --port=5433 --dbname=trama_dev
-```
-
-## Ambiente de desenvolvimento
-
-Use o Node indicado pelo arquivo .nvmrc:
-
-```bash
-nvm install
-nvm use
-node --version
-```
-
-Depois de clonar o projeto, instale as dependências:
-
-```bash
-npm install
-```
-
-Abra a pasta do projeto no VS Code a partir do terminal Ubuntu/WSL:
-
-```bash
-code .
-```
-
-Inicie a aplicação:
-
-```bash
-npm run dev
-```
-
-Esse script inicia o banco, aguarda o PostgreSQL, aplica as migrações pendentes e inicia o Next.js. A aplicação fica disponível em http://localhost:3001.
-
-## Scripts disponíveis
-
-Confira sempre os scripts atuais em package.json.
-
-- Verificar a formatação com Prettier:
-
-  ```bash
-  npm run lint:prettier:check
-  ```
-
-- Aplicar formatação com Prettier em todo o projeto:
-
-  ```bash
-  npm run lint:prettier:fix
-  ```
-
-- Verificar o código com ESLint:
-
-  ```bash
-  npm run lint:eslint:check
-  ```
-
-- Executar os testes de integração:
-
-  ```bash
-  npm run test
-  ```
-
-  Esse script inicia somente o PostgreSQL de testes, aguarda sua disponibilidade, inicia o Next.js de testes e executa Jest. Ao concluir, mesmo em caso de falha dos testes, encerra o servidor e para somente o banco de testes. Os testes de migrations recriam o schema `public` de `trama_test`.
-
-- Executar os testes em modo watch:
-
-  ```bash
-  npm run test:watch
-  ```
-
-  Usa o mesmo ambiente isolado e mantém os serviços de teste ativos até encerrar o comando com Ctrl+C.
-
-- Criar uma migration:
-
-  ```bash
-  npm run migrations:create -- nome-da-migration
-  ```
-
-- Aplicar migrations pendentes:
-
-  ```bash
-  npm run migrations:up
-  ```
-
-- Reverter a última migration:
-
-  ```bash
-  npm run migrations:down
-  ```
-
-## Ambiente de testes isolado
-
-| Recurso                        | Desenvolvimento         | Testes                     |
-| ------------------------------ | ----------------------- | -------------------------- |
-| Arquivo de ambiente            | `.env.development`      | `.env.test`                |
-| Projeto Compose                | `trama`                 | `trama-test`               |
-| Banco PostgreSQL               | `trama_dev`             | `trama_test`               |
-| Usuário PostgreSQL             | `trama_user`            | `trama_test_user`          |
-| Porta PostgreSQL no computador | `5433`                  | `5434`                     |
-| Servidor HTTP                  | `http://localhost:3001` | `http://127.0.0.1:3002`    |
-| Arquivos gerados pelo Next.js  | `.next`                 | `.next-test`               |
-| Volume Docker                  | `trama_database_data`   | `trama-test_database_data` |
-
-Você pode manter `npm run dev` aberto enquanto executa `npm test` ou `npm run test:watch`. A configuração de Jest e o inicializador de testes carregam explicitamente `.env.test`, substituindo as variáveis de conexão herdadas do terminal. As credenciais desse arquivo são exemplos exclusivos do ambiente local de testes.
-
-A trava de segurança exige o host, a porta, o usuário, o banco e o servidor HTTP de testes antes de permitir a limpeza do schema. Não altere esses valores para apontar para desenvolvimento ou produção. O inicializador recusa a execução se a porta `3002` já estiver ocupada e usa explicitamente o projeto Compose `trama-test`.
-
-Para executar apenas testes unitários, sem iniciar Docker ou Next.js:
+Para acompanhar os testes, use `npm run test:watch`. Para somente testes unitários, sem iniciar serviços:
 
 ```bash
 NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand --testPathPatterns=tests/unit
 ```
 
-Chamadas diretas a Jest também usam `.env.test`; os testes de integração precisam do servidor isolado ativo. Prefira os scripts `npm test` e `npm run test:watch` para executar a integração.
+Os workflows de pull request em `.github/workflows/` definem testes, ESLint, Prettier e Conventional Commits. A existência dos arquivos não comprova aprovação de uma execução remota.
 
-## Área autenticada e usuários
+## Migrations e publicação
 
-Após entrar, o menu dá acesso a `/works`. Administradores também acessam `/users`, com busca, listagem, cadastro, edição e remoção de usuários. A remoção pede confirmação e não permite excluir a própria conta. Na edição, deixar a nova senha em branco mantém a senha existente.
+```bash
+npm run migrations:create -- nome-da-migration
+npm run migrations:up
+```
 
-As contas recebem `is_admin = false` por padrão, inclusive quando criadas por um administrador. O cadastro público em `/register` permanece disponível. Administradores podem mudar o perfil de outra conta pelo formulário de edição. O último administrador não pode perder esse perfil; a regra é verificada em transação, inclusive em alterações concorrentes. Nenhuma migration promove pessoas por nome ou e-mail.
+Confirme o banco antes de aplicar migrations. Não reverta migrations automaticamente nem reutilize os containers do Curso.Dev.
 
-A listagem e as operações individuais da API exigem permissão administrativa verificada no banco a cada requisição. Respostas administrativas não expõem senhas ou hashes e usam `Cache-Control: private, no-store`.
+Na Vercel, [vercel.json](vercel.json) define `npm run migrations:deploy && npm run build`. O runner exige `DATABASE_URL_UNPOOLED` direta e usa TLS, trava e transação. Falhas de migration interrompem o build; falha posterior de compilação não desfaz migrations concluídas. [Procedimento de deploy](docs/deployment-migrations.md).
 
-## Preferência de tema
+Envio real de e-mails, ambientes remotos e aparência do DOCX em Word/LibreOffice ainda exigem as validações do roadmap. Implementação local não significa deploy ou validação de produção.
 
-A seleção de tema claro ou escuro é salva no cookie `trama_theme` por um ano, com `Path=/`, `SameSite=Lax` e `Secure` em HTTPS. O cookie contém apenas `light` ou `dark`; valores inválidos usam o tema claro. Se o navegador bloquear cookies, a troca continua funcionando durante a navegação atual, sem garantia de persistência após recarregar.
+## Documentação
 
-O estado compartilhado fica em `components/theme/ThemeProvider.js`. O `getInitialProps` de `pages/_app.js` lê a preferência para renderizar o HTML inicial no tema escolhido. Isso desativa a otimização estática automática das páginas públicas; as respostas HTML usam `Cache-Control: private, no-store`. Não há consulta ao banco para o tema. A preferência por conta e a sincronização entre dispositivos ficam para uma próxima etapa.
-
-## Minha conta
-
-A rota autenticada `/account` permite editar nome, usuário, e-mail e a própria senha pelo endpoint `PATCH /api/v1/user`, que identifica a pessoa pela sessão e rejeita alterações de perfil. A aparência é alterada nessa mesma tela e continua sendo salva somente no cookie do navegador.
-
-Visitantes continuam com o seletor de tema nas páginas públicas. Após entrar, o seletor fica disponível somente em Minha conta. O estado de autenticação usado na apresentação é compartilhado por `components/auth/AuthProvider.js`, com a API de usuário atual e o cache do SWR; permissões continuam sendo verificadas no servidor.
-
-Em Minha conta, os campos Nova senha e Confirmar nova senha são opcionais. Quando preenchidos, precisam coincidir e respeitar o limite de 8 a 128 caracteres; deixá-los vazios preserva a senha atual. A confirmação é validada na interface e no servidor e não é armazenada. A edição administrativa de usuários também exige confirmação ao informar uma nova senha; os dois campos vazios preservam a senha existente.
+- [Roadmap e pendências](docs/roadmap.md)
+- [Regras editoriais](docs/editorial-rules.md)
+- [E-mails e recuperação de senha](docs/email.md)
+- [Migrations no deploy](docs/deployment-migrations.md)
+- [Obra piloto e continuidade](docs/example-work.md)
+- [Termos de Uso](docs/terms-of-use.md), [Aviso de Privacidade](docs/privacy-notice.md) e [revisão jurídica](docs/legal-review.md)
+- [Ideia de escrita acadêmica](docs/academic-writing-idea.md)
+- [Orientações de desenvolvimento](AGENTS.md)

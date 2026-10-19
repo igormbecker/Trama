@@ -8,6 +8,121 @@
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
+.editorialDisclosure {
+  margin: 24px 0;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--preview-paper);
+}
+.editorialDisclosure > summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 500;
+}
+.editorialDisclosure[open] > summary {
+  margin-bottom: 20px;
+}
+.editorialDisclosure > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.editorialCard {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--preview-paper);
+}
+.editorialCard h3,
+.editorialCard h4 {
+  margin: 0;
+}
+.editorialCard textarea,
+.editorialCard select {
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+.editorialCard textarea {
+  min-height: 100px;
+}
+.editorialActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.editorialText {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.reviewLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  gap: 24px;
+  margin: 20px 0;
+}
+.reviewFeedback {
+  margin-top: 24px;
+}
+.workspace .reviewSelectionAction {
+  position: fixed;
+  right: 24px;
+  bottom: 80px;
+  z-index: 20;
+  box-shadow: 0 2px 10px #0003;
+}
+.reviewReading {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  user-select: text;
+}
+.reviewReading mark {
+  background: var(--selected);
+  color: var(--ink);
+  border-bottom: 2px solid var(--accent);
+  cursor: pointer;
+}
+.reviewComments {
+  min-width: 0;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+.reviewComment {
+  padding: 16px;
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.reviewComment h5 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.reviewComment blockquote {
+  margin: 0 0 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--accent);
+  color: var(--muted);
+}
+@media (max-width: 800px) {
+  .reviewLayout {
+    grid-template-columns: 1fr;
+  }
+  .reviewComments {
+    max-height: none;
+  }
+}
 .workspace button,
 .workspace select {
   font: inherit;
@@ -22,6 +137,14 @@
 .workspace select:disabled {
   opacity: 0.55;
   cursor: default;
+}
+.workspace .editorialCard select {
+  background: var(--paper);
+  color: var(--ink);
+}
+.workspace .editorialCard select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .toolbar {
   display: flex;
@@ -128,26 +251,6 @@
 .readingAnchor {
   scroll-margin-top: 24px;
 }
-.workspace .backToTop {
-  position: fixed;
-  right: max(24px, env(safe-area-inset-right));
-  bottom: max(24px, env(safe-area-inset-bottom));
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--preview-paper);
-  color: var(--accent);
-  text-decoration: none;
-}
-.workspace .backToTop:hover {
-  background: var(--surface);
-  border-color: var(--accent);
-}
 .readingChapter {
   margin-bottom: 48px;
 }
@@ -226,6 +329,16 @@
 .workspace .dangerButton {
   background: var(--error-text);
   color: var(--paper);
+}
+.workspace .approveButton {
+  background: var(--approve-button-bg);
+  color: #fff;
+  border-color: var(--approve-button-bg);
+}
+.workspace .correctionButton {
+  background: var(--correction-button-bg);
+  color: #fff;
+  border-color: var(--correction-button-bg);
 }
 @media (max-width: 600px) {
   .workspace {

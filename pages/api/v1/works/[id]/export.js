@@ -3,6 +3,7 @@ import controller from "infra/controller.js";
 import authentication from "models/authentication.js";
 import work from "models/work.js";
 import workReading from "models/workReading.js";
+import workCredits from "models/workCredits";
 import { generateDocx, generatePdf } from "models/workExport.js";
 import { ValidationError } from "infra/errors.js";
 const router = createRouter();
@@ -22,6 +23,7 @@ router.get(async (request, response) => {
     request.query.id,
     request.authenticatedUser.id,
   );
+  reading.credits = await workCredits.findConfirmed(request.query.id);
   const buffer = await (format === "docx"
     ? generateDocx(reading)
     : generatePdf(reading));

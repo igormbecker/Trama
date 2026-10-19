@@ -4,11 +4,18 @@ import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import ChapterEditor from "./ChapterEditor";
 import ChapterReader from "./ChapterReader";
+import EditorialRequestPanel from "./EditorialRequestPanel";
 import { chapterRequest } from "./chapterClient";
 import styles from "./chapter.module.css";
 import useRecordAccess from "components/home/useRecordAccess";
 
-export default function ChapterPage({ user, work, content: initialContent }) {
+export default function ChapterPage({
+  user,
+  work,
+  content: initialContent,
+  requestContent,
+  participants,
+}) {
   useRecordAccess(user.id, work.id, initialContent.chapter.id);
   const router = useRouter();
   const autoOpened = useRef(false);
@@ -71,6 +78,8 @@ export default function ChapterPage({ user, work, content: initialContent }) {
       description="Escrita e leitura do capítulo."
       user={user}
       activePage="works"
+      backHref={`/works/${work.id}`}
+      backLabel="Voltar à obra"
     >
       <section className={styles.workspace}>
         <Link href={`/works/${work.id}`}>← {work.title}</Link>
@@ -81,39 +90,51 @@ export default function ChapterPage({ user, work, content: initialContent }) {
           {content.chapter.part_position}.{content.chapter.position}.{" "}
           {content.chapter.title}
         </h1>
-        {error && <p role="alert">{error}</p>}
-        {token ? (
-          <ChapterEditor
-            key={token}
-            path={path}
-            userId={user.id}
-            content={content}
-            token={token}
-            onClose={close}
-            onRestart={restart}
-          />
-        ) : (
-          <>
-            {work.owner_id === user.id && (
-              <button type="button" onClick={start} disabled={busy}>
-                {busy ? "Abrindo editor…" : "Escrever capítulo"}
-              </button>
-            )}
-            <article
-              className={styles.reading}
-              aria-label="Leitura do capítulo"
-            >
-              {content.revision === 0 ? (
-                <p>
-                  Este capítulo ainda não tem texto. A descrição continua
-                  disponível na estrutura da obra.
-                </p>
-              ) : (
-                <ChapterReader document={content.document} />
+        <EditorialRequestPanel
+          user={user}
+          work={work}
+          content={content}
+          setContent={setContent}
+          initialRequestContent={requestContent}
+          participants={participants}
+        >
+          {error && <p role="alert">{error}</p>}
+          {token ? (
+            <ChapterEditor
+              key={token}
+              path={path}
+              userId={user.id}
+              content={content}
+              token={token}
+              onClose={close}
+              onRestart={restart}
+            />
+          ) : (
+            <>
+              {work.owner_id === user.id && (
+                <button type="button" onClick={start} disabled={busy}>
+                  {busy ? "Abrindo editor…" : "Escrever capítulo"}
+                </button>
               )}
-            </article>
-          </>
-        )}
+              <article
+                className={styles.reading}
+                aria-label="Leitura do capítulo"
+              >
+                {content.revision === 0 ? (
+                  <p>
+                    Este capítulo ainda não tem texto. A descrição continua
+                    disponível na estrutura da obra.
+                  </p>
+                ) : (
+                  <ChapterReader document={content.document} />
+                )}
+              </article>
+            </>
+          )}
+        </EditorialRequestPanel>
+        <div className={styles.actions}>
+          <Link href={`/works/${work.id}`}>← Voltar à obra</Link>
+        </div>
       </section>
     </AppLayout>
   );

@@ -2,6 +2,17 @@ import database from "infra/database.js";
 import work from "models/work.js";
 import { NotFoundError, ValidationError } from "infra/errors.js";
 
+const editorialProgressJoin = `LEFT JOIN LATERAL (
+  SELECT jsonb_build_object(
+    'kind', r.kind, 'status', r.status, 'review_verdict', r.review_verdict,
+    'assignee_name', u.name, 'adjustments_requested', r.adjustment_message IS NOT NULL
+  ) AS editorial_request
+  FROM chapter_requests r LEFT JOIN users u ON u.id = r.assignee_user_id
+  WHERE r.chapter_id = c.id
+  ORDER BY CASE WHEN r.status IN ('writing', 'waiting') THEN 0 ELSE 1 END,
+    r.created_at DESC, r.id DESC LIMIT 1
+) editorial ON true`;
+
 function validateInput(input, isChapter, partial = false) {
   const fields = isChapter ? ["title", "description"] : ["title"];
   if (
@@ -72,7 +83,7 @@ async function listChapters(workId, partId, userId) {
   await findPart(workId, partId);
   return (
     await database.query({
-      text: "SELECT * FROM chapters WHERE part_id = $1 ORDER BY position, id",
+      text: `SELECT c.*, editorial.editorial_request FROM chapters c ${editorialProgressJoin} WHERE c.part_id = $1 ORDER BY c.position, c.id`,
       values: [partId],
     })
   ).rows;
@@ -80,7 +91,7 @@ async function listChapters(workId, partId, userId) {
 async function findAll(workId, userId) {
   const parts = await listParts(workId, userId);
   const chapters = await database.query({
-    text: "SELECT c.* FROM chapters c JOIN work_parts p ON p.id = c.part_id WHERE p.work_id = $1 ORDER BY c.position, c.id",
+    text: `SELECT c.*, editorial.editorial_request FROM chapters c JOIN work_parts p ON p.id = c.part_id ${editorialProgressJoin} WHERE p.work_id = $1 ORDER BY c.position, c.id`,
     values: [workId],
   });
   return parts.map((part) => ({

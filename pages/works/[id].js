@@ -4,6 +4,7 @@ import WorkPage from "components/works/WorkPage";
 import authentication from "models/authentication.js";
 import work from "models/work.js";
 import workStructure from "models/workStructure.js";
+import workCredits from "models/workCredits.js";
 import {
   LegalAcceptanceRequiredError,
   UnauthorizedError,
@@ -45,6 +46,11 @@ export async function getServerSideProps({ req, res, params }) {
             invitations.filter((invitation) => invitation.status === "pending"),
           ),
         ),
+        creditsData: isOwner
+          ? JSON.parse(
+              JSON.stringify(await workCredits.read(params.id, currentUser.id)),
+            )
+          : null,
       },
     };
   } catch (error) {

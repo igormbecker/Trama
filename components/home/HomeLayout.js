@@ -1,4 +1,5 @@
 import Head from "next/head";
+import BackToTop from "components/shared/BackToTop";
 import { useAuth } from "components/auth/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -72,6 +73,7 @@ export default function HomeLayout({
   description = "Conheça o Trama: uma proposta para conectar pessoas, capítulos e etapas da produção editorial, da organização da obra à aprovação.",
   navigation,
   showThemeControl = true,
+  hasFloatingNavigation = false,
 }) {
   const { theme, setTheme } = useTheme();
   const { isAuthenticated } = useAuth();
@@ -88,7 +90,7 @@ export default function HomeLayout({
         : router.asPath || "/";
 
   return (
-    <div className={styles.site} lang="pt-BR" data-theme={theme}>
+    <div id="page-top" className={styles.site} lang="pt-BR" data-theme={theme}>
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -101,7 +103,9 @@ export default function HomeLayout({
       <a className={styles.skipLink} href="#conteudo">
         Pular para o conteúdo
       </a>
-      <header className={styles.header}>
+      <header
+        className={`${styles.header} ${hasFloatingNavigation ? styles.floatingNavigationHeader : ""}`}
+      >
         <Link
           className={styles.productBrand}
           href={brandPath}
@@ -173,6 +177,7 @@ export default function HomeLayout({
           </Link>
         </div>
       </footer>
+      <BackToTop />
     </div>
   );
 }

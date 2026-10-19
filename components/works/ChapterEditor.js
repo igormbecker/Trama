@@ -35,9 +35,10 @@ export default function ChapterEditor({
   token,
   onClose,
   onRestart,
+  draftKey,
 }) {
   const router = useRouter();
-  const key = `${userId}:${content.chapter.id}`;
+  const key = draftKey || `${userId}:${content.chapter.id}`;
   const [status, setStatus] = useState("Carregando recuperação local…");
   const [error, setError] = useState("");
   const [localError, setLocalError] = useState("");
@@ -232,7 +233,7 @@ export default function ChapterEditor({
     )
       return;
     await queue.current;
-    await onClose();
+    await onClose({ pending: writer.pending() });
   }
   function link() {
     const href = window.prompt(
