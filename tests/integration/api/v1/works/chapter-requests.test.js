@@ -63,6 +63,187 @@ const submittedDocument = {
   ],
 };
 
+test.each(["review", "contribution"])(
+  "Assigned %s is visible from the workspace and opens its chapter panel",
+  async (kind) => {
+    const { owner, contributor, work: book, chapter, path } = await setup();
+    const created = await (
+      await request(path, owner, "POST", {
+        assignee_user_id: contributor.id,
+        kind,
+        instructions: "Pedido que precisa aparecer.",
+      })
+    ).json();
+    const home = await (await request("/home", contributor)).text();
+    expect(home).toContain("Pedidos aguardando sua ação");
+    expect(home).toContain(`requestId=${created.id}`);
+    const page = await (
+      await request(
+        `/works/${book.id}/chapters/${chapter.id}?requestId=${created.id}`,
+        contributor,
+      )
+    ).text();
+    expect(page).toMatch(/<details[^>]*open=""[^>]*>/);
+    const list = await (
+      await request("/api/v1/participations", contributor)
+    ).json();
+    expect(list).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: created.id, kind, status: "writing" }),
+      ]),
+    );
+  },
+);
+
+test("Only the owner resolves and reopens comments, including earlier reviews, without changing the verdict or text", async () => {
+  const { owner, contributor, work: book, chapter, path } = await setup();
+  const lease = await chapterContent.reserve(book.id, chapter.id, owner.id, {});
+  await chapterContent.save(book.id, chapter.id, owner.id, {
+    document: submittedDocument,
+    revision: 0,
+    token: lease.token,
+  });
+  await chapterContent.release(book.id, chapter.id, owner.id, {
+    token: lease.token,
+  });
+  const created = await (
+    await request(path, owner, "POST", {
+      assignee_user_id: contributor.id,
+      kind: "review",
+      instructions: "Revise.",
+    })
+  ).json();
+  const commented = await (
+    await request(path, contributor, "PATCH", {
+      action: "comment",
+      start: 0,
+      end: 7,
+      quote: "Entrega",
+      message: "Confira.",
+    })
+  ).json();
+  const input = {
+    action: "resolve_comment",
+    request_id: created.id,
+    comment_id: commented.review_comments[0].id,
+  };
+  expect((await request(path, contributor, "PATCH", input)).status).toBe(404);
+  expect((await request(path, null, "PATCH", input)).status).toBe(401);
+  expect(
+    (await request(path, owner, "PATCH", { ...input, comment_id: "missing" }))
+      .status,
+  ).toBe(400);
+  await request(path, contributor, "PATCH", {
+    action: "conclude_review",
+    verdict: "changes_requested",
+  });
+  await request(path, owner, "POST", {
+    assignee_user_id: contributor.id,
+    kind: "review",
+    instructions: "Nova revisão.",
+  });
+  const resolved = await request(path, owner, "PATCH", input);
+  expect(resolved.status).toBe(200);
+  const result = await resolved.json();
+  expect(result.review_comments[0]).toMatchObject({
+    quote: "Entrega",
+    message: "Confira.",
+    resolved_by: owner.id,
+    resolved_at: expect.any(String),
+    resolution_history: [
+      {
+        action: "resolved",
+        actor_user_id: owner.id,
+        created_at: expect.any(String),
+      },
+    ],
+  });
+  expect(result.review_verdict).toBe("changes_requested");
+  expect((await request(path, owner, "PATCH", input)).status).toBe(409);
+  const reopened = await (
+    await request(path, owner, "PATCH", { ...input, action: "reopen_comment" })
+  ).json();
+  expect(reopened.review_comments[0].resolved_at).toBeNull();
+  expect(reopened.review_comments[0].resolution_history).toHaveLength(2);
+  const concurrent = await Promise.all([
+    request(path, owner, "PATCH", input),
+    request(path, owner, "PATCH", input),
+  ]);
+  expect(concurrent.map((response) => response.status).sort()).toEqual([
+    200, 409,
+  ]);
+  const historical = await (
+    await request(`${path}?requestId=${created.id}`, contributor)
+  ).json();
+  expect(historical.request.review_comments[0].resolution_history).toHaveLength(
+    3,
+  );
+  expect(
+    (await chapterContent.read(book.id, chapter.id, owner.id)).document,
+  ).toEqual(submittedDocument);
+  const outsider = await account();
+  expect((await request(path, outsider, "PATCH", input)).status).toBe(404);
+  const otherFixture = await setup();
+  expect(
+    (await request(otherFixture.path, otherFixture.owner, "PATCH", input))
+      .status,
+  ).toBe(404);
+});
+
+test("Comment resolution keeps its history during an active review and canceled reviews cannot be resolved", async () => {
+  const { owner, contributor, work: book, chapter, path } = await setup();
+  const lease = await chapterContent.reserve(book.id, chapter.id, owner.id, {});
+  await chapterContent.save(book.id, chapter.id, owner.id, {
+    document: submittedDocument,
+    revision: 0,
+    token: lease.token,
+  });
+  await chapterContent.release(book.id, chapter.id, owner.id, {
+    token: lease.token,
+  });
+  const created = await (
+    await request(path, owner, "POST", {
+      assignee_user_id: contributor.id,
+      kind: "review",
+      instructions: "Revise.",
+    })
+  ).json();
+  const commented = await (
+    await request(path, contributor, "PATCH", {
+      action: "comment",
+      start: 0,
+      end: 7,
+      quote: "Entrega",
+      message: "Confira.",
+    })
+  ).json();
+  const input = {
+    action: "resolve_comment",
+    request_id: created.id,
+    comment_id: commented.review_comments[0].id,
+  };
+  expect((await request(path, owner, "PATCH", input)).status).toBe(200);
+  expect(
+    (
+      await request(path, contributor, "PATCH", {
+        action: "remove_comment",
+        comment_id: input.comment_id,
+      })
+    ).status,
+  ).toBe(409);
+  expect(
+    (await request(path, owner, "PATCH", { action: "cancel" })).status,
+  ).toBe(200);
+  expect(
+    (
+      await request(path, owner, "PATCH", {
+        ...input,
+        action: "reopen_comment",
+      })
+    ).status,
+  ).toBe(404);
+});
+
 test("Chapter lists expose only editorial progress to authorized participants", async () => {
   const { owner, contributor, work: book, chapter, path } = await setup();
   expect(

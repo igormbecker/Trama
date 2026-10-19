@@ -54,7 +54,21 @@ function renderNode(node, key, context) {
         <mark
           key={`${key}-${index}`}
           data-review-comment={marked[0].id}
+          data-review-comments={marked.map((comment) => comment.id).join(" ")}
+          data-active={
+            marked.some((comment) => comment.id === context.activeCommentId) ||
+            undefined
+          }
+          role="button"
+          tabIndex={0}
+          aria-label={`Ver comentário sobre: ${node.text.slice(from - start, boundaries[index + 1] - start)}`}
           onClick={() => context.onComment?.(marked[0].id)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              context.onComment?.(marked[0].id);
+            }
+          }}
         >
           {text}
         </mark>
@@ -90,8 +104,9 @@ export default function ChapterReader({
   document,
   annotations = [],
   onComment,
+  activeCommentId,
 }) {
-  const context = { offset: 0, annotations, onComment };
+  const context = { offset: 0, annotations, onComment, activeCommentId };
   return (
     <>
       {document.content?.map((node, index) =>

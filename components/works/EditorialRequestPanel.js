@@ -62,7 +62,19 @@ export default function EditorialRequestPanel({
     setSuccess("");
     try {
       await chapterRequest(path, "PATCH", input);
-      await refresh();
+      if (input.request_id && current?.id === input.request_id)
+        setRequestContent(
+          await chapterRequest(
+            `${path}?requestId=${encodeURIComponent(input.request_id)}`,
+          ),
+        );
+      else await refresh();
+      if (historyDetails?.request?.id === input.request_id)
+        setHistoryDetails(
+          await chapterRequest(
+            `${path}?requestId=${encodeURIComponent(input.request_id)}`,
+          ),
+        );
       setSuccess(
         input.action === "conclude_review"
           ? "Parecer enviado ao responsável."
@@ -221,7 +233,10 @@ export default function EditorialRequestPanel({
       )?.name;
   return (
     <>
-      <details className={styles.editorialDisclosure}>
+      <details
+        className={styles.editorialDisclosure}
+        open={Boolean(assigned && active)}
+      >
         <summary>
           {current
             ? `${kindLabels[current.kind]}${assigneeName ? ` · ${assigneeName}` : ""} · ${requestStatus(current)}`
@@ -251,6 +266,7 @@ export default function EditorialRequestPanel({
               <ChapterReview
                 request={current}
                 editable={assigned && active}
+                canResolve={isOwner && current.status !== "canceled"}
                 busy={busy}
                 onAction={reviewAction}
                 success={success}
@@ -524,6 +540,13 @@ export default function EditorialRequestPanel({
                     <ChapterReview
                       request={historyDetails.request}
                       editable={false}
+                      canResolve={
+                        isOwner && historyDetails.request.status !== "canceled"
+                      }
+                      busy={busy}
+                      onAction={reviewAction}
+                      success={success}
+                      error={error}
                     />
                   )}
                 {historyDetails.request.submitted_document && (
