@@ -16,7 +16,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 
 ## O que já está implementado
 
-- [x] Cadastro restrito a administradores: POST /api/v1/users exige sessão administrativa; visitantes e contas comuns não criam usuários. A página /register informa o fechamento do cadastro público, e login e convites orientam solicitar conta ao administrador. Novas contas continuam comuns, sem promoção automática.
+- [x] Cadastro público fechado: POST /api/v1/users exige sessão administrativa e /register informa o acesso restrito. A exceção é o cadastro pelo link de convite válido para uma obra, limitado ao e-mail convidado; a nova conta continua comum e precisa aceitar pessoalmente os documentos e o convite.
 
 ### Publicação restrita — decisões de 17/10/2026
 
@@ -45,7 +45,7 @@ O sistema Obras, em D:/Projects/obras3, serve como referência de funcionalidade
 - [x] Menu autenticado com Minhas obras, Minha conta e Usuários para administradores.
 - [x] Primeira versão de obras: criar, listar e abrir obras privadas e bloquear exclusão de contas responsáveis por obras.
 - [x] Minhas obras apresenta miniaturas de capas com título e marca Trama, em uma paleta de cores definida pelo identificador da obra. A cor permanece estável entre atualizações, contas e temas, sem imagens ou novos dados no banco.
-- [x] Participantes e convites do MVP: responsável convida organizadores por link, com aceite pelo e-mail correspondente e acesso de consulta revogável.
+- [x] Participantes e convites do MVP: responsável convida organizadores por e-mail, com aceite pela conta do endereço correspondente e acesso de consulta revogável.
 - [x] Administração de usuários: listar, buscar na lista, adicionar, editar e remover.
 - [x] Edição de perfil administrativo, bloqueio de exclusão da própria conta e proteção para manter ao menos um administrador.
 - [x] Minha conta: editar dados pessoais e alterar a própria senha com confirmação.
@@ -117,7 +117,7 @@ A migration foi executada somente no banco de testes nesta entrega. A aplicaçã
 
 - Manter simples: apenas responsável e organizador nesta entrega; autores, revisores e permissões sobre capítulos serão definidos quando esses módulos existirem.
 - Somente o responsável convida, gerencia participantes e cancela convites. O organizador tem acesso de consulta à obra e não gerencia convites nem participantes. Administradores globais continuam sem acesso editorial automático.
-- Convites por e-mail, inclusive para pessoas ainda sem cadastro, compartilhados por link; nenhum e-mail é enviado automaticamente.
+- Convites por e-mail, inclusive para pessoas ainda sem cadastro, são enviados pelo serviço transacional. O link recebido permite criar uma conta restrita ao endereço convidado; a criação não aceita documentos nem concede participação automaticamente.
 - O aceite ou a recusa exige sessão de uma conta com o mesmo e-mail do convite, comparado sem diferenciar maiúsculas e minúsculas. Convites pendentes não concedem acesso.
 - Validade de sete dias. Reenviar para o mesmo e-mail cancela o convite pendente anterior. Convites expirados, recusados, cancelados ou já aceitos não podem ser usados para obter acesso.
 - Remover um organizador revoga o acesso e preserva o registro de participação e os convites. O responsável não pode remover a si mesmo. Um participante removido só volta por novo convite e novo aceite.
@@ -129,7 +129,7 @@ A migration foi executada somente no banco de testes nesta entrega. A aplicaçã
 - [x] Página `/invitations` (Meus convites) no menu da conta, com contador de pendentes, título da obra, papel, validade, aceite e recusa em vermelho. A lista usa o e-mail atual da conta e exibe somente convites pendentes e válidos; sair da página não exige recuperar o link. Aceitar abre a obra e recusar remove o item da lista. Listagem, isolamento por conta, consumo único entre lista e link, concorrência, estado vazio, navegação, temas e largura de celular foram verificados no ambiente isolado de testes.
 - [x] Criar migrations de participantes e convites com chaves estrangeiras, unicidade de participação por obra/conta e apenas um convite pendente por obra/e-mail.
 - [x] Implementar criação, listagem e cancelamento de convites, com validação de responsável no model.
-- [x] Adicionar botão de cópia por ícone com nome acessível e tooltip, confirmação de sucesso e alternativa por seleção para acesso pelo IP em HTTP. Falhas oferecem orientação para cópia manual. Cópia e permanência do link foram verificadas no navegador pelo IP do WSL.
+- [x] Na implementação anterior, o botão de cópia de link foi verificado no navegador pelo IP do WSL. A interface atual envia o convite por e-mail e não apresenta esse botão.
 - [x] Destacar o cancelamento de convites em vermelho e preservar a marca original Trama no rodapé, com o símbolo de elos à direita da frase “Pessoas, ideias e capítulos. Uma obra construída em conjunto.”.
 - [x] Implementar consulta, aceite e recusa de convite com e-mail correspondente, expiração e consumo único.
 - [x] Listar organizadores e permitir remoção com confirmação na interface, sem apagar a participação do banco.
@@ -232,22 +232,22 @@ Critério de conclusão da V1: uma pessoa autorizada edita o capítulo, acompanh
 
 Importação e exportação continuam como possibilidades futuras. Se forem retomadas, a preferência já discutida é processar os documentos sem armazenar permanentemente os arquivos importados ou exportados. Formatos e eventual suporte a imagens exigem decisão própria.
 
-## 5. Contribuição e revisão opcionais — V1 definida
+## 5. Contribuição e revisão opcionais — primeira implementação local
 
-Escopo definido em 18/10/2026. Implementação pendente e adiada a pedido do usuário, que desenvolverá outra funcionalidade antes. Regras completas e referência histórica: [regras editoriais](editorial-rules.md). A definição abaixo substitui o fluxo anterior de revisão e avaliação obrigatórias em etapas separadas.
+Escopo definido em 18/10/2026 e implementado localmente na branch de trabalho. Regras completas e referência histórica: [regras editoriais](editorial-rules.md). Esta versão substitui o fluxo anterior de revisão e avaliação obrigatórias em etapas separadas. Os testes de integração cobrem o ciclo principal, mas a interface ainda requer verificação interativa antes de declarar a V1 validada.
 
 - [x] Definir escrita individual livre, sem aprovação obrigatória, e pedidos opcionais de contribuição ou revisão por capítulo.
 - [x] Definir um pedido ativo por capítulo, uma pessoa participante ativa atribuída por vez e aprovação somente pelo responsável pela obra. Organizador permanece leitor sem atribuição explícita.
 - [x] Definir fluxo comum do pedido: Em escrita → Aguardando aprovação → Aprovada; solicitação de ajustes com mensagem retorna para Em escrita, seguida de reenvio.
-- [ ] Implementar atribuição de contribuição (desenvolver conteúdo) ou revisão (corrigir e melhorar texto existente), com instruções do responsável.
-- [ ] Implementar cópia de trabalho separada do texto atual do capítulo e preservar a versão enviada enquanto aguarda decisão.
-- [ ] Implementar aprovação que incorpora a entrega ao capítulo e preserva o texto anterior para recuperação. Se o capítulo mudou desde o início do pedido, exigir conferência antes da substituição.
-- [ ] Implementar solicitação de ajustes, reenvio e cancelamento pelo responsável sem incorporar o texto pendente.
+- [x] Implementar atribuição de contribuição (desenvolver conteúdo) ou revisão (corrigir e melhorar texto existente), com instruções do responsável.
+- [x] Implementar cópia de trabalho separada do texto atual do capítulo e preservar a versão enviada enquanto aguarda decisão.
+- [x] Implementar aprovação que incorpora a entrega ao capítulo e preserva o texto anterior para recuperação. Se o capítulo mudou desde o início do pedido, exigir conferência antes da substituição.
+- [x] Implementar solicitação de ajustes, reenvio e cancelamento pelo responsável sem incorporar o texto pendente.
 - [ ] Validar permissões no servidor, revogação de acesso, transições, concorrência e preservação do histórico.
 
 Fora desta V1: colaboradores simultâneos no mesmo capítulo, revisor e avaliador em etapas obrigatórias separadas, delegação de aprovação, comentários por trecho, prazos, notificações e aprovação com restrições.
 
-Critério de conclusão futuro: escrever sozinho → atribuir contribuição ou revisão → receber entrega → pedir ajustes → receber reenvio → aprovar e incorporar o resultado com recuperação do texto anterior. Verificar cancelamento e conflito com mudanças do responsável. Nenhuma funcionalidade deste novo fluxo está implementada por este registro.
+Critério de conclusão: escrever sozinho → atribuir contribuição ou revisão → receber entrega → pedir ajustes → receber reenvio → aprovar e incorporar o resultado com recuperação do texto anterior. Ainda validar no navegador o ciclo completo, falhas de rede e reserva, temas e largura de celular; não houve aplicação da migration em desenvolvimento nem deploy.
 
 ## 6. Tarefas, painéis e comunicação
 
@@ -284,8 +284,8 @@ Usar `pgm.func("timezone('utc', now())")` nos defaults de data atual, conforme p
 - [x] Bloquear destinatários de preview fora da lista explícita `EMAIL_PREVIEW_RECIPIENTS`; sem lista, bloquear todos os envios. Desenvolvimento e testes nunca usam Resend, mesmo com credenciais herdadas.
 - [x] Usuário confirmou o cadastro de destinatários de teste em `EMAIL_PREVIEW_RECIPIENTS`, somente no ambiente Preview da Vercel; envio real ainda pendente de validação.
 - [ ] Validar envio real pelo Resend e aparência nas caixas Gmail/Outlook após conectar os fluxos; revisar o aviso de privacidade para o novo provedor antes dos envios reais.
-- [ ] Implementar convite de acesso à conta com definição inicial da senha pelo destinatário, mantendo cadastro público fechado e aceite pessoal dos documentos.
-- [ ] Conectar envio automático aos convites para obras, com tratamento de falhas e reenvio.
+- [ ] Implementar convite administrativo de acesso à conta com definição inicial da senha pelo destinatário. O cadastro restrito por convite de obra já existe; não substitui esse fluxo administrativo.
+- [x] Conectar envio automático aos convites para obras, com tratamento de falhas e reenvio; envio local verificado no MailCatcher de testes. Entrega real pelo Resend continua pendente de validação.
 
 Configuração confirmada pelo usuário: domínio `etrama.bectec.com.br` verificado, `RESEND_API_KEY` própria por ambiente e `EMAIL_FROM` configurado em Production e Preview. Nenhuma chave consta no código. A implementação local não significa deploy nem envio real confirmado. Detalhes e uso interno em [docs/email.md](email.md). Sem fila durável ou repetição automática nesta etapa; os futuros fluxos devem aguardar o envio e usar idempotência por evento.
 

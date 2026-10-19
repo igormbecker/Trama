@@ -1,6 +1,8 @@
 import authentication from "models/authentication.js";
 import work from "models/work.js";
 import chapterContent from "models/chapterContent.js";
+import chapterRequest from "models/chapterRequest.js";
+import workParticipant from "models/workParticipant.js";
 import {
   LegalAcceptanceRequiredError,
   UnauthorizedError,
@@ -21,12 +23,28 @@ export async function getServerSideProps({ req, res, params }) {
       params.chapterId,
       user.id,
     );
+    let requestContent = null;
+    try {
+      requestContent = await chapterRequest.read(
+        params.id,
+        params.chapterId,
+        user.id,
+      );
+    } catch (error) {
+      if (!(error instanceof NotFoundError)) throw error;
+    }
+    const participants =
+      ownedWork.owner_id === user.id
+        ? await workParticipant.findAll(params.id, user.id)
+        : [];
     return {
       props: JSON.parse(
         JSON.stringify({
           user: { id: user.id, name: user.name, is_admin: user.is_admin },
           work: ownedWork,
           content,
+          requestContent,
+          participants,
         }),
       ),
     };

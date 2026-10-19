@@ -8,6 +8,48 @@
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
+.editorialPanel {
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.editorialCard {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--preview-paper);
+}
+.editorialCard h3,
+.editorialCard h4 {
+  margin: 0;
+}
+.editorialCard textarea,
+.editorialCard select {
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+.editorialCard textarea {
+  min-height: 100px;
+}
+.editorialActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.editorialText {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
 .workspace button,
 .workspace select {
   font: inherit;

@@ -4,11 +4,18 @@ import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import ChapterEditor from "./ChapterEditor";
 import ChapterReader from "./ChapterReader";
+import EditorialRequestPanel from "./EditorialRequestPanel";
 import { chapterRequest } from "./chapterClient";
 import styles from "./chapter.module.css";
 import useRecordAccess from "components/home/useRecordAccess";
 
-export default function ChapterPage({ user, work, content: initialContent }) {
+export default function ChapterPage({
+  user,
+  work,
+  content: initialContent,
+  requestContent,
+  participants,
+}) {
   useRecordAccess(user.id, work.id, initialContent.chapter.id);
   const router = useRouter();
   const autoOpened = useRef(false);
@@ -113,6 +120,16 @@ export default function ChapterPage({ user, work, content: initialContent }) {
               )}
             </article>
           </>
+        )}
+        {(work.owner_id === user.id || requestContent?.request) && (
+          <EditorialRequestPanel
+            user={user}
+            work={work}
+            content={content}
+            setContent={setContent}
+            initialRequestContent={requestContent}
+            participants={participants}
+          />
         )}
       </section>
     </AppLayout>

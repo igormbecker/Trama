@@ -4,7 +4,7 @@ Registro de continuidade em 18/10/2026. Inspeção estática do legado localizad
 
 ## V1 definida: escrita livre e colaboração opcional
 
-Escopo aprovado pelo usuário em 18/10/2026, registrado no TODO para implementação futura. O usuário quer desenvolver outra funcionalidade antes; não iniciar esta implementação agora.
+Escopo aprovado pelo usuário em 18/10/2026. A primeira implementação local usa pedidos por capítulo, uma cópia de trabalho com reserva e revisão próprias, eventos de entrega/ajustes/decisão e recuperação do texto anterior à aprovação. A validação interativa e o deploy permanecem pendentes.
 
 - O responsável escreve, organiza e salva seus capítulos sozinho, sem submissão ou aprovação obrigatória.
 - Por capítulo, o responsável pode pedir contribuição ou revisão a uma pessoa cadastrada e participante ativa da obra, informando o que precisa.
@@ -19,7 +19,7 @@ Escopo aprovado pelo usuário em 18/10/2026, registrado no TODO para implementa�
 - O responsável pode cancelar o pedido sem incorporar o texto pendente.
 - Fora da V1: vários colaboradores simultâneos no mesmo capítulo, revisão e avaliação obrigatórias em etapas separadas, delegação de aprovação a organizadores, comentários por trecho, prazos, notificações e aprovação com restrições.
 
-Critério de conclusão futuro: escrever sozinho → atribuir contribuição ou revisão → receber entrega → solicitar ajustes → receber reenvio → aprovar → conferir incorporação ao capítulo e preservação do texto anterior. Verificar também cancelamento, permissões e conflito com alterações do responsável.
+Critério de conclusão: escrever sozinho → atribuir contribuição ou revisão → receber entrega → solicitar ajustes → receber reenvio → aprovar → conferir incorporação ao capítulo e preservação do texto anterior. Verificar também cancelamento, permissões e conflito com alterações do responsável. A remoção da pessoa participante bloqueia leitura e edição imediatamente, preservando pedido e entregas para consulta e cancelamento pelo responsável.
 
 ### Discussão anterior substituída para a V1
 
@@ -51,6 +51,6 @@ A proposta inicial de Rascunho → Em escrita → Em revisão → Em avaliação
 
 ## Situação atual e próximos pontos do Trama
 
-Hoje somente o responsável gerencia estrutura, participantes e escrita; organizador ativo consulta conteúdo salvo. Não existem submissão editorial, comentários, aprovador/revisor atribuído nem estados de aprovação.
+O responsável continua gerenciando estrutura e participantes e escrevendo sem aprovação. Organizador ativo consulta conteúdo salvo; a pessoa explicitamente atribuída a um pedido pode editar somente a cópia daquele capítulo. Existem entrega, pedido de ajustes, aprovação pelo responsável e cancelamento. Comentários por trecho e etapas obrigatórias separadas não existem.
 
-O escopo futuro da V1 é o definido acima. Detalhes técnicos de versões, recuperação, cancelamento e revogação de acesso deverão respeitar essas regras e a arquitetura atual. O comportamento do legado não altera as decisões aprovadas.
+A migration e os testes desta implementação foram aplicados somente ao banco descartável de testes. A interface ainda precisa de validação interativa; o comportamento do legado não altera as decisões aprovadas.

@@ -2,7 +2,7 @@
 
 ## Escopo
 
-Infraestrutura para recuperação de senha, convite de acesso e convite para obra. A recuperação já está conectada ao envio; os dois tipos de convite permanecem pendentes. Não há endpoint genérico de disparo.
+Infraestrutura para recuperação de senha, convite de acesso e convite para obra. Recuperação e convite para obra já usam o envio; o convite administrativo de acesso à conta permanece pendente. Não há endpoint genérico de disparo.
 
 `infra/email.js` centraliza o transporte; `models/transactional/index.js` gera HTML e texto simples usando React Email. As regras de negócio continuam nos models de cada funcionalidade. A recuperação usa `waitUntil` de `@vercel/functions` para manter o envio ativo após a resposta genérica; não usar promessas soltas sem aguardar ou sem esse mecanismo nas funções da Vercel. Isso não constitui fila durável.
 
@@ -50,9 +50,11 @@ O retorno `{ id }` indica aceitação pelo transporte, não comprova entrega na 
 
 ## Verificação
 
-`npm run services:up` inclui o MailCatcher de desenvolvimento; `services:stop` para os serviços locais preservando o volume do banco. `npm test -- tests/unit/infra/email.test.js tests/unit/models/transactional.test.js tests/integration/email/send.test.js` sobe e para somente os serviços isolados de teste. O teste SMTP usa destinatário fictício e confirma as duas partes da mensagem capturada, sem enviar ao Resend nem limpar o esquema do banco.
+`npm run dev` chama `services:up`, que inclui o MailCatcher de desenvolvimento no loopback; `services:stop` para os serviços locais preservando o volume do banco. `npm test -- tests/unit/infra/email.test.js tests/unit/models/transactional.test.js tests/integration/email/send.test.js` sobe e para somente os serviços isolados de teste. O teste SMTP usa destinatário fictício e confirma as duas partes da mensagem capturada, sem enviar ao Resend nem limpar o esquema do banco.
 
-Envio real pelo Resend e aparência em Gmail/Outlook ainda devem ser validados no preview. Antes dos envios reais, revisar o aviso de privacidade para refletir o provedor e o tratamento de mensagens. Ativação/definição inicial de senha e envio dos convites atuais permanecem próximos passos, com TDD e regras próprias.
+Convites de organizador agora são enviados ao endereço informado, usando origem confiável e link válido por sete dias. A API não devolve o token; o banco guarda somente seu hash. Se o endereço ainda não tiver conta, o link permite criar uma conta comum limitada àquele e-mail. A conta não recebe participação nem aceite legal automaticamente: a pessoa entra, aceita os documentos atuais e responde ao convite. Falha de envio cancela o novo convite e, quando ainda possível, preserva o convite pendente substituído.
+
+Envio real pelo Resend e aparência em Gmail/Outlook ainda devem ser validados no preview. Antes dos envios reais, revisar o aviso de privacidade para refletir o provedor e o tratamento de mensagens. O convite administrativo de acesso à conta com definição inicial de senha continua pendente.
 
 ## Recuperação de senha
 
