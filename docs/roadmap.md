@@ -45,6 +45,8 @@ Contribuição por cópia, revisão por comentários, indicadores nos capítulos
 
 Seu espaço também destaca até cinco pedidos de revisão/contribuição aguardando ação, com dados iniciais do servidor e atualização pelo mesmo fluxo. O painel ativo abre ao acessar o capítulo como pessoa atribuída. Comentários têm painel lateral persistente no computador e painel inferior expansível no celular, filtros e navegação entre apontamento e trecho. O responsável pode resolver/reabrir comentários, inclusive de revisões anteriores, preservando autor/data de cada ação e sem alterar texto ou parecer. Não requer migration: os metadados ficam no JSONB existente. Conferência visual no navegador e no iPhone físico permanece pendente.
 
+O salvamento de comentários não consulta histórico sem identificador: após sucesso, limpa o campo e a seleção e exibe confirmação no cabeçalho do painel, inclusive no celular. Falhas preservam o texto para nova tentativa.
+
 - [ ] Exercitar no navegador correções, nova revisão e consulta de histórico nas duas contas.
 - [ ] Testar seleção/comentários com gestos de smartphone físico, textos longos e seleções entre parágrafos.
 - [ ] Exercitar falhas de rede, remoção da pessoa atribuída e troca/expiração de sessão na interface editorial. Permissões, revogação, transições, concorrência e histórico têm cobertura automatizada; preservar essa proteção.
@@ -95,6 +97,16 @@ Nunca editar textos legais de uma versão já aceita: criar novo arquivo/identif
 
 ## 8. Usabilidade e ideias futuras
 
+A página inicial pública descreve os recursos disponíveis de organização, editor, contribuições, revisão por comentários, leitura completa, créditos e exportação PDF/DOCX. A prévia permanece ilustrativa, com estados de pedidos editoriais e papéis coerentes com as permissões atuais; autoria continua declarada nos créditos. Layout e aviso de produto em desenvolvimento são preservados. A atualização de conteúdo não inclui mensagem sobre acesso restrito, conforme preferência do usuário.
+
+Carregamento compartilhado: navegação mostra barra indeterminada e “Carregando…” sem cobrir o conteúdo, encerra em conclusão/erro e bloqueia repetição de links internos durante a transição, preservando âncoras, downloads e novas abas. Ações de conta, autenticação, obras, estrutura, participantes, convites, créditos, pedidos editoriais e exportação usam trava imediata por componente (`useActionState`) e estados de espera; envios mostram spinner via `aria-busy`, e operações de painel usam `LoadingMessage`. Não altera permissões nem contratos de API e não substitui proteções no servidor. A lentidão de produção ainda exige investigação própria; esta entrega melhora o retorno visual. Validar o próximo Preview/Production e smartphone físico antes de afirmar funcionamento remoto.
+
+Títulos de seções expansíveis compartilham a cor de destaque do tema, peso 500, cursor de mão e foco visível: créditos, pedidos editoriais, históricos e texto anterior à aprovação. O estilo é centralizado para incluir novos `summary` automaticamente.
+
+Profundidade aprovada nos painéis e cartões do sistema: sombra estática mais profunda e difusa no topo e à direita, centralizada em `--panel-shadow`. Aplicada aos painéis de obras/convites/participações, formulários de autenticação/conta/usuários, tabela e diálogo de usuários, cartões de Seu espaço, prévia pública, painéis editoriais/comentários, sumário/recuperação e status. Blocos internos, campos e mensagens não recebem sombra indiscriminadamente. O efeito dos botões permanece intacto. Não há elevação nem efeito de pressão nos painéis; conferência visual completa nas demais telas permanece pendente.
+
+Padrão visual aprovado para os botões do sistema: sombra suave e difusa no topo e à direita, elevação sutil ao passar o mouse e redução da sombra ao clicar. O CSS global `components/shared/buttons.css` aplica o efeito aos botões atuais e futuros; links com aparência de botão usam `data-button`. Cores e dimensões de cada tela são preservadas. Na obra, salvar/enviar e escrever capítulo usam destaque de cor; leitura, edição e organização ficam neutras. Ações destrutivas usam fundo vermelho e texto branco como padrão compartilhado (`--danger-button-bg` e `--danger-button-text`), inclusive nos dois temas, separado das cores de mensagens de erro. Preserva foco, transformações de posicionamento e preferência de movimento reduzido; desabilitados ficam sem sombra. O fundo clicável do menu é uma exceção por ser uma sobreposição transparente. Conferência visual completa nas demais telas permanece pendente.
+
 O botão Sair fica no menu lateral, abaixo do perfil (Administrador ou Sua conta), no computador e no celular. No computador, a lateral e o controle acompanham a rolagem dentro da área autenticada usando sticky, com margem superior de 12 px e rolagem própria se os itens ultrapassarem a altura disponível. O controle fica no alto da divisória, somente com setas duplas indicando recolher/expandir; acompanha o recolhimento e permanece acessível à esquerda. No celular, permanece no canto superior esquerdo, com hambúrguer ao fechar e X ao abrir. A transição de recolhimento e a sobreposição com fundo escurecido no celular são preservadas.
 
 O rodapé usa uma assinatura Bectec menor e links legais no mesmo tamanho do Status do sistema. Todos os botões da tela de detalhes da obra, incluindo leitura, edição, créditos, estrutura e participantes/convites, seguem o tamanho compacto no celular e no computador, com área mínima de toque de 44 px e setas de ordenação agrupadas. Conferência visual nos dois tamanhos e no iPhone físico permanece pendente.
@@ -104,6 +116,18 @@ O rodapé usa uma assinatura Bectec menor e links legais no mesmo tamanho do Sta
 - [ ] Definir prioridade/escopo do [apoio à escrita acadêmica](academic-writing-idea.md), modelos, etapas e eventual uso de IA.
 
 A identidade visual do site da Bectec é uma intenção separada. Não introduzir serviços, IA ou módulos do legado apenas porque aparecem nas referências.
+
+## 9. Preparação para cadastro público
+
+Planejamento combinado em 19/10/2026. O cadastro continua fechado; registrar estas tarefas não autoriza abrir o acesso nem executar testes de carga em produção. Priorizar confirmação de e-mail, proteção contra abuso e restauração verificada; depois concluir limites e fluxo de cadastro antes de uma abertura gradual.
+
+- [ ] Implementar proteção contra abuso no cadastro e login, com limites de tentativas por conta/endereço e IP, considerando redes compartilhadas e sem expor a existência de contas. Aproveitar a proteção existente da recuperação e avaliar proteção adicional conforme os sinais de abuso.
+- [ ] Implementar confirmação de e-mail com link temporário e uso único, reenvio limitado e verificação ao trocar o endereço. Definir quais operações ficam bloqueadas até a confirmação, incluindo o aceite de convites vinculados ao e-mail.
+- [ ] Definir e aplicar no servidor limites de obras por conta, capítulos e conteúdo total, além de frequência e concorrência de exportações. O limite atual de 1 MiB por capítulo não limita o armazenamento total. Valores e mensagens ainda precisam ser definidos; não há decisão sobre planos pagos.
+- [ ] Integrar o cadastro público ao aceite explícito dos documentos pelo próprio usuário, reutilizando o controle existente de versão e data, com acesso aos textos e bloqueio das operações protegidas enquanto houver pendência. Não fabricar aceite nem tratar aceite dos Termos como consentimento genérico para qualquer uso de dados. Concluir a revisão jurídica indicada na seção 7.
+- [ ] Definir frequência e retenção dos backups, perda máxima de dados aceitável e prazo desejado de recuperação. Testar restauração em banco separado, verificando contas, obras, capítulos, comentários e seus vínculos, sem sobrescrever produção. A existência de um backup não comprova que a restauração funciona.
+- [ ] Acompanhar erros, latência, conexões, uso de recursos, armazenamento e custos, com alertas e orçamento definidos. Preservar credenciais, tokens e conteúdo privado nos registros.
+- [ ] Medir capacidade em ambiente de teste com configuração equivalente à produção, usando cenários de leitura, escrita/salvamento, revisão e exportação. Avaliar etapas de 10, 25, 50 e 100 usuários ativos como alvos de teste, sem tratá-las como capacidade já comprovada. Confirmar recursos e planos atuais antes de estimar simultaneidade ou abrir um beta controlado.
 
 ## Ambiente local e continuidade
 
