@@ -62,10 +62,11 @@ async function transaction(operation) {
   }
 }
 async function lockWork(client, workId) {
-  await client.query({
-    text: "SELECT id FROM works WHERE id = $1 FOR UPDATE",
+  const locked = await client.query({
+    text: "SELECT id FROM works WHERE id = $1 AND deleted_at IS NULL FOR UPDATE",
     values: [workId],
   });
+  if (!locked.rowCount) throw notFound();
 }
 async function create(workId, ownerId, input) {
   await work.requireOwner(workId, ownerId);
@@ -131,13 +132,19 @@ async function undoFailedDelivery(workId, invitation) {
 async function createAndSend(workId, ownerId, input) {
   const origin = invitationOrigin();
   const invitedWork = await work.requireOwner(workId, ownerId);
+  const projectName =
+    invitedWork.type === "group_assignment"
+      ? "um trabalho em grupo"
+      : "uma obra";
+  const projectReference =
+    invitedWork.type === "group_assignment" ? "do trabalho" : "da obra";
   const invitation = await create(workId, ownerId, input);
   try {
     const content = await renderMessage({
-      title: "Convite para participar de uma obra",
+      title: `Convite para participar de ${projectName}`,
       highlight: invitedWork.title,
       paragraphs: [
-        `Você recebeu um convite para participar da obra ${invitedWork.title} como organizador no Trama.`,
+        `Você recebeu um convite para participar ${projectReference} ${invitedWork.title} como organizador no Trama.`,
         "O convite vale por sete dias. Se ainda não tiver conta, você poderá criá-la pelo link. Se não esperava este convite, ignore a mensagem.",
       ],
       actionLabel: "Abrir convite",
@@ -145,7 +152,7 @@ async function createAndSend(workId, ownerId, input) {
     });
     await email.send({
       to: invitation.email,
-      subject: "Convite para participar de uma obra no Trama",
+      subject: `Convite para participar de ${projectName} no Trama`,
       ...content,
       idempotencyKey: `invitation/${invitation.id}`,
     });
@@ -178,7 +185,7 @@ async function findForRegistration(token, executor = database, lock = false) {
   const result = await executor.query({
     text: `SELECT i.id, i.email, i.work_id, i.expires_at, w.title AS work_title
       FROM work_invitations i JOIN works w ON w.id = i.work_id
-      WHERE i.token_hash = $1 AND i.status = 'pending' AND i.expires_at > clock_timestamp()
+      WHERE i.token_hash = $1 AND w.deleted_at IS NULL AND i.status = 'pending' AND i.expires_at > clock_timestamp()
       ${lock ? "FOR UPDATE OF i" : ""}`,
     values: [hashToken(token)],
   });
@@ -207,28 +214,32 @@ async function register(token, input) {
   const passwordHash = await password.hash(values.password);
   try {
     return await transaction(async (client) => {
+      await lockWork(client, invitation.work_id);
       const current = await findForRegistration(token, client, true);
       const existing = await client.query({
         text: "SELECT id FROM users WHERE LOWER(email) = $1",
         values: [current.email],
       });
-      if (existing.rowCount)
-        throw new ValidationError({
-          message: "This email already has an account.",
-        });
+      if (existing.rowCount) return { email: current.email };
       const created = await client.query({
         text: `INSERT INTO users (name, username, email, password)
           VALUES ($1, $2, $3, $4)
           RETURNING id, name, username, email, created_at, updated_at`,
         values: [values.name, values.username, current.email, passwordHash],
       });
-      return created.rows[0];
+      return { email: created.rows[0].email };
     });
   } catch (error) {
-    if (error.code === "23505")
-      throw new ValidationError({
-        message: "Email or username already in use.",
+    if (error.code === "23505") {
+      const existing = await database.query({
+        text: "SELECT id FROM users WHERE LOWER(email) = $1",
+        values: [invitation.email],
       });
+      if (existing.rowCount) return { email: invitation.email };
+      throw new ValidationError({
+        message: "Username already in use.",
+      });
+    }
     throw error;
   }
 }
@@ -244,7 +255,7 @@ async function findPendingForUser(column, value, userId, executor, lock) {
   const result = await executor.query({
     text: `SELECT i.*, w.title AS work_title FROM work_invitations i JOIN works w ON w.id = i.work_id
       JOIN users u ON LOWER(u.email) = i.email
-      WHERE i.${column} = $1 AND u.id = $2 AND i.status = 'pending' AND i.expires_at > clock_timestamp()
+      WHERE i.${column} = $1 AND u.id = $2 AND w.deleted_at IS NULL AND i.status = 'pending' AND i.expires_at > clock_timestamp()
       ${lock ? "FOR UPDATE OF i" : ""}`,
     values: [value, userId],
   });
@@ -256,7 +267,7 @@ async function findPendingForAccount(userId) {
     text: `SELECT i.id, i.work_id, w.title AS work_title, 'organizer' AS role, i.created_at, i.expires_at
       FROM work_invitations i JOIN works w ON w.id = i.work_id
       JOIN users u ON LOWER(u.email) = i.email
-      WHERE u.id = $1 AND i.status = 'pending' AND i.expires_at > clock_timestamp()
+      WHERE u.id = $1 AND w.deleted_at IS NULL AND i.status = 'pending' AND i.expires_at > clock_timestamp()
       ORDER BY i.created_at DESC, i.id DESC`,
     values: [userId],
   });
@@ -266,7 +277,7 @@ async function findSentForOwner(userId) {
   const result = await database.query({
     text: `SELECT i.id, i.work_id, i.email, i.status, i.created_at, i.expires_at, i.updated_at, w.title AS work_title
       FROM work_invitations i JOIN works w ON w.id = i.work_id
-      WHERE w.owner_id = $1 ORDER BY i.created_at DESC, i.id DESC`,
+      WHERE w.owner_id = $1 AND w.deleted_at IS NULL ORDER BY i.created_at DESC, i.id DESC`,
     values: [userId],
   });
   return result.rows.map(toPublic);

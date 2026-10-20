@@ -94,6 +94,8 @@
   margin-top: 24px;
 }
 .panel input,
+.panel select,
+.projectFilter select,
 .panel textarea {
   width: 100%;
   min-width: 0;
@@ -107,6 +109,20 @@
 }
 .panel textarea {
   resize: vertical;
+}
+.projectFilter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.projectFilter select {
+  width: auto;
+  max-width: 100%;
+}
+.projectFilter p {
+  color: var(--muted);
 }
 .panel button {
   justify-self: start;
@@ -456,6 +472,17 @@
 }
 .panel .creditsIntroduction {
   margin-top: 24px;
+}
+.trashDialog {
+  margin: auto;
+  width: min(540px, calc(100vw - 48px));
+  max-height: calc(100dvh - 48px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  color: var(--ink);
+}
+.trashDialog::backdrop {
+  background: rgb(0 0 0 / 55%);
 }
 .creditSuggestions {
   display: grid;

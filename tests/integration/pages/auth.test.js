@@ -28,6 +28,7 @@ describe("Authentication pages", () => {
     expect(html).toContain('autoComplete="current-password"');
     expect(html).toMatch(/<form[^>]*method="post"/);
     expect(html).toContain('type="submit"');
+    expect(html).not.toContain('href="/verify-email"');
     // Next.js overrides rendered-page cache headers in development.
     expect(response.headers.get("cache-control")).toMatch(/no-store|no-cache/);
   });
@@ -77,8 +78,8 @@ describe("Authentication pages", () => {
     });
     expect(response.status).toBe(200);
     const html = await response.text();
-    expect(html).toMatch(/<title[^>]*>Minhas obras \| Trama<\/title>/);
-    expect(html).toContain("Minhas obras");
+    expect(html).toMatch(/<title[^>]*>Meus projetos \| Trama<\/title>/);
+    expect(html).toContain("Meus projetos");
     expect(html).toContain("Pessoa de teste");
     expect(html).toContain("Sair");
     expect(html).not.toContain(createdUser.password);
@@ -144,7 +145,7 @@ describe("Registration page", () => {
       "http://127.0.0.1:3002/login?registration=complete",
     );
     expect(await response.text()).toContain(
-      "Conta criada! Entre com seu e-mail e senha.",
+      "Confira seu e-mail para continuar.",
     );
   });
 

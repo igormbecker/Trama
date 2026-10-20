@@ -2,6 +2,8 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import user from "models/user.js";
 import authentication from "models/authentication.js";
+import { waitUntil } from "@vercel/functions";
+import emailVerification from "models/emailVerification.js";
 
 const router = createRouter();
 
@@ -19,6 +21,7 @@ async function postHandler(request, response) {
   );
   const userInputValues = request.body;
   const newUser = await user.create(userInputValues);
+  emailVerification.queue(newUser.email, waitUntil);
   return response.status(201).json({
     id: newUser.id,
     name: newUser.name,

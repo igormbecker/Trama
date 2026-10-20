@@ -98,11 +98,19 @@ export default function UsersPage({ user, initialUsers }) {
     setFormError("");
     try {
       const savedUser = await saveUser(formValues, editingUser?.username);
+      if (
+        savedUser.id === user.id &&
+        editingUser &&
+        savedUser.email.toLowerCase() !== editingUser.email.toLowerCase()
+      ) {
+        await router.replace("/verify-email");
+        return;
+      }
       if (savedUser.id === user.id && !savedUser.is_admin) {
         await router.replace("/works");
         return;
       }
-      // Public registration returns a regular account without the role field.
+      // Administrative creation returns a regular account without the role field.
       const publicUser = {
         ...savedUser,
         is_admin: savedUser.is_admin ?? false,
@@ -114,7 +122,11 @@ export default function UsersPage({ user, initialUsers }) {
             )
           : [...current, publicUser],
       );
-      setNotice(editingUser ? "Usuário atualizado." : "Usuário adicionado.");
+      setNotice(
+        editingUser
+          ? "Usuário atualizado. Se o e-mail mudou, a pessoa precisa confirmar o novo endereço."
+          : "Usuário adicionado. A pessoa precisa confirmar o e-mail antes de entrar; pode solicitar outro link em Confirmar e-mail.",
+      );
       closeForm();
     } catch (error) {
       setFormError(error.message);

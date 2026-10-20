@@ -67,8 +67,8 @@ export default function InvitationRegistrationPage({ invitation }) {
           </p>
           <p className={styles.formDescription}>
             A conta será criada com o e-mail {invitation.email}. Depois de
-            entrar e aceitar os documentos atuais, responda ao convite em Meus
-            convites.
+            confirmar seu e-mail, entrar e aceitar os documentos atuais,
+            responda ao convite em Meus convites.
           </p>
           {error && (
             <p className={styles.error} role="alert">

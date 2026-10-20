@@ -5,11 +5,17 @@ import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import styles from "./works.module.css";
 import { getWorkCoverColor } from "./workCover";
+import { getProjectLabels, filterProjects } from "./projectLabels";
+import SuccessMessage from "components/shared/SuccessMessage";
 
 export default function WorksPage({ user, works }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
+  const [type, setType] = useState("literary");
+  const [filter, setFilter] = useState("all");
+  const labels = getProjectLabels(type);
+  const visibleWorks = filterProjects(works, filter);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -24,6 +30,7 @@ export default function WorksPage({ user, works }) {
         body: JSON.stringify({
           title: form.get("title"),
           description: form.get("description"),
+          type,
         }),
       });
       if (response.status === 401) {
@@ -33,8 +40,8 @@ export default function WorksPage({ user, works }) {
       if (!response.ok) {
         setError(
           response.status === 400
-            ? "Confira o título e a descrição da obra."
-            : "Não foi possível criar a obra. Tente novamente.",
+            ? "Confira o tipo, o título e a descrição do projeto."
+            : "Não foi possível criar o projeto. Tente novamente.",
         );
         return;
       }
@@ -49,21 +56,47 @@ export default function WorksPage({ user, works }) {
 
   return (
     <AppLayout
-      title="Minhas obras | Trama"
-      description="Seu espaço para acompanhar obras no Trama."
+      title="Meus projetos | Trama"
+      description="Suas obras literárias e trabalhos em grupo no Trama."
       user={user}
       activePage="works"
     >
       <section className={styles.workspace} aria-labelledby="works-title">
         <div className={styles.heading}>
           <p>Olá, {user.name}.</p>
-          <h1 id="works-title">Minhas obras</h1>
+          <h1 id="works-title">Meus projetos</h1>
           <p>Um espaço para suas ideias começarem a ganhar forma.</p>
+          <Link href="/trash">Abrir lixeira</Link>
         </div>
+        {router.query?.trashed === "1" && (
+          <SuccessMessage>
+            Projeto movido para a lixeira. Você pode restaurá-lo quando
+            precisar.
+          </SuccessMessage>
+        )}
         <section className={styles.panel} aria-labelledby="create-work-title">
-          <h2 id="create-work-title">Criar uma obra</h2>
-          <p>A obra é privada. Você decide quem pode participar.</p>
+          <h2 id="create-work-title">Criar um projeto</h2>
+          <p>O projeto é privado. Você decide quem pode participar.</p>
           <form onSubmit={handleSubmit} aria-busy={isSubmitting}>
+            <label htmlFor="project-type">Tipo de projeto</label>
+            <select
+              id="project-type"
+              name="type"
+              value={type}
+              onChange={(event) => setType(event.target.value)}
+              disabled={isSubmitting}
+            >
+              <option value="literary">Obra literária</option>
+              <option value="group_assignment">Trabalho em grupo</option>
+            </select>
+            {type === "group_assignment" && (
+              <p>
+                O trabalho começa com Elementos textuais (Introdução,
+                Desenvolvimento e Conclusão) e Elementos pós-textuais
+                (Referências). Você pode editar, acrescentar, reordenar ou
+                excluir partes e seções.
+              </p>
+            )}
             <label htmlFor="title">Título</label>
             <input
               id="title"
@@ -86,18 +119,38 @@ export default function WorksPage({ user, works }) {
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >
-              {isSubmitting ? "Criando…" : "Criar obra"}
+              {isSubmitting ? "Criando…" : `Criar ${labels.name}`}
             </button>
           </form>
         </section>
-        {works.length === 0 ? (
+        <div className={styles.projectFilter}>
+          <label htmlFor="project-filter">Filtrar projetos</label>
+          <select
+            id="project-filter"
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+          >
+            <option value="all">Todos</option>
+            <option value="literary">Obras literárias</option>
+            <option value="group_assignment">Trabalhos em grupo</option>
+          </select>
+          <p role="status">
+            {visibleWorks.length}{" "}
+            {visibleWorks.length === 1 ? "projeto" : "projetos"}
+          </p>
+        </div>
+        {visibleWorks.length === 0 ? (
           <div className={styles.emptyState}>
-            <h2>Nenhuma obra por aqui ainda.</h2>
-            <p>Crie sua primeira obra ou aceite um convite para participar.</p>
+            <h2>Nenhum projeto por aqui ainda.</h2>
+            <p>
+              {works.length
+                ? "Escolha outro filtro para ver seus projetos."
+                : "Crie seu primeiro projeto ou aceite um convite para participar."}
+            </p>
           </div>
         ) : (
           <ul className={styles.workList}>
-            {works.map((work) => (
+            {visibleWorks.map((work) => (
               <li
                 key={work.id}
                 className={`${styles.panel} ${styles.workCard}`}
@@ -111,13 +164,16 @@ export default function WorksPage({ user, works }) {
                   <span>trama</span>
                 </div>
                 <div className={styles.workCardContent}>
+                  <p>{getProjectLabels(work.type).type}</p>
                   <h2>
                     <Link href={`/works/${work.id}`}>{work.title}</Link>
                   </h2>
                   <p className={styles.preview}>
                     {work.description || "Sem descrição."}
                   </p>
-                  <Link href={`/works/${work.id}`}>Abrir obra →</Link>
+                  <Link href={`/works/${work.id}`}>
+                    Abrir {getProjectLabels(work.type).name} →
+                  </Link>
                 </div>
               </li>
             ))}

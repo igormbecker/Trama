@@ -8,6 +8,7 @@ import ChapterReview from "./ChapterReview";
 import { chapterRequest } from "./chapterClient";
 import SuccessMessage from "components/shared/SuccessMessage";
 import styles from "./chapter.module.css";
+import { getProjectLabels } from "./projectLabels";
 
 const statusLabels = {
   writing: "Em escrita",
@@ -39,6 +40,7 @@ export default function EditorialRequestPanel({
   participants = [],
   children,
 }) {
+  const labels = getProjectLabels(work.type);
   const [requestContent, setRequestContent] = useState(initialRequestContent);
   const [assignee, setAssignee] = useState("");
   const [kind, setKind] = useState("contribution");
@@ -193,7 +195,7 @@ export default function EditorialRequestPanel({
       setContent(await chapterRequest(path.replace(/\/request$/, "")));
       setConflict(false);
       setReviewedConflict(false);
-      setSuccess("Entrega aprovada e incorporada ao capítulo.");
+      setSuccess(`Entrega aprovada e incorporada ${labels.inChapter}.`);
     } catch (failure) {
       if (failure.status === 409) {
         setContent(await chapterRequest(path.replace(/\/request$/, "")));
@@ -218,7 +220,7 @@ export default function EditorialRequestPanel({
           expected_chapter_revision: content.revision,
           confirm_conflict: true,
         }),
-      "Texto anterior restaurado no capítulo.",
+      `Texto anterior restaurado ${labels.inChapter}.`,
     );
   }
   async function viewHistory(id) {
@@ -257,13 +259,13 @@ export default function EditorialRequestPanel({
         </LoadingMessage>
         {assigned && active && (
           <p>
-            Você tem um pedido de {kindLabels[current.kind].toLowerCase()} neste
-            capítulo.
+            Você tem um pedido de {kindLabels[current.kind].toLowerCase()}{" "}
+            {labels.inChapter}.
           </p>
         )}
         <p>
           Contribuições usam uma cópia editável. Revisões usam comentários sobre
-          uma versão fixa do capítulo, sem alterar o texto da obra.
+          uma versão fixa do texto, sem alterar o original do projeto.
         </p>
         {error && <p role="alert">{error}</p>}
         {success && <SuccessMessage>{success}</SuccessMessage>}
@@ -277,6 +279,7 @@ export default function EditorialRequestPanel({
             </p>
             {current.kind === "review" && current.review_document && (
               <ChapterReview
+                projectType={work.type}
                 request={current}
                 editable={assigned && active}
                 canResolve={isOwner && current.status !== "canceled"}
@@ -296,6 +299,7 @@ export default function EditorialRequestPanel({
               current.status === "writing" &&
               (token ? (
                 <ChapterEditor
+                  projectType={work.type}
                   key={token}
                   path={path}
                   userId={user.id}
@@ -327,7 +331,7 @@ export default function EditorialRequestPanel({
               current.status === "writing" && (
                 <p>
                   A pessoa atribuída está trabalhando em uma cópia. O texto
-                  atual do capítulo continua disponível para sua escrita.
+                  atual continua disponível para sua escrita.
                 </p>
               )}
             {current.kind === "contribution" &&
@@ -338,13 +342,13 @@ export default function EditorialRequestPanel({
                   <div className={styles.editorialText}>
                     <ChapterReader document={current.submitted_document} />
                   </div>
-                  <h4>Texto atual do capítulo</h4>
+                  <h4>Texto atual</h4>
                   <div className={styles.editorialText}>
                     <ChapterReader document={content.document} />
                   </div>
                   {content.revision !== current.base_chapter_revision && (
                     <p role="alert">
-                      O capítulo mudou desde o início do pedido. Compare os dois
+                      O texto mudou desde o início do pedido. Compare os dois
                       textos antes de substituir o atual.
                     </p>
                   )}
@@ -472,19 +476,19 @@ export default function EditorialRequestPanel({
           <div className={styles.editorialCard}>
             <h3>Convide alguém para colaborar</h3>
             <p>
-              Esta obra ainda não tem organizadores ativos. Para solicitar
-              contribuição ou revisão, convide uma pessoa para participar da
-              obra. Após o aceite do convite, ela ficará disponível para receber
-              pedidos por capítulo.
+              {labels.thisProject} ainda não tem organizadores ativos. Para
+              solicitar contribuição ou revisão, convide uma pessoa para
+              participar do projeto. Após o aceite do convite, ela ficará
+              disponível para receber pedidos por {labels.chapter}.
             </p>
             <Link href={`/works/${work.id}#participants-title`}>
-              Convidar organizador na obra →
+              Convidar organizador no projeto →
             </Link>
           </div>
         )}
         {isOwner && !active && participants.length > 0 && (
           <form className={styles.editorialCard} onSubmit={create}>
-            <h3>Novo pedido por capítulo</h3>
+            <h3>Novo pedido por {labels.chapter}</h3>
             <label htmlFor="editorial-assignee">Pessoa participante</label>
             <select
               id="editorial-assignee"
@@ -552,6 +556,7 @@ export default function EditorialRequestPanel({
                 {historyDetails.request.kind === "review" &&
                   historyDetails.request.review_document && (
                     <ChapterReview
+                      projectType={work.type}
                       request={historyDetails.request}
                       editable={false}
                       canResolve={

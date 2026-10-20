@@ -41,7 +41,7 @@ function validateInput(input, isChapter, partial = false) {
 async function findPart(workId, partId, executor = database) {
   work.validateId(partId);
   const result = await executor.query({
-    text: "SELECT * FROM work_parts WHERE id = $1 AND work_id = $2",
+    text: "SELECT * FROM work_parts WHERE id = $1 AND work_id = $2 AND deleted_at IS NULL",
     values: [partId, workId],
   });
   if (!result.rowCount) throw new NotFoundError({ message: "Part not found." });
@@ -54,7 +54,7 @@ async function transaction(workId, userId, operation) {
     client = await database.getNewClient();
     await client.query("BEGIN");
     const locked = await client.query({
-      text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 FOR UPDATE",
+      text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL FOR UPDATE",
       values: [workId, userId],
     });
     if (!locked.rowCount)
@@ -73,7 +73,7 @@ async function listParts(workId, userId) {
   await work.findOneById(workId, userId);
   return (
     await database.query({
-      text: "SELECT * FROM work_parts WHERE work_id = $1 ORDER BY position, id",
+      text: "SELECT * FROM work_parts WHERE work_id = $1 AND deleted_at IS NULL ORDER BY position, id",
       values: [workId],
     })
   ).rows;
@@ -83,7 +83,7 @@ async function listChapters(workId, partId, userId) {
   await findPart(workId, partId);
   return (
     await database.query({
-      text: `SELECT c.*, editorial.editorial_request FROM chapters c ${editorialProgressJoin} WHERE c.part_id = $1 ORDER BY c.position, c.id`,
+      text: `SELECT c.*, editorial.editorial_request FROM chapters c ${editorialProgressJoin} WHERE c.part_id = $1 AND c.deleted_at IS NULL ORDER BY c.position, c.id`,
       values: [partId],
     })
   ).rows;
@@ -91,7 +91,7 @@ async function listChapters(workId, partId, userId) {
 async function findAll(workId, userId) {
   const parts = await listParts(workId, userId);
   const chapters = await database.query({
-    text: `SELECT c.*, editorial.editorial_request FROM chapters c JOIN work_parts p ON p.id = c.part_id ${editorialProgressJoin} WHERE p.work_id = $1 ORDER BY c.position, c.id`,
+    text: `SELECT c.*, editorial.editorial_request FROM chapters c JOIN work_parts p ON p.id = c.part_id ${editorialProgressJoin} WHERE p.work_id = $1 AND p.deleted_at IS NULL AND c.deleted_at IS NULL ORDER BY c.position, c.id`,
     values: [workId],
   });
   return parts.map((part) => ({
@@ -102,12 +102,17 @@ async function findAll(workId, userId) {
 async function createPart(workId, userId, input) {
   return transaction(workId, userId, async (client) => {
     const values = validateInput(input, false);
-    return (
+    const created = (
       await client.query({
         text: "INSERT INTO work_parts (work_id, title, position) SELECT $1, $2, COALESCE(MAX(position), 0) + 1 FROM work_parts WHERE work_id = $1 RETURNING *",
         values: [workId, values.title],
       })
     ).rows[0];
+    const positions = await normalizePositions(client, "part", workId);
+    return {
+      ...created,
+      position: positions.find((entry) => entry.id === created.id).position,
+    };
   });
 }
 async function updatePart(workId, partId, userId, input) {
@@ -126,12 +131,17 @@ async function createChapter(workId, partId, userId, input) {
   return transaction(workId, userId, async (client) => {
     await findPart(workId, partId, client);
     const values = validateInput(input, true);
-    return (
+    const created = (
       await client.query({
         text: "INSERT INTO chapters (part_id, title, description, position) SELECT $1, $2, $3, COALESCE(MAX(position), 0) + 1 FROM chapters WHERE part_id = $1 RETURNING *",
         values: [partId, values.title, values.description || ""],
       })
     ).rows[0];
+    const positions = await normalizePositions(client, "chapter", partId);
+    return {
+      ...created,
+      position: positions.find((entry) => entry.id === created.id).position,
+    };
   });
 }
 async function updateChapter(workId, partId, chapterId, userId, input) {
@@ -139,7 +149,7 @@ async function updateChapter(workId, partId, chapterId, userId, input) {
     await findPart(workId, partId, client);
     work.validateId(chapterId);
     const existing = await client.query({
-      text: "SELECT * FROM chapters WHERE id = $1 AND part_id = $2",
+      text: "SELECT * FROM chapters WHERE id = $1 AND part_id = $2 AND deleted_at IS NULL",
       values: [chapterId, partId],
     });
     if (!existing.rowCount)
@@ -164,7 +174,7 @@ async function reorder(workId, userId, input, partId) {
     const parentColumn = partId === undefined ? "work_id" : "part_id";
     const parentId = partId === undefined ? workId : partId;
     const current = await client.query({
-      text: `SELECT id FROM ${table} WHERE ${parentColumn} = $1`,
+      text: `SELECT id FROM ${table} WHERE ${parentColumn} = $1 AND deleted_at IS NULL`,
       values: [parentId],
     });
     if (
@@ -187,13 +197,28 @@ async function reorder(workId, userId, input, partId) {
     }
     return (
       await client.query({
-        text: `SELECT * FROM ${table} WHERE ${parentColumn} = $1 ORDER BY position, id`,
+        text: `SELECT * FROM ${table} WHERE ${parentColumn} = $1 AND deleted_at IS NULL ORDER BY position, id`,
         values: [parentId],
       })
     ).rows;
   });
 }
+async function normalizePositions(client, kind, parentId) {
+  const table = kind === "part" ? "work_parts" : "chapters";
+  const parentColumn = kind === "part" ? "work_id" : "part_id";
+  return (
+    await client.query({
+      text: `WITH ordered AS (
+      SELECT id, row_number() OVER (ORDER BY deleted_at IS NOT NULL, position, id)::int AS next_position
+      FROM ${table} WHERE ${parentColumn} = $1
+    ) UPDATE ${table} item SET position = ordered.next_position FROM ordered
+      WHERE item.id = ordered.id RETURNING item.id, item.position`,
+      values: [parentId],
+    })
+  ).rows;
+}
 const workStructure = {
+  normalizePositions,
   findAll,
   listParts,
   listChapters,

@@ -19,7 +19,7 @@ test("Introduces the workspace without inventing recent works or pending invitat
   expect(html).toContain("Seu espaço");
   expect(html).toContain("Continue de onde parou");
   expect(html).toContain("Carregando seus últimos acessos");
-  expect(html).toContain("Ver todas as obras");
+  expect(html).toContain("Ver todos os projetos");
   expect(html).not.toContain("convite para responder");
 });
 

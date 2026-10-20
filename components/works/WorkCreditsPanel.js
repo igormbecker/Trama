@@ -3,13 +3,15 @@ import { useState } from "react";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { saveStructure } from "./structureClient";
 import styles from "./works.module.css";
+import { getProjectLabels } from "./projectLabels";
 
 const groups = [
   ["authors", "Autoria"],
   ["contributors", "Contribuições"],
   ["reviewers", "Revisão"],
 ];
-export default function WorkCreditsPanel({ workId, initialData }) {
+export default function WorkCreditsPanel({ workId, initialData, projectType }) {
+  const labels = getProjectLabels(projectType);
   const [draft, setDraft] = useState(() =>
     Object.fromEntries(
       groups.map(([group]) => [
@@ -61,11 +63,11 @@ export default function WorkCreditsPanel({ workId, initialData }) {
       id="work-credits"
       className={`${styles.panel} ${styles.structureForm}`}
     >
-      <summary>Créditos da obra para exportação</summary>
+      <summary>Créditos para exportação</summary>
       <p className={styles.creditsIntroduction}>
         Confira os nomes que aparecerão após a capa do PDF e do DOCX. A autoria
         é informada por você e pode incluir pessoas sem conta no Trama.
-        Participar da obra não atribui autoria automaticamente.
+        Participar do projeto não atribui autoria automaticamente.
       </p>
       <form onSubmit={save} aria-busy={busy}>
         {groups.map(([group, label]) => (
@@ -74,7 +76,7 @@ export default function WorkCreditsPanel({ workId, initialData }) {
             <p id={`credits-${group}-hint`}>
               {group === "authors"
                 ? "Um autor por linha, na ordem dos créditos."
-                : "Uma pessoa por linha; inclua os capítulos, se desejar. Exemplo: Ana Silva — Capítulos 1 e 2."}
+                : `Uma pessoa por linha; inclua ${labels.chapters}, se desejar. Exemplo: Ana Silva — ${labels.chapterTitle} 1 e 2.`}
             </p>
             <textarea
               id={`credits-${group}`}

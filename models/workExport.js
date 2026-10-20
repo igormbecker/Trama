@@ -70,7 +70,13 @@ export function exportBlocks(reading) {
     ["reviewers", "Revisão"],
   ];
   if (creditGroups.some(([group]) => reading.credits?.[group]?.length)) {
-    heading("Créditos da obra", 2, true);
+    heading(
+      reading.work.type === "group_assignment"
+        ? "Créditos do trabalho"
+        : "Créditos da obra",
+      2,
+      true,
+    );
     for (const [group, label] of creditGroups) {
       if (!reading.credits[group]?.length) continue;
       heading(label, 3);
@@ -79,7 +85,13 @@ export function exportBlocks(reading) {
     }
   }
   if (reading.work.description?.trim()) {
-    heading("Descrição da obra", 2, true);
+    heading(
+      reading.work.type === "group_assignment"
+        ? "Descrição do trabalho"
+        : "Descrição da obra",
+      2,
+      true,
+    );
     for (const text of reading.work.description.trim().split(/\r?\n/u)) {
       blocks.push({ level: 0, runs: [{ text }] });
     }

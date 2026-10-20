@@ -20,10 +20,12 @@ async function remove(workId, userId, ownerId) {
   try {
     client = await database.getNewClient();
     await client.query("BEGIN");
-    await client.query({
-      text: "SELECT id FROM works WHERE id = $1 FOR UPDATE",
+    const locked = await client.query({
+      text: "SELECT id FROM works WHERE id = $1 AND deleted_at IS NULL FOR UPDATE",
       values: [workId],
     });
+    if (!locked.rowCount)
+      throw new NotFoundError({ message: "Work not found." });
     const result = await client.query({
       text: "UPDATE work_participants SET removed_at = now() WHERE work_id = $1 AND user_id = $2 AND removed_at IS NULL RETURNING id",
       values: [workId, userId],

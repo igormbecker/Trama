@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import HomeLayout from "./HomeLayout";
 import styles from "./home.module.css";
 
@@ -40,19 +41,19 @@ const chapters = [
 
 const workflow = [
   {
-    title: "Organize a obra",
+    title: "Organize o projeto",
     description:
-      "Dê estrutura às ideias, dividindo a obra em partes e capítulos.",
+      "Divida sua obra em partes e capítulos ou comece um trabalho com introdução, desenvolvimento, conclusão e referências.",
+  },
+  {
+    title: "Distribua contribuições",
+    description:
+      "Convide participantes e atribua contribuições por capítulo ou seção. Cada pessoa desenvolve sua entrega em uma cópia do texto.",
   },
   {
     title: "Escreva no Trama",
     description:
-      "Desenvolva os capítulos no editor, com salvamento automático e recuperação de rascunhos locais.",
-  },
-  {
-    title: "Reúna contribuições",
-    description:
-      "Convide participantes e atribua contribuições por capítulo. Confira as entregas antes de incorporá-las.",
+      "Escreva com salvamento automático e recuperação de rascunhos locais. O responsável confere as entregas antes de incorporá-las.",
   },
   {
     title: "Revise em conjunto",
@@ -62,28 +63,28 @@ const workflow = [
   {
     title: "Leia e exporte",
     description:
-      "Leia a obra completa, confirme os créditos e exporte em PDF ou DOCX com capa e sumário.",
+      "Reúna os textos, confirme os créditos e exporte o projeto em PDF ou DOCX com capa e sumário.",
   },
 ];
 
 const participants = [
   {
-    name: "Responsável pela obra",
+    name: "Responsável pelo projeto",
     title: "O todo, sem perder os detalhes.",
     description:
-      "Organize a estrutura, escreva os capítulos, atribua pedidos e decida quais contribuições incorporar à obra.",
+      "Organize a estrutura, escreva os textos, atribua pedidos e decida quais contribuições incorporar ao projeto.",
   },
   {
     name: "Pessoas participantes",
     title: "Espaço para construir juntos.",
     description:
-      "Consulte a obra como organizador e, ao receber uma atribuição, desenvolva sua contribuição em uma cópia do capítulo.",
+      "Consulte o projeto como organizador e, ao receber uma atribuição, desenvolva sua contribuição em uma cópia do capítulo ou da seção.",
   },
   {
     name: "Revisores",
-    title: "Cada leitura faz a obra avançar.",
+    title: "Cada leitura faz o texto avançar.",
     description:
-      "Quando receber uma revisão, comente os trechos de uma versão fixa e envie seu parecer, sem alterar o capítulo.",
+      "Quando receber uma revisão, comente os trechos de uma versão fixa e envie seu parecer, sem alterar o texto.",
   },
 ];
 
@@ -91,23 +92,26 @@ export default function HomePage() {
   const [selectedChapter, setSelectedChapter] = useState(chapters[1]);
 
   return (
-    <HomeLayout>
+    <HomeLayout
+      title="Trama — Obras e trabalhos em grupo"
+      description="Organize obras e trabalhos em grupo, distribua contribuições, acompanhe revisões e exporte os textos em PDF ou DOCX com o Trama."
+    >
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={styles.heroCopy}>
-          <p className={styles.intro}>Gestão editorial colaborativa</p>
+          <p className={styles.intro}>Obras e trabalhos em grupo</p>
           <h1 id="hero-title">
-            Boas obras são
-            <br />
-            feitas <span>em conjunto.</span>
+            Escrever em grupo fica melhor quando cada pessoa sabe o que fazer.
           </h1>
           <p className={styles.description}>
-            Organize sua obra, escreva capítulos e reúna contribuições em um só
-            lugar. Da primeira ideia à revisão, o Trama conecta as pessoas e o
-            trabalho editorial.
+            Da obra literária ao trabalho em grupo, organize partes, distribua
+            contribuições, acompanhe revisões e reúna tudo em um só lugar.
           </p>
-          <a className={styles.primaryLink} href="#como-funciona" data-button>
-            Conhecer o fluxo <span aria-hidden="true">↓</span>
-          </a>
+          <div className={styles.heroActions}>
+            <Link className={styles.primaryLink} href="/login" data-button>
+              Entrar no Trama
+            </Link>
+            <a href="#como-funciona">Conhecer o fluxo</a>
+          </div>
           <p className={styles.developmentNote}>
             Escrita, colaboração e revisão em um só espaço.
             <br />
@@ -182,6 +186,35 @@ export default function HomePage() {
       </section>
 
       <section
+        className={styles.useCases}
+        aria-label="O que você pode criar no Trama"
+      >
+        <article>
+          <p className={styles.intro}>Gestão editorial colaborativa</p>
+          <h2>Uma obra com várias vozes? O Trama organiza.</h2>
+          <p>
+            Coordene contribuições, peça revisões e acompanhe cada capítulo até
+            a versão final.
+          </p>
+          <p className={styles.useCaseDetail}>
+            Partes e capítulos para dar forma à sua obra.
+          </p>
+        </article>
+        <article>
+          <p className={styles.intro}>Trabalhos em grupo</p>
+          <h2>Um trabalho sem deixar tudo para uma pessoa? O Trama ajuda.</h2>
+          <p>
+            Comece com uma estrutura pronta, distribua as seções e reúna as
+            entregas do grupo.
+          </p>
+          <p className={styles.useCaseDetail}>
+            Introdução, desenvolvimento, conclusão e referências como ponto de
+            partida.
+          </p>
+        </article>
+      </section>
+
+      <section
         className={styles.workflowSection}
         id="como-funciona"
         aria-labelledby="workflow-title"
@@ -190,14 +223,15 @@ export default function HomePage() {
           <div>
             <p>Como funciona</p>
             <h2 id="workflow-title">
-              Da ideia à obra.
+              Da ideia ao texto completo.
               <br />
-              Um capítulo de cada vez.
+              Uma etapa de cada vez.
             </h2>
           </div>
           <p>
             Escreva por conta própria e convide outras pessoas quando precisar.
-            Acompanhe o trabalho até a leitura completa e a exportação da obra.
+            Acompanhe os textos até a leitura completa e a exportação do
+            projeto.
           </p>
         </div>
         <ol className={styles.workflow}>
@@ -223,13 +257,13 @@ export default function HomePage() {
             <p>Para quem</p>
             <h2 id="participants-title">
               Diferentes olhares.
-              <br />A mesma obra.
+              <br />O mesmo projeto.
             </h2>
           </div>
           <p>
-            Uma produção editorial reúne pessoas com contribuições diferentes. O
-            Trama aproxima esse trabalho. Os nomes de autoria são informados nos
-            créditos pelo responsável; participar da obra não atribui autoria
+            Um projeto reúne pessoas com contribuições diferentes. O Trama
+            aproxima esse trabalho. Os nomes de autoria são informados nos
+            créditos pelo responsável; participar do projeto não atribui autoria
             automaticamente.
           </p>
         </div>
@@ -246,7 +280,7 @@ export default function HomePage() {
 
       <section className={styles.closing} aria-labelledby="closing-title">
         <span className={styles.thread} aria-hidden="true"></span>
-        <p>O próximo capítulo é coletivo.</p>
+        <p>Sua próxima ideia pode ser construída em conjunto.</p>
         <h2 id="closing-title">
           Cada contribuição
           <br />

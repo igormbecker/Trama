@@ -9,6 +9,7 @@ import EditorialRequestPanel from "./EditorialRequestPanel";
 import { chapterRequest } from "./chapterClient";
 import styles from "./chapter.module.css";
 import useRecordAccess from "components/home/useRecordAccess";
+import { getProjectLabels } from "./projectLabels";
 
 export default function ChapterPage({
   user,
@@ -17,6 +18,7 @@ export default function ChapterPage({
   requestContent,
   participants,
 }) {
+  const labels = getProjectLabels(work.type);
   useRecordAccess(user.id, work.id, initialContent.chapter.id);
   const router = useRouter();
   const autoOpened = useRef(false);
@@ -42,13 +44,13 @@ export default function ChapterPage({
         }).catch(() => {});
       setError(
         failure.status === 409
-          ? "Este capítulo está aberto para edição em outra aba. Feche a edição lá ou aguarde até 90 segundos após o último contato."
+          ? `${labels.thisChapter} está ${work.type === "group_assignment" ? "aberta" : "aberto"} para edição em outra aba. Feche a edição lá ou aguarde até 90 segundos após o último contato.`
           : failure.message,
       );
     } finally {
       setBusy(false);
     }
-  }, [path, pendingRef, setBusy]);
+  }, [path, pendingRef, setBusy, labels.thisChapter, work.type]);
   useEffect(() => {
     if (
       !router.isReady ||
@@ -77,11 +79,11 @@ export default function ChapterPage({
   return (
     <AppLayout
       title={`${content.chapter.title} | Trama`}
-      description="Escrita e leitura do capítulo."
+      description={`Escrita e leitura de ${content.chapter.title}.`}
       user={user}
       activePage="works"
       backHref={`/works/${work.id}`}
-      backLabel="Voltar à obra"
+      backLabel={labels.back}
     >
       <section className={styles.workspace}>
         <Link href={`/works/${work.id}`}>← {work.title}</Link>
@@ -103,6 +105,7 @@ export default function ChapterPage({
           {error && <p role="alert">{error}</p>}
           {token ? (
             <ChapterEditor
+              projectType={work.type}
               key={token}
               path={path}
               userId={user.id}
@@ -120,17 +123,17 @@ export default function ChapterPage({
                   disabled={busy}
                   aria-busy={busy}
                 >
-                  {busy ? "Abrindo editor…" : "Escrever capítulo"}
+                  {busy ? "Abrindo editor…" : `Escrever ${labels.chapter}`}
                 </button>
               )}
               <article
                 className={styles.reading}
-                aria-label="Leitura do capítulo"
+                aria-label={`Leitura de ${content.chapter.title}`}
               >
                 {content.revision === 0 ? (
                   <p>
-                    Este capítulo ainda não tem texto. A descrição continua
-                    disponível na estrutura da obra.
+                    {labels.thisChapter} ainda não tem texto. A descrição
+                    continua disponível na estrutura do projeto.
                   </p>
                 ) : (
                   <ChapterReader document={content.document} />
@@ -140,7 +143,7 @@ export default function ChapterPage({
           )}
         </EditorialRequestPanel>
         <div className={styles.actions}>
-          <Link href={`/works/${work.id}`}>← Voltar à obra</Link>
+          <Link href={`/works/${work.id}`}>← {labels.back}</Link>
         </div>
       </section>
     </AppLayout>

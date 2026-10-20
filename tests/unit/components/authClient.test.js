@@ -6,6 +6,15 @@ afterEach(() => {
 });
 
 describe("Sign in", () => {
+  test("Identifies pending verification only from the authenticated login response", async () => {
+    jest.spyOn(globalThis, "fetch").mockResolvedValue({
+      status: 403,
+      json: async () => ({ name: "EmailVerificationRequiredError" }),
+    });
+    await expect(
+      signIn("reader@trama.test", "validpassword"),
+    ).rejects.toMatchObject({ verificationRequired: true });
+  });
   test("Sends credentials to the session API and relies on its cookie", async () => {
     const fetchMock = jest
       .spyOn(globalThis, "fetch")

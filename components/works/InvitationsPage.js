@@ -46,7 +46,7 @@ export default function InvitationsPage({
       );
       if (action === "accept")
         await router.push(`/works/${invitation.work_id}`);
-      else setMessage("Convite recusado. Você não recebeu acesso à obra.");
+      else setMessage("Convite recusado. Você não recebeu acesso ao projeto.");
     } catch (error) {
       setError(error.message);
       if (error.status === 401) await router.push("/login");
@@ -61,15 +61,15 @@ export default function InvitationsPage({
       user={user}
       activePage="invitations"
       title="Meus convites | Trama"
-      description="Responda aos seus convites para participar de obras."
+      description="Responda aos seus convites para participar de projetos."
       initialInvitations={invitations}
     >
       <section className={styles.workspace} aria-labelledby="invitations-title">
         <div className={styles.heading}>
           <h1 id="invitations-title">Meus convites</h1>
           <p>
-            Acompanhe os convites recebidos e os enviados nas obras pelas quais
-            você é responsável.
+            Acompanhe os convites recebidos e os enviados nos projetos pelos
+            quais você é responsável.
           </p>
         </div>
         <h2>Recebidos</h2>
@@ -77,8 +77,8 @@ export default function InvitationsPage({
           Respondendo convite…
         </LoadingMessage>
         <p>
-          Convites pendentes para o e-mail da sua conta. Aceite para acessar a
-          obra como organizador.
+          Convites pendentes para o e-mail da sua conta. Aceite para acessar o
+          projeto como organizador.
         </p>
         {(error || loadError) && (
           <p role="alert">{error || loadError.message}</p>
@@ -88,7 +88,7 @@ export default function InvitationsPage({
           <div className={styles.emptyState}>
             <h2>Nenhum convite pendente</h2>
             <p>
-              Quando alguém convidar o e-mail da sua conta para uma obra, o
+              Quando alguém convidar o e-mail da sua conta para um projeto, o
               convite aparecerá aqui enquanto estiver válido.
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function InvitationsPage({
             {pendingInvitations.map((invitation) => (
               <li key={invitation.id} className={styles.panel}>
                 <h2>{invitation.work_title}</h2>
-                <p>Papel: Organizador · Acesso de consulta à obra</p>
+                <p>Papel: Organizador · Acesso de consulta ao projeto</p>
                 <p>Válido até {formatInvitationDate(invitation.expires_at)}.</p>
                 <div
                   className={styles.actions}
@@ -130,11 +130,11 @@ export default function InvitationsPage({
         >
           <h2 id="sent-invitations-title">Enviados</h2>
           <p>
-            Histórico dos convites das suas obras, incluindo os aceitos,
+            Histórico dos convites dos seus projetos, incluindo os aceitos,
             recusados, cancelados e expirados.
           </p>
           {sentInvitations.length === 0 ? (
-            <p>Nenhum convite enviado nas suas obras.</p>
+            <p>Nenhum convite enviado nos seus projetos.</p>
           ) : (
             <ul className={styles.workList}>
               {sentInvitations.map((invitation) => (
@@ -154,7 +154,7 @@ export default function InvitationsPage({
                     <Link
                       href={`/works/${invitation.work_id}#participants-title`}
                     >
-                      Gerenciar na obra
+                      Gerenciar no projeto
                     </Link>
                   )}
                 </li>

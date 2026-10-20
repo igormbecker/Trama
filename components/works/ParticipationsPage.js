@@ -31,7 +31,7 @@ function ParticipationList({ items, emptyMessage }) {
                   ? "Pedido encerrado por cancelamento."
                   : item.kind === "review"
                     ? "Parecer enviado ao responsável."
-                    : "Contribuição incorporada ao capítulo."}
+                    : "Contribuição incorporada ao texto."}
           </p>
           <Link
             href={`/works/${item.work_id}/chapters/${item.chapter_id}?requestId=${item.id}`}
@@ -79,7 +79,8 @@ export default function ParticipationsPage({
           </p>
         )}
         <p>
-          Contribuições e revisões atribuídas a você nas obras de que participa.
+          Contribuições e revisões atribuídas a você nos projetos de que
+          participa.
         </p>
         <section aria-labelledby="ongoing-participations-title">
           <h2 id="ongoing-participations-title">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import HomeLayout from "components/home/HomeLayout";
 import LogoutButton from "components/auth/LogoutButton";
 import useInvitations from "components/works/useInvitations";
@@ -7,6 +7,7 @@ import useParticipations, {
   needsParticipationAction,
 } from "components/works/useParticipations";
 import styles from "./appLayout.module.css";
+import observeSidebarHeight from "./observeSidebarHeight";
 
 function subscribeViewport(onChange) {
   const viewport = window.matchMedia("(max-width: 800px)");
@@ -35,6 +36,11 @@ export default function AppLayout({
   );
   const menuOpen = menuChoice ?? !isMobile;
   const toggleRef = useRef(null);
+  const sidebarRef = useRef(null);
+  useEffect(() => {
+    if (isMobile || !sidebarRef.current) return;
+    return observeSidebarHeight(sidebarRef.current);
+  }, [isMobile]);
   function closeMobileMenu(event) {
     if (
       event.target.closest("a") &&
@@ -123,6 +129,7 @@ export default function AppLayout({
         )}
         <div
           id="account-sidebar"
+          ref={sidebarRef}
           className={styles.sidebarClip}
           inert={!menuOpen}
           aria-hidden={!menuOpen}
@@ -164,7 +171,7 @@ export default function AppLayout({
                     strokeLinejoin="round"
                   />
                 </svg>
-                Minhas obras
+                Meus projetos
               </Link>
               <Link
                 href="/participations"

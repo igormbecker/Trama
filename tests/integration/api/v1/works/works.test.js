@@ -82,6 +82,8 @@ test("Creates a private work for the authenticated account and persists it", asy
     id: expect.any(String),
     title: "Minha obra",
     description: "Descrição",
+    type: "literary",
+    deleted_at: null,
     owner_id: user.id,
     created_at: expect.any(String),
     updated_at: expect.any(String),

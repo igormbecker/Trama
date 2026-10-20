@@ -10,6 +10,7 @@ import {
   removeParticipant,
 } from "./participantsClient";
 import styles from "./works.module.css";
+import { getProjectLabels } from "./projectLabels";
 
 const statusLabels = {
   pending: "Pendente",
@@ -23,7 +24,9 @@ export default function ParticipantsPanel({
   workId,
   participants,
   invitations,
+  projectType,
 }) {
+  const labels = getProjectLabels(projectType);
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [isBusy, setIsBusy, pendingRef] = useActionState(false);
@@ -61,7 +64,7 @@ export default function ParticipantsPanel({
     await perform(async () => {
       await removeParticipant(workId, removalTarget.user_id);
       setRemovalTarget(null);
-    }, "Participante removido. O acesso à obra foi revogado.");
+    }, "Participante removido. O acesso ao projeto foi revogado.");
   }
   return (
     <section
@@ -74,8 +77,8 @@ export default function ParticipantsPanel({
         Atualizando participantes e convites…
       </LoadingMessage>
       <p>
-        Convide alguém para consultar esta obra como organizador. Somente você
-        gerencia participantes e convites.
+        Convide alguém para consultar {labels.definite} como organizador.
+        Somente você gerencia participantes e convites.
       </p>
       {error && <p role="alert">{error}</p>}
       {message && <SuccessMessage>{message}</SuccessMessage>}
@@ -97,7 +100,7 @@ export default function ParticipantsPanel({
       </form>
       <h3 className={styles.organizersTitle}>Organizadores</h3>
       {participants.length === 0 ? (
-        <p>Ainda não há organizadores nesta obra.</p>
+        <p>Ainda não há organizadores neste projeto.</p>
       ) : (
         <ul className={styles.workList}>
           {participants.map((participant) => (
@@ -126,8 +129,8 @@ export default function ParticipantsPanel({
           aria-label="Confirmar remoção"
         >
           <p>
-            Remover {removalTarget.name}? Essa pessoa perderá o acesso à obra.
-            Suas contribuições serão preservadas.
+            Remover {removalTarget.name}? Essa pessoa perderá o acesso ao
+            projeto. Suas contribuições serão preservadas.
           </p>
           <div className={styles.actions}>
             <button
@@ -159,7 +162,7 @@ export default function ParticipantsPanel({
         </Link>
       </p>
       {pendingInvitations.length === 0 ? (
-        <p>Nenhum convite pendente nesta obra.</p>
+        <p>Nenhum convite pendente neste projeto.</p>
       ) : (
         <ul className={styles.workList}>
           {pendingInvitations.map((invitation) => (

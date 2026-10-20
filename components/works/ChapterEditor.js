@@ -10,6 +10,7 @@ import { preserveWordHeadings } from "./wordHeadings";
 import ChapterReader from "./ChapterReader";
 import SuccessIcon from "components/shared/SuccessIcon";
 import styles from "./chapter.module.css";
+import { getProjectLabels } from "./projectLabels";
 
 const extensions = [
   StarterKit.configure({
@@ -36,7 +37,9 @@ export default function ChapterEditor({
   onClose,
   onRestart,
   draftKey,
+  projectType,
 }) {
+  const labels = getProjectLabels(projectType);
   const router = useRouter();
   const key = draftKey || `${userId}:${content.chapter.id}`;
   const [status, setStatus] = useState("Carregando recuperação local…");
@@ -118,7 +121,7 @@ export default function ChapterEditor({
     editorProps: {
       transformPastedHTML: preserveWordHeadings,
       attributes: {
-        "aria-label": "Conteúdo do capítulo",
+        "aria-label": `Conteúdo: ${labels.chapter}`,
         role: "textbox",
         "aria-multiline": "true",
       },
@@ -266,7 +269,7 @@ export default function ChapterEditor({
     ],
   ];
   return (
-    <section aria-label="Editor do capítulo">
+    <section aria-label={`Editor: ${labels.chapter}`}>
       {recovery && (
         <section
           className={styles.recovery}
@@ -275,7 +278,7 @@ export default function ChapterEditor({
           <h2>Encontramos um rascunho neste navegador</h2>
           <p>
             {recovery.revision !== content.revision
-              ? "O capítulo salvo no Trama mudou desde este rascunho. Compare o texto abaixo com a leitura antes de recuperar. Recuperar colocará este texto no editor para um novo salvamento."
+              ? "O texto salvo no Trama mudou desde este rascunho. Compare o texto abaixo com a leitura antes de recuperar. Recuperar colocará este texto no editor para um novo salvamento."
               : "Você pode continuar de onde parou ou manter o texto salvo no Trama."}
           </p>
           <div className={styles.recoveryText}>
@@ -436,8 +439,8 @@ export default function ChapterEditor({
       </div>
       <EditorContent editor={editor} className={styles.editor} />
       <p className={styles.hint}>
-        Somente texto e formatação · Até 1 MB por capítulo · Salvamento após 2
-        segundos de pausa ou a cada 15 segundos.
+        Somente texto e formatação · Até 1 MB por {labels.chapter} · Salvamento
+        após 2 segundos de pausa ou a cada 15 segundos.
       </p>
       <div className={styles.actions}>
         <button

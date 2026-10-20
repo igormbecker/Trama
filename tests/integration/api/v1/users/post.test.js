@@ -115,7 +115,7 @@ describe("POST /api/v1/users", () => {
       },
     );
 
-    test("Normalizes profile fields and allows the new account to sign in", async () => {
+    test("Normalizes profile fields and requires email confirmation before sign-in", async () => {
       const response = await fetch("http://127.0.0.1:3002/api/v1/users", {
         method: "POST",
         headers: {
@@ -146,8 +146,9 @@ describe("POST /api/v1/users", () => {
           password: "example-password",
         }),
       });
-      expect(login.status).toBe(201);
-      expect(login.headers.get("set-cookie")).toContain("trama_session_id=");
+      expect(login.status).toBe(403);
+      expect(login.headers.get("set-cookie")).toBeNull();
+      expect((await login.json()).name).toBe("EmailVerificationRequiredError");
     });
     test("With duplicated 'email'", async () => {
       const response1 = await fetch("http://127.0.0.1:3002/api/v1/users", {

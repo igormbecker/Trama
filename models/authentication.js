@@ -6,13 +6,26 @@ import {
   NotFoundError,
   UnauthorizedError,
   ForbiddenError,
+  EmailVerificationRequiredError,
 } from "infra/errors.js";
 
 async function authenticate(providedEmail, providedPassword) {
+  if (
+    typeof providedEmail !== "string" ||
+    typeof providedPassword !== "string" ||
+    providedEmail.length > 254 ||
+    providedPassword.length > 128
+  )
+    throw new UnauthorizedError({
+      message: "Invalid email or password.",
+      action: "Check your credentials and try again.",
+    });
   try {
     const storedUser = await findUserByEmail(providedEmail);
     await validatePassword(providedPassword, storedUser.password);
 
+    if (storedUser.email_verification_required && !storedUser.email_verified_at)
+      throw new EmailVerificationRequiredError();
     return storedUser;
   } catch (error) {
     if (error instanceof UnauthorizedError) {
@@ -32,6 +45,11 @@ async function authenticate(providedEmail, providedPassword) {
       storedUser = await user.findOneByEmail(providedEmail);
     } catch (error) {
       if (error instanceof NotFoundError) {
+        const rounds = process.env.NODE_ENV === "production" ? "14" : "04";
+        await password.compare(
+          providedPassword,
+          `$2b$${rounds}$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy`,
+        );
         throw new UnauthorizedError({
           message: "Invalid email.",
           action: "Check your credentials and try again.",
@@ -67,6 +85,8 @@ async function authenticateSession(
 
   try {
     const actor = await user.findOneById(storedSession.user_id);
+    if (actor.email_verification_required && !actor.email_verified_at)
+      throw new UnauthorizedError();
     if (!allowPendingLegalAcceptance)
       await legalAcceptance.assertAccepted(actor.id);
     if (!storedSession.impersonated_user_id) return actor;
@@ -78,6 +98,11 @@ async function authenticateSession(
     const represented = await user.findOneById(
       storedSession.impersonated_user_id,
     );
+    if (
+      represented.email_verification_required &&
+      !represented.email_verified_at
+    )
+      throw new UnauthorizedError();
     if (!allowPendingLegalAcceptance)
       await legalAcceptance.assertAccepted(represented.id);
     return {

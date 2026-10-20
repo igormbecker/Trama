@@ -19,6 +19,15 @@ export async function signIn(email, password) {
     throw new Error("E-mail ou senha não conferem.");
   }
 
+  if (response.status === 403) {
+    const body = await response.json().catch(() => ({}));
+    if (body.name === "EmailVerificationRequiredError") {
+      const error = new Error("Confirme seu e-mail antes de entrar.");
+      error.verificationRequired = true;
+      throw error;
+    }
+  }
+
   if (response.status !== 201) {
     throw new Error("Não foi possível entrar agora. Tente novamente.");
   }

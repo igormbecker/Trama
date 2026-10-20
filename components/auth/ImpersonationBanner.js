@@ -1,5 +1,5 @@
 import useActionState from "components/shared/useActionState";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import styles from "./impersonation.module.css";
 
@@ -22,6 +22,26 @@ export default function ImpersonationBanner() {
   );
   const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
+  const bannerRef = useRef(null);
+  const active = Boolean(data?.active);
+  useEffect(() => {
+    const banner = bannerRef.current;
+    if (!active || !banner) return;
+    const style = document.documentElement.style;
+    function updateHeight() {
+      style.setProperty(
+        "--impersonation-banner-height",
+        `${banner.getBoundingClientRect().height}px`,
+      );
+    }
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(banner);
+    return () => {
+      observer.disconnect();
+      style.removeProperty("--impersonation-banner-height");
+    };
+  }, [active]);
   async function stop() {
     if (pendingRef.current) return;
     setBusy(true);
@@ -47,7 +67,11 @@ export default function ImpersonationBanner() {
   if (!data?.active) return null;
   const expired = data.expired || new Date(data.expires_at) <= new Date();
   return (
-    <aside className={styles.banner} aria-label="Personificação de usuário">
+    <aside
+      ref={bannerRef}
+      className={styles.banner}
+      aria-label="Personificação de usuário"
+    >
       <p role="status">
         {expired ? "Personificação expirada" : "Você está personificando"}:{" "}
         <strong>{data.name}</strong>. As ações afetam os dados reais dessa

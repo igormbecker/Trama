@@ -2,6 +2,7 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import authentication from "models/authentication.js";
 import workStructure from "models/workStructure.js";
+import projectTrash from "models/projectTrash.js";
 const router = createRouter();
 router.use(async (request, response, next) => {
   response.setHeader("Cache-Control", "private, no-store");
@@ -9,6 +10,15 @@ router.use(async (request, response, next) => {
     request.cookies?.trama_session_id,
   );
   return next();
+});
+router.delete(async (request, response) => {
+  await projectTrash.move(
+    request.query.id,
+    request.authenticatedUser.id,
+    "part",
+    request.query.partId,
+  );
+  return response.status(204).end();
 });
 router.patch(async (request, response) =>
   response

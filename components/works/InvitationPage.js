@@ -46,8 +46,8 @@ export default function InvitationPage({ user, invitation }) {
             <h2>Entre para responder ao convite</h2>
             <p>
               Use uma conta com o e-mail que recebeu o convite. Se ainda não tem
-              conta, crie uma pelo convite. Depois de entrar, aceite os
-              documentos atuais e responda em Meus convites.
+              conta, crie uma pelo convite e confirme seu e-mail. Depois de
+              entrar, aceite os documentos atuais e responda em Meus convites.
             </p>
             <div className={styles.actions}>
               <Link href="/login">Entrar</Link>
@@ -63,20 +63,20 @@ export default function InvitationPage({ user, invitation }) {
               com o e-mail convidado. O link também pode ter expirado ou já ter
               sido utilizado ou cancelado.
             </p>
-            <Link href="/works">Minhas obras</Link>
+            <Link href="/works">Meus projetos</Link>
           </>
         ) : declined ? (
           <>
             <SuccessMessage>
-              Convite recusado. Você não recebeu acesso à obra.
+              Convite recusado. Você não recebeu acesso ao projeto.
             </SuccessMessage>
-            <Link href="/works">Minhas obras</Link>
+            <Link href="/works">Meus projetos</Link>
           </>
         ) : (
           <>
             <h2>{invitation.work_title}</h2>
             <p>
-              Você foi convidado para consultar esta obra como organizador. O
+              Você foi convidado para consultar este projeto como organizador. O
               responsável continua gerenciando participantes e convites.
             </p>
             <p>Válido até {formatInvitationDate(invitation.expires_at)}.</p>

@@ -190,17 +190,20 @@
   gap: 12px;
 }
 .rowActions button {
-  border: 0;
-  padding: 0;
-  font-size: 16px !important;
-  background: transparent;
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px !important;
+  background: var(--preview-paper);
+  color: var(--ink);
+  text-decoration: none;
   cursor: pointer;
 }
 .rowActions .removeLink {
-  color: var(--error-text);
+  background: var(--danger-button-bg);
+  color: var(--danger-button-text);
+  border-color: var(--danger-button-bg);
 }
 .error,
 .success {
@@ -305,7 +308,7 @@
   }
   .rowActions {
     margin-top: 6px;
-    gap: 24px;
+    gap: 12px;
   }
 }
 @media (max-width: 600px) {

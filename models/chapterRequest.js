@@ -47,7 +47,7 @@ async function transaction(operation) {
 async function chapterExists(client, workId, chapterId) {
   work.validateId(chapterId);
   const result = await client.query({
-    text: "SELECT c.id FROM chapters c JOIN work_parts p ON p.id = c.part_id WHERE c.id = $1 AND p.work_id = $2",
+    text: "SELECT c.id FROM chapters c JOIN work_parts p ON p.id = c.part_id WHERE c.id = $1 AND p.work_id = $2 AND c.deleted_at IS NULL AND p.deleted_at IS NULL",
     values: [chapterId, workId],
   });
   if (!result.rowCount) throw unavailable();
@@ -63,7 +63,7 @@ async function findCurrent(client, chapterId, lock = false) {
 async function assertAccess(workId, chapterId, userId, client, lock = false) {
   work.validateId(workId);
   const access = await client.query({
-    text: `SELECT w.owner_id FROM works w WHERE w.id = $1 AND
+    text: `SELECT w.owner_id FROM works w WHERE w.id = $1 AND w.deleted_at IS NULL AND
       (w.owner_id = $2 OR EXISTS (SELECT 1 FROM work_participants p
       WHERE p.work_id = w.id AND p.user_id = $2 AND p.removed_at IS NULL))
       ${lock ? "FOR UPDATE OF w" : ""}`,
@@ -138,7 +138,7 @@ async function findForAssignee(userId) {
       w.id AS work_id, w.title AS work_title
       FROM chapter_requests r JOIN chapters c ON c.id = r.chapter_id
       JOIN work_parts part ON part.id = c.part_id JOIN works w ON w.id = part.work_id
-      WHERE r.assignee_user_id = $1 AND EXISTS (
+      WHERE r.assignee_user_id = $1 AND w.deleted_at IS NULL AND part.deleted_at IS NULL AND c.deleted_at IS NULL AND EXISTS (
         SELECT 1 FROM work_participants p WHERE p.work_id = w.id
         AND p.user_id = $1 AND p.removed_at IS NULL
       )
@@ -161,10 +161,11 @@ async function create(workId, chapterId, ownerId, input) {
   await work.requireOwner(workId, ownerId);
   try {
     return await transaction(async (client) => {
-      await client.query({
-        text: "SELECT id FROM works WHERE id = $1 FOR UPDATE",
+      const locked = await client.query({
+        text: "SELECT id FROM works WHERE id = $1 AND deleted_at IS NULL FOR UPDATE",
         values: [workId],
       });
+      if (!locked.rowCount) throw unavailable();
       await chapterExists(client, workId, chapterId);
       const participant = await client.query({
         text: "SELECT id FROM work_participants WHERE work_id = $1 AND user_id = $2 AND removed_at IS NULL",
@@ -291,7 +292,7 @@ async function act(workId, chapterId, userId, input) {
     return transaction(async (client) => {
       work.validateId(workId);
       const access = await client.query({
-        text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 FOR UPDATE",
+        text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL FOR UPDATE",
         values: [workId, userId],
       });
       if (!access.rowCount) throw unavailable();

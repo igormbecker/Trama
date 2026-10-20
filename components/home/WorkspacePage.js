@@ -8,6 +8,7 @@ import useParticipations, {
 import { getWorkCoverColor } from "components/works/workCover";
 import { readActivity, recentWorks } from "./recentActivity";
 import styles from "./workspace.module.css";
+import { getProjectLabels } from "components/works/projectLabels";
 
 export default function WorkspacePage({
   user,
@@ -46,7 +47,7 @@ export default function WorkspacePage({
         if (!response.ok) {
           if (![401, 404].includes(response.status))
             setHistoryError(
-              "Não foi possível carregar o último capítulo. Você pode abrir a obra pela lista abaixo.",
+              "Não foi possível carregar o último texto. Você pode abrir o projeto pela lista abaixo.",
             );
           return;
         }
@@ -55,7 +56,7 @@ export default function WorkspacePage({
       } catch {
         if (active)
           setHistoryError(
-            "O histórico está indisponível neste momento. Você pode continuar por Minhas obras.",
+            "O histórico está indisponível neste momento. Você pode continuar por Meus projetos.",
           );
       } finally {
         if (active) setLoading(false);
@@ -72,14 +73,14 @@ export default function WorkspacePage({
       user={user}
       activePage="home"
       title="Seu espaço | Trama"
-      description="Retome seus capítulos e suas obras recentes."
+      description="Retome seus textos e seus projetos recentes."
       initialParticipations={initialParticipations}
     >
       <section className={styles.workspace} aria-labelledby="workspace-title">
         <header className={styles.heading}>
           <p>Olá, {user.name}.</p>
           <h1 id="workspace-title">Seu espaço</h1>
-          <p>O próximo capítulo começa de onde você parou.</p>
+          <p>Continue suas ideias de onde você parou.</p>
         </header>
         {invitations?.length > 0 && (
           <aside className={styles.invitation}>
@@ -151,15 +152,17 @@ export default function WorkspacePage({
                     ? "Continuar escrevendo"
                     : "Continuar lendo"}
                 </Link>
-                <Link href={`/works/${chapter.work.id}`}>Abrir obra</Link>
+                <Link href={`/works/${chapter.work.id}`}>
+                  Abrir {getProjectLabels(chapter.work.type).name}
+                </Link>
               </div>
             </>
           ) : (
             <>
               <p>
                 {works.length
-                  ? "Abra um capítulo para encontrá-lo aqui na próxima visita."
-                  : "Crie sua primeira obra ou aceite um convite para começar."}
+                  ? "Abra um texto para encontrá-lo aqui na próxima visita."
+                  : "Crie seu primeiro projeto ou aceite um convite para começar."}
               </p>
               <Link
                 className={styles.primary}
@@ -167,8 +170,8 @@ export default function WorkspacePage({
                 href={works.length ? "/works" : "/works#create-work-title"}
               >
                 {works.length
-                  ? "Explorar minhas obras"
-                  : "Criar minha primeira obra"}
+                  ? "Explorar meus projetos"
+                  : "Criar meu primeiro projeto"}
               </Link>
               {!works.length && (
                 <p>
@@ -181,11 +184,11 @@ export default function WorkspacePage({
         </section>
         <section aria-labelledby="recent-title">
           <div className={styles.sectionHeading}>
-            <h2 id="recent-title">Obras recentes</h2>
-            <Link href="/works">Ver todas as obras</Link>
+            <h2 id="recent-title">Projetos recentes</h2>
+            <Link href="/works">Ver todos os projetos</Link>
           </div>
           {!loading && !recent.length && (
-            <p>As obras que você acessar aparecerão aqui.</p>
+            <p>Os projetos que você acessar aparecerão aqui.</p>
           )}
           <ul className={styles.recentList}>
             {recent.map((work) => (
@@ -202,6 +205,7 @@ export default function WorkspacePage({
                     <Link href={`/works/${work.id}`}>{work.title}</Link>
                   </h3>
                   <p>
+                    {getProjectLabels(work.type).type} ·{" "}
                     {work.owner_id === user.id
                       ? "Você é o responsável"
                       : "Você participa como organizador"}
@@ -210,9 +214,9 @@ export default function WorkspacePage({
                 <Link
                   className={styles.openWork}
                   href={`/works/${work.id}`}
-                  aria-label={`Abrir obra ${work.title}`}
+                  aria-label={`Abrir ${getProjectLabels(work.type).name} ${work.title}`}
                 >
-                  Abrir obra →
+                  Abrir {getProjectLabels(work.type).name} →
                 </Link>
               </li>
             ))}

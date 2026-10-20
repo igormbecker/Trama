@@ -1,6 +1,6 @@
 import database from "infra/database";
 import work from "models/work";
-import { ValidationError } from "infra/errors";
+import { ValidationError, NotFoundError } from "infra/errors";
 
 const groups = ["authors", "contributors", "reviewers"];
 const emptyCredits = () => ({ authors: [], contributors: [], reviewers: [] });
@@ -51,7 +51,7 @@ async function read(workId, userId) {
   const result = await database.query({
     text: `SELECT DISTINCT r.kind, u.name, c.title FROM chapter_requests r
       JOIN users u ON u.id = r.assignee_user_id JOIN chapters c ON c.id = r.chapter_id
-      JOIN work_parts p ON p.id = c.part_id WHERE p.work_id = $1
+      JOIN work_parts p ON p.id = c.part_id WHERE p.work_id = $1 AND p.deleted_at IS NULL AND c.deleted_at IS NULL
       AND r.status = 'approved' AND (r.kind = 'review' OR r.restored_at IS NULL)
       ORDER BY u.name, c.title`,
     values: [workId],
@@ -66,10 +66,27 @@ async function read(workId, userId) {
 async function update(workId, userId, input) {
   await work.requireOwner(workId, userId);
   const credits = validate(input);
-  await database.query({
-    text: "INSERT INTO work_credits (work_id, document) VALUES ($1, $2) ON CONFLICT (work_id) DO UPDATE SET document = EXCLUDED.document, updated_at = timezone('utc', now())",
-    values: [workId, JSON.stringify(credits)],
-  });
+  let client;
+  try {
+    client = await database.getNewClient();
+    await client.query("BEGIN");
+    const locked = await client.query({
+      text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL FOR UPDATE",
+      values: [workId, userId],
+    });
+    if (!locked.rowCount)
+      throw new NotFoundError({ message: "Work not found." });
+    await client.query({
+      text: "INSERT INTO work_credits (work_id, document) VALUES ($1, $2) ON CONFLICT (work_id) DO UPDATE SET document = EXCLUDED.document, updated_at = timezone('utc', now())",
+      values: [workId, JSON.stringify(credits)],
+    });
+    await client.query("COMMIT");
+  } catch (error) {
+    await client?.query("ROLLBACK");
+    throw error;
+  } finally {
+    await client?.end();
+  }
   return credits;
 }
 const workCredits = { read, update, findConfirmed };
