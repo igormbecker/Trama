@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
+  const [verificationRequired, setVerificationRequired] = useState(false);
 
   // The server only renders this form when the visitor has no valid session.
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function LoginPage() {
     }
 
     setError("");
+    setVerificationRequired(false);
     setIsSubmitting(true);
 
     try {
@@ -38,7 +40,8 @@ export default function LoginPage() {
       await router.replace("/home");
     } catch (error) {
       if (error.verificationRequired) {
-        await router.push("/verify-email");
+        setPassword("");
+        setVerificationRequired(true);
         return;
       }
       setError(error.message);
@@ -123,7 +126,10 @@ export default function LoginPage() {
                 autoComplete="username"
                 required
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setVerificationRequired(false);
+                }}
                 disabled={isSubmitting}
               />
             </div>
@@ -154,11 +160,14 @@ export default function LoginPage() {
               {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
           </form>
+          {verificationRequired && (
+            <p className={styles.formDescription} role="status">
+              Confirme seu e-mail para continuar.{" "}
+              <Link href="/verify-email">Precisa de outro link?</Link>
+            </p>
+          )}
           <p className={styles.backLink}>
             <Link href="/forgot-password">Esqueci minha senha</Link>
-          </p>
-          <p className={styles.backLink}>
-            <Link href="/verify-email">Confirmar e-mail ou reenviar link</Link>
           </p>
           <p className={styles.formDescription}>
             O acesso é restrito. Solicite sua conta ao administrador do Trama.

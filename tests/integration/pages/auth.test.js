@@ -28,6 +28,7 @@ describe("Authentication pages", () => {
     expect(html).toContain('autoComplete="current-password"');
     expect(html).toMatch(/<form[^>]*method="post"/);
     expect(html).toContain('type="submit"');
+    expect(html).not.toContain('href="/verify-email"');
     // Next.js overrides rendered-page cache headers in development.
     expect(response.headers.get("cache-control")).toMatch(/no-store|no-cache/);
   });
