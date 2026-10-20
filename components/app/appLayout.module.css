@@ -76,13 +76,15 @@
     grid-column: 1;
     grid-row: 1;
     align-self: start;
-    max-height: calc(100dvh - var(--impersonation-banner-height, 0px) - 24px);
+    max-height: var(--sidebar-available-height, calc(100dvh - 24px));
     overflow-y: auto;
+    scrollbar-width: thin;
     overscroll-behavior: contain;
     background: var(--paper);
   }
   .sidebar {
     height: auto;
+    padding-bottom: 12px;
   }
   .content {
     grid-column: 2;
