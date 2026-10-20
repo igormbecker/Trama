@@ -17,7 +17,23 @@
 .note {
   color: var(--muted);
 }
+.pendingRequests {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+}
+.pendingRequests li {
+  display: grid;
+  gap: 4px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.pendingRequests span {
+  font-size: 14px;
+  color: var(--muted);
+}
 .resume {
+  box-shadow: var(--panel-shadow);
   padding: 32px;
   background: var(--preview-paper);
   border: 1px solid var(--line);

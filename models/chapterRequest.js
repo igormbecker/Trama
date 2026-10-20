@@ -285,6 +285,51 @@ async function release(workId, chapterId, userId, input) {
   });
 }
 async function act(workId, chapterId, userId, input) {
+  if (["resolve_comment", "reopen_comment"].includes(input?.action)) {
+    exactInput(input, ["action", "request_id", "comment_id"]);
+    work.validateId(input.request_id);
+    return transaction(async (client) => {
+      work.validateId(workId);
+      const access = await client.query({
+        text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 FOR UPDATE",
+        values: [workId, userId],
+      });
+      if (!access.rowCount) throw unavailable();
+      await chapterExists(client, workId, chapterId);
+      const selected = await client.query({
+        text: "SELECT * FROM chapter_requests WHERE id = $1 AND chapter_id = $2 FOR UPDATE",
+        values: [input.request_id, chapterId],
+      });
+      const review = selected.rows[0];
+      if (!review || review.kind !== "review" || review.status === "canceled")
+        throw unavailable();
+      const comment = review.review_comments.find(
+        (entry) => entry.id === input.comment_id,
+      );
+      if (!comment) throw invalid();
+      const resolving = input.action === "resolve_comment";
+      if (Boolean(comment.resolved_at) === resolving)
+        throw new ConflictError(
+          "The comment status changed. Refresh the review.",
+        );
+      const timestamp = new Date().toISOString();
+      comment.resolved_at = resolving ? timestamp : null;
+      comment.resolved_by = resolving ? userId : null;
+      comment.resolution_history = [
+        ...(comment.resolution_history || []),
+        {
+          action: resolving ? "resolved" : "reopened",
+          actor_user_id: userId,
+          created_at: timestamp,
+        },
+      ];
+      const updated = await client.query({
+        text: "UPDATE chapter_requests SET review_comments = $2, updated_at = timezone('utc', now()) WHERE id = $1 RETURNING *",
+        values: [review.id, JSON.stringify(review.review_comments)],
+      });
+      return updated.rows[0];
+    });
+  }
   exactInput(input, [
     "action",
     "message",
@@ -349,6 +394,10 @@ async function act(workId, chapterId, userId, input) {
           (comment) => comment.id === input.comment_id,
         );
         if (index < 0) throw invalid();
+        if (comments[index].resolution_history?.length)
+          throw new ConflictError(
+            "Comments with resolution history must be preserved.",
+          );
         comments.splice(index, 1);
       } else {
         if (

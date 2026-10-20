@@ -55,7 +55,7 @@
   background: var(--preview-paper);
   border: 1px solid var(--line);
   border-radius: 12px;
-  box-shadow: 0 22px 65px -32px #25293840;
+  box-shadow: var(--panel-shadow);
 }
 .previewTop {
   display: flex;

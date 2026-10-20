@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import SuccessMessage from "components/shared/SuccessMessage";
 import Link from "next/link";
 import { useAuth } from "./AuthProvider";
@@ -12,7 +13,7 @@ export default function LoginPage() {
   const { refreshUser, clearUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
 
   // The server only renders this form when the visitor has no valid session.
@@ -23,7 +24,7 @@ export default function LoginPage() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (isSubmitting) {
+    if (pendingRef.current) {
       return;
     }
 

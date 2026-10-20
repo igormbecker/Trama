@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useRouter } from "next/router";
 import { useAuth } from "./AuthProvider";
 import { useState } from "react";
@@ -7,11 +8,11 @@ import styles from "./auth.module.css";
 export default function LogoutButton() {
   const router = useRouter();
   const { clearUser } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
 
   async function handleLogout() {
-    if (isSubmitting) {
+    if (pendingRef.current) {
       return;
     }
 

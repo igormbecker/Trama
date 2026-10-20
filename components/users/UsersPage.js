@@ -1,3 +1,5 @@
+import useActionState from "components/shared/useActionState";
+import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
@@ -14,7 +16,7 @@ export default function UsersPage({ user, initialUsers }) {
   const [editingUser, setEditingUser] = useState(null);
   const [formValues, setFormValues] = useState(emptyValues);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isBusy, setIsBusy] = useState(false);
+  const [isBusy, setIsBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [formError, setFormError] = useState("");
   const [notice, setNotice] = useState("");
@@ -73,7 +75,7 @@ export default function UsersPage({ user, initialUsers }) {
   }
 
   async function refreshList() {
-    if (isBusy) {
+    if (pendingRef.current) {
       return;
     }
     setIsBusy(true);
@@ -89,7 +91,7 @@ export default function UsersPage({ user, initialUsers }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (isBusy) {
+    if (pendingRef.current) {
       return;
     }
     setIsBusy(true);
@@ -128,7 +130,7 @@ export default function UsersPage({ user, initialUsers }) {
   }
 
   async function confirmRemoval() {
-    if (isBusy) {
+    if (pendingRef.current) {
       return;
     }
     setIsBusy(true);
@@ -148,7 +150,7 @@ export default function UsersPage({ user, initialUsers }) {
   }
 
   async function startImpersonation() {
-    if (isBusy || !representingUser) return;
+    if (pendingRef.current || !representingUser) return;
     setIsBusy(true);
     setError("");
     try {
@@ -205,6 +207,7 @@ export default function UsersPage({ user, initialUsers }) {
             Adicionar usuário
           </button>
         </div>
+        <LoadingMessage pending={isBusy}>Atualizando usuários…</LoadingMessage>
         {representingUser ? (
           <section
             className={styles.formPanel}
@@ -384,6 +387,7 @@ export default function UsersPage({ user, initialUsers }) {
                   className={styles.primaryButton}
                   type="submit"
                   disabled={isBusy}
+                  aria-busy={isBusy}
                 >
                   {isBusy ? "Salvando..." : "Salvar usuário"}
                 </button>
@@ -520,7 +524,7 @@ export default function UsersPage({ user, initialUsers }) {
           aria-labelledby="delete-title"
           aria-describedby="delete-description"
           onCancel={(event) => {
-            if (isBusy) {
+            if (pendingRef.current) {
               event.preventDefault();
             } else {
               closeDeleteDialog();

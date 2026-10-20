@@ -70,7 +70,7 @@ function TramaThread() {
 export default function HomeLayout({
   children,
   title = "Trama — Gestão editorial colaborativa",
-  description = "Conheça o Trama: uma proposta para conectar pessoas, capítulos e etapas da produção editorial, da organização da obra à aprovação.",
+  description = "Organize sua obra, escreva capítulos e reúna contribuições no Trama. Revise por comentários, confirme os créditos e exporte em PDF ou DOCX.",
   navigation,
   showThemeControl = true,
   hasFloatingNavigation = false,

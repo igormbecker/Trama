@@ -1,3 +1,5 @@
+import useActionState from "components/shared/useActionState";
+import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -24,7 +26,7 @@ export default function ParticipantsPanel({
 }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [isBusy, setIsBusy] = useState(false);
+  const [isBusy, setIsBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [removalTarget, setRemovalTarget] = useState(null);
@@ -33,7 +35,7 @@ export default function ParticipantsPanel({
   );
 
   async function perform(operation, successMessage) {
-    if (isBusy) return;
+    if (pendingRef.current) return;
     setIsBusy(true);
     setError("");
     setMessage("");
@@ -68,6 +70,9 @@ export default function ParticipantsPanel({
       aria-busy={isBusy}
     >
       <h2 id="participants-title">Participantes</h2>
+      <LoadingMessage pending={isBusy}>
+        Atualizando participantes e convites…
+      </LoadingMessage>
       <p>
         Convide alguém para consultar esta obra como organizador. Somente você
         gerencia participantes e convites.
@@ -86,7 +91,7 @@ export default function ParticipantsPanel({
           onChange={(event) => setEmail(event.target.value)}
           disabled={isBusy}
         />
-        <button type="submit" disabled={isBusy}>
+        <button type="submit" disabled={isBusy} aria-busy={isBusy}>
           {isBusy ? "Aguarde…" : "Enviar convite"}
         </button>
       </form>

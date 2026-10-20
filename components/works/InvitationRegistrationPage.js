@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -11,12 +12,12 @@ export default function InvitationRegistrationPage({ invitation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
 
   async function submit(event) {
     event.preventDefault();
-    if (busy) return;
+    if (pendingRef.current) return;
     setBusy(true);
     setError("");
     try {
@@ -130,6 +131,7 @@ export default function InvitationRegistrationPage({ invitation }) {
               className={styles.primaryButton}
               type="submit"
               disabled={busy}
+              aria-busy={busy}
             >
               {busy ? "Criando conta…" : "Criar conta"}
             </button>

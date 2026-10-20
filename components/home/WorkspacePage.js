@@ -2,16 +2,28 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import useInvitations from "components/works/useInvitations";
+import useParticipations, {
+  needsParticipationAction,
+} from "components/works/useParticipations";
 import { getWorkCoverColor } from "components/works/workCover";
 import { readActivity, recentWorks } from "./recentActivity";
 import styles from "./workspace.module.css";
 
-export default function WorkspacePage({ user, works }) {
+export default function WorkspacePage({
+  user,
+  works,
+  participations: initialParticipations = [],
+}) {
   const [recent, setRecent] = useState([]);
   const [chapter, setChapter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [historyError, setHistoryError] = useState("");
   const { data: invitations } = useInvitations(user.id);
+  const {
+    data: participations = initialParticipations,
+    error: participationError,
+  } = useParticipations(user.id, initialParticipations);
+  const pendingRequests = participations.filter(needsParticipationAction);
 
   useEffect(() => {
     let active = true;
@@ -61,6 +73,7 @@ export default function WorkspacePage({ user, works }) {
       activePage="home"
       title="Seu espaço | Trama"
       description="Retome seus capítulos e suas obras recentes."
+      initialParticipations={initialParticipations}
     >
       <section className={styles.workspace} aria-labelledby="workspace-title">
         <header className={styles.heading}>
@@ -78,6 +91,40 @@ export default function WorkspacePage({ user, works }) {
               →
             </Link>
           </aside>
+        )}
+        {(pendingRequests.length > 0 || participationError) && (
+          <section
+            className={styles.resume}
+            aria-labelledby="pending-requests-title"
+          >
+            <h2 id="pending-requests-title">
+              Pedidos aguardando sua ação ({pendingRequests.length})
+            </h2>
+            {participationError && (
+              <p role="status">
+                Não foi possível atualizar seus pedidos.{" "}
+                <Link href="/participations">
+                  Consultar Minhas participações
+                </Link>
+              </p>
+            )}
+            <ul className={styles.pendingRequests}>
+              {pendingRequests.slice(0, 5).map((item) => (
+                <li key={item.id}>
+                  <span>
+                    {item.kind === "review" ? "Revisão" : "Contribuição"} ·{" "}
+                    {item.work_title}
+                  </span>
+                  <Link
+                    href={`/works/${item.work_id}/chapters/${item.chapter_id}?requestId=${item.id}`}
+                  >
+                    {item.chapter_title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link href="/participations">Ver todas as participações</Link>
+          </section>
         )}
         <section
           className={styles.resume}
@@ -97,6 +144,7 @@ export default function WorkspacePage({ user, works }) {
               <div className={styles.actions}>
                 <Link
                   className={styles.primary}
+                  data-button
                   href={`/works/${chapter.work.id}/chapters/${chapter.id}${chapter.work.owner_id === user.id ? "?write=1" : ""}`}
                 >
                   {chapter.work.owner_id === user.id
@@ -115,6 +163,7 @@ export default function WorkspacePage({ user, works }) {
               </p>
               <Link
                 className={styles.primary}
+                data-button
                 href={works.length ? "/works" : "/works#create-work-title"}
               >
                 {works.length

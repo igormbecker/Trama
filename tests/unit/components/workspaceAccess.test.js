@@ -1,10 +1,12 @@
 import { getServerSideProps } from "pages/home";
 import authentication from "models/authentication";
 import work from "models/work";
+import chapterRequest from "models/chapterRequest";
 import { UnauthorizedError } from "infra/errors";
 
 jest.mock("models/authentication", () => ({ authenticateSession: jest.fn() }));
 jest.mock("models/work", () => ({ findAllForUser: jest.fn() }));
+jest.mock("models/chapterRequest", () => ({ findForAssignee: jest.fn() }));
 
 test("The workspace redirects unauthenticated visitors without listing works", async () => {
   authentication.authenticateSession.mockRejectedValue(
@@ -16,6 +18,7 @@ test("The workspace redirects unauthenticated visitors without listing works", a
     redirect: { destination: "/login", permanent: false },
   });
   expect(work.findAllForUser).not.toHaveBeenCalled();
+  expect(chapterRequest.findForAssignee).not.toHaveBeenCalled();
   expect(res.setHeader).toHaveBeenCalledWith(
     "Cache-Control",
     "private, no-store",
@@ -30,13 +33,20 @@ test("Lists works for the authenticated account and exposes only public profile 
     password: "hidden",
   });
   work.findAllForUser.mockResolvedValue([{ id: "accessible" }]);
+  chapterRequest.findForAssignee.mockResolvedValue([
+    { id: "assigned-review", kind: "review", status: "writing" },
+  ]);
   const result = await getServerSideProps({
     req: { cookies: { trama_session_id: "session" } },
     res: { setHeader: jest.fn() },
   });
   expect(work.findAllForUser).toHaveBeenCalledWith("alice");
+  expect(chapterRequest.findForAssignee).toHaveBeenCalledWith("alice");
   expect(result.props).toEqual({
     user: { id: "alice", name: "Alice", is_admin: false },
     works: [{ id: "accessible" }],
+    participations: [
+      { id: "assigned-review", kind: "review", status: "writing" },
+    ],
   });
 });

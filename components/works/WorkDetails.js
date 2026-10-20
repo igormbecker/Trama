@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { saveStructure } from "./structureClient";
@@ -9,7 +10,7 @@ export default function WorkDetails({ work, canManage }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(work.title);
   const [description, setDescription] = useState(work.description);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const titleField = useRef(null);
@@ -23,7 +24,7 @@ export default function WorkDetails({ work, canManage }) {
 
   async function save(event) {
     event.preventDefault();
-    if (busy) return;
+    if (pendingRef.current) return;
     setBusy(true);
     setError("");
     try {
@@ -86,7 +87,7 @@ export default function WorkDetails({ work, canManage }) {
             </label>
             {error && <p role="alert">{error}</p>}
             <div className={styles.actions}>
-              <button type="submit" disabled={busy}>
+              <button type="submit" disabled={busy} aria-busy={busy}>
                 {busy ? "Salvando…" : "Salvar"}
               </button>
               <button

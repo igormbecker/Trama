@@ -1,5 +1,20 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import EditorialRequestPanel from "components/works/EditorialRequestPanel";
+import { chapterRequest } from "components/works/chapterClient";
+
+let mockReviewAction;
+beforeEach(() => jest.clearAllMocks());
+jest.mock("components/works/chapterClient", () => ({
+  chapterRequest: jest.fn(),
+}));
+jest.mock(
+  "components/works/ChapterReview",
+  () =>
+    function Review({ onAction }) {
+      mockReviewAction = onAction;
+      return null;
+    },
+);
 
 const props = {
   user: { id: "owner" },
@@ -7,6 +22,83 @@ const props = {
   content: { chapter: { id: "chapter" } },
   participants: [{ user_id: "organizer", name: "Alice" }],
 };
+
+test("Saving a new comment reports success without requesting an undefined history entry", async () => {
+  const initialRequestContent = {
+    request: {
+      id: "request",
+      kind: "review",
+      status: "writing",
+      assignee_user_id: "organizer",
+      review_document: { type: "doc", content: [] },
+    },
+  };
+  chapterRequest.mockImplementation(async (path) => {
+    if (path.includes("requestId=undefined"))
+      throw new Error("Pedido inexistente.");
+    return initialRequestContent;
+  });
+  renderToStaticMarkup(
+    <EditorialRequestPanel
+      {...props}
+      user={{ id: "organizer" }}
+      initialRequestContent={initialRequestContent}
+    />,
+  );
+  const input = {
+    action: "comment",
+    start: 0,
+    end: 4,
+    quote: "Cena",
+    message: "Confira a cena.",
+  };
+  await expect(mockReviewAction(input)).resolves.toBe(true);
+  expect(chapterRequest.mock.calls.map(([path]) => path)).toEqual([
+    "/api/v1/works/work/chapters/chapter/request",
+    "/api/v1/works/work/chapters/chapter/request",
+  ]);
+});
+
+test("Two immediate comment submissions send only one mutation", async () => {
+  let finishSave;
+  const initialRequestContent = {
+    request: {
+      id: "request",
+      kind: "review",
+      status: "writing",
+      assignee_user_id: "organizer",
+      review_document: { type: "doc", content: [] },
+    },
+  };
+  chapterRequest.mockImplementation((path, method) =>
+    method === "PATCH"
+      ? new Promise((resolve) => {
+          finishSave = resolve;
+        })
+      : Promise.resolve(initialRequestContent),
+  );
+  renderToStaticMarkup(
+    <EditorialRequestPanel
+      {...props}
+      user={{ id: "organizer" }}
+      initialRequestContent={initialRequestContent}
+    />,
+  );
+  const input = {
+    action: "comment",
+    start: 0,
+    end: 4,
+    quote: "Cena",
+    message: "Confira.",
+  };
+  const first = mockReviewAction(input);
+  await expect(mockReviewAction(input)).resolves.toBe(false);
+  expect(
+    chapterRequest.mock.calls.filter(([, method]) => method === "PATCH"),
+  ).toHaveLength(1);
+  finishSave({});
+  await expect(first).resolves.toBe(true);
+});
 
 test("Explains the participant requirement and links to invitations when no organizer is active", () => {
   const html = renderToStaticMarkup(

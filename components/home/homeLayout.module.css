@@ -6,6 +6,11 @@
 .site {
   --error-background: #f0d7d2;
   --error-text: #752e2e;
+  --danger-button-bg: #752e2e;
+  --danger-button-text: #fff;
+  --panel-shadow:
+    4px -4px 14px -6px rgb(0 0 0 / 0.16),
+    14px -14px 36px -16px rgb(0 0 0 / 0.24);
   --ink: #30313a;
   --accent: #373a86;
   --muted: #5e5c61;
@@ -65,9 +70,15 @@
 .site select {
   font: inherit;
 }
+.site summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 500;
+}
 .site a:focus-visible,
 .site button:focus-visible,
-.site select:focus-visible {
+.site select:focus-visible,
+.site summary:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 5px;
 }
@@ -120,6 +131,14 @@
 }
 .header nav a:hover {
   text-decoration: underline;
+}
+@media (min-width: 801px) {
+  .header.floatingNavigationHeader {
+    gap: 16px;
+  }
+  .header.floatingNavigationHeader nav {
+    margin-left: 0;
+  }
 }
 .themeControl {
   display: flex;
@@ -189,7 +208,7 @@
   line-height: 1.15;
 }
 .companyBrand strong {
-  font-size: 32px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.075em;
   white-space: nowrap;
@@ -198,15 +217,19 @@
   color: var(--accent);
 }
 .companyBrand small {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--accent);
 }
 .statusLink {
   display: inline-flex;
   align-items: center;
   gap: 16px;
-  font-size: 16px;
+  font-size: 14px;
   text-decoration: none;
+}
+.footerBottom nav {
+  font-size: 14px;
+  color: var(--muted);
 }
 .statusLink:hover {
   text-decoration: underline;

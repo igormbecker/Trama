@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -19,12 +20,12 @@ export default function ResetPasswordPage() {
   const [token] = useState(getTokenFromHash);
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (isSubmitting || !token) return;
+    if (pendingRef.current || !token) return;
     setError("");
     if (password !== confirmation) {
       setError("As senhas precisam ser iguais.");

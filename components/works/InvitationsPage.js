@@ -1,3 +1,5 @@
+import useActionState from "components/shared/useActionState";
+import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -27,12 +29,12 @@ export default function InvitationsPage({
     error: loadError,
     mutate,
   } = useInvitations(user.id, invitations);
-  const [busyId, setBusyId] = useState(null);
+  const [busyId, setBusyId, pendingRef] = useActionState(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
   async function respond(invitation, action) {
-    if (busyId) return;
+    if (pendingRef.current) return;
     setBusyId(invitation.id);
     setError("");
     setMessage("");
@@ -71,6 +73,9 @@ export default function InvitationsPage({
           </p>
         </div>
         <h2>Recebidos</h2>
+        <LoadingMessage pending={Boolean(busyId)}>
+          Respondendo convite…
+        </LoadingMessage>
         <p>
           Convites pendentes para o e-mail da sua conta. Aceite para acessar a
           obra como organizador.

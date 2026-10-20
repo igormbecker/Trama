@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import AppLayout from "components/app/AppLayout";
@@ -15,7 +16,7 @@ export default function AccountPage({ user }) {
     password: "",
     password_confirmation: "",
   });
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const { theme, setTheme } = useTheme();
@@ -27,7 +28,7 @@ export default function AccountPage({ user }) {
   }
   async function handleSubmit(event) {
     event.preventDefault();
-    if (isSaving) {
+    if (pendingRef.current) {
       return;
     }
     setIsSaving(true);
@@ -171,6 +172,7 @@ export default function AccountPage({ user }) {
                 className={styles.primaryButton}
                 type="submit"
                 disabled={isSaving}
+                aria-busy={isSaving}
               >
                 {isSaving ? "Salvando..." : "Salvar alterações"}
               </button>

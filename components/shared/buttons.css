@@ -1,0 +1,63 @@
+button:not([data-button-effect="none"]),
+a[data-button] {
+  --button-shadow: rgb(0 0 0 / 0.18);
+  box-shadow:
+    2px -2px 6px -2px var(--button-shadow),
+    6px -6px 14px -7px var(--button-shadow);
+  transition:
+    translate 120ms ease,
+    box-shadow 120ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  button:not([data-button-effect="none"]):enabled:hover,
+  a[data-button]:not([aria-disabled="true"]):hover {
+    translate: 0 -2px;
+    box-shadow:
+      4px -4px 10px -3px var(--button-shadow),
+      10px -10px 22px -8px var(--button-shadow);
+  }
+}
+button:not([data-button-effect="none"]):enabled:active,
+a[data-button]:not([aria-disabled="true"]):active {
+  translate: 0 0;
+  box-shadow: 1px -1px 3px var(--button-shadow);
+}
+button:disabled,
+a[data-button][aria-disabled="true"] {
+  translate: none;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  button:not([data-button-effect="none"]),
+  button:not([data-button-effect="none"]):enabled:is(:hover, :active),
+  a[data-button],
+  a[data-button]:not([aria-disabled="true"]):is(:hover, :active) {
+    transition: none;
+    translate: none;
+  }
+}
+button[aria-busy="true"] {
+  cursor: progress;
+}
+button[aria-busy="true"]::before {
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.5em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -0.1em;
+  animation: button-loading 0.8s linear infinite;
+}
+@keyframes button-loading {
+  to {
+    rotate: 360deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button[aria-busy="true"]::before {
+    animation: none;
+  }
+}

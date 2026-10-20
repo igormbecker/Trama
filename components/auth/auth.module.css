@@ -84,6 +84,7 @@
   color: var(--muted);
 }
 .formPanel {
+  box-shadow: var(--panel-shadow);
   background: var(--preview-paper);
   border: 1px solid var(--line);
   border-radius: 12px;

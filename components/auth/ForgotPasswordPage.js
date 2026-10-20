@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import SuccessMessage from "components/shared/SuccessMessage";
 import RecoveryLayout from "./RecoveryLayout";
@@ -6,13 +7,13 @@ import styles from "./auth.module.css";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting, pendingRef] = useActionState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (isSubmitting) return;
+    if (pendingRef.current) return;
     setError("");
     setIsSubmitting(true);
     try {

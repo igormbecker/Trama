@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -21,10 +22,11 @@ export default function ChapterPage({
   const autoOpened = useRef(false);
   const [content, setContent] = useState(initialContent);
   const [token, setToken] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const path = `/api/v1/works/${work.id}/chapters/${content.chapter.id}`;
   const start = useCallback(async () => {
+    if (pendingRef.current) return;
     setBusy(true);
     setError("");
     let lease;
@@ -46,7 +48,7 @@ export default function ChapterPage({
     } finally {
       setBusy(false);
     }
-  }, [path]);
+  }, [path, pendingRef, setBusy]);
   useEffect(() => {
     if (
       !router.isReady ||
@@ -112,7 +114,12 @@ export default function ChapterPage({
           ) : (
             <>
               {work.owner_id === user.id && (
-                <button type="button" onClick={start} disabled={busy}>
+                <button
+                  type="button"
+                  onClick={start}
+                  disabled={busy}
+                  aria-busy={busy}
+                >
                   {busy ? "Abrindo editor…" : "Escrever capítulo"}
                 </button>
               )}

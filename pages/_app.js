@@ -6,6 +6,8 @@ import NextApp from "next/app";
 import { ThemeProvider } from "components/theme/ThemeProvider";
 import { readThemeCookie } from "components/theme/theme";
 import localFont from "next/font/local";
+import "components/shared/buttons.css";
+import NavigationLoading from "components/shared/NavigationLoading";
 
 const inter = localFont({
   src: "../public/fonts/inter/InterVariable.woff2",
@@ -39,6 +41,7 @@ export default function App({
         }
       `}</style>
       <ThemeProvider initialTheme={initialTheme}>
+        <NavigationLoading />
         <AuthProvider
           initialUser={pageProps.user}
           hasSessionCookie={hasSessionCookie}

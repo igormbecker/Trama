@@ -1,0 +1,49 @@
+.loading {
+  --loading-ink: #373a86;
+  --loading-paper: #f7f2e9;
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  pointer-events: none;
+}
+.loading[data-theme="dark"] {
+  --loading-ink: #c5bde5;
+  --loading-paper: #302e2b;
+}
+.track {
+  height: 3px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--loading-ink) 18%, transparent);
+}
+.track span {
+  display: block;
+  width: 35%;
+  height: 100%;
+  background: var(--loading-ink);
+  animation: progress 1.2s ease-in-out infinite;
+}
+.label {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  padding: 6px 12px;
+  border: 1px solid var(--loading-ink);
+  border-radius: 6px;
+  background: var(--loading-paper);
+  color: var(--loading-ink);
+  font-size: 14px;
+}
+@keyframes progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(390%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .track span {
+    animation: none;
+    width: 100%;
+  }
+}
