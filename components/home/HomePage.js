@@ -6,33 +6,35 @@ const chapters = [
   {
     number: "01",
     title: "O começo de uma ideia",
-    author: "Marina Costa",
+    participant: "Marina Costa · Contribuição",
     initials: "MC",
-    status: "Aprovado",
+    status: "Contribuição Incorporada",
     stage: "approved",
-    detail: "Revisão concluída. O capítulo está aprovado para seguir na obra.",
-    action: "Uma etapa concluída, com todos na mesma página.",
+    detail:
+      "O responsável aprovou a contribuição de Marina e incorporou a entrega ao capítulo, preservando o texto anterior.",
+    action: "Uma contribuição que passa a fazer parte da obra.",
   },
   {
     number: "02",
     title: "Perspectivas que se encontram",
-    author: "Rafael Lima",
+    participant: "Rafael Lima · Revisão",
     initials: "RL",
     status: "Em revisão",
     stage: "review",
     detail:
-      "A entrega de Rafael está em revisão. O próximo passo é reunir os apontamentos e devolver ao autor.",
-    action: "Da entrega à revisão, cada passagem fica clara.",
+      "Rafael comenta trechos de uma versão fixa e prepara seu parecer. O responsável decide os ajustes no texto da obra.",
+    action: "Apontamentos ligados ao trecho que precisa de atenção.",
   },
   {
     number: "03",
     title: "Novos caminhos possíveis",
-    author: "Ana Martins",
+    participant: "Ana Martins · Contribuição",
     initials: "AM",
-    status: "Em escrita",
+    status: "Em contribuição",
     stage: "writing",
-    detail: "Ana está preparando a primeira entrega deste capítulo.",
-    action: "Cada pessoa entende sua participação na obra.",
+    detail:
+      "Ana escreve em uma cópia do capítulo. Quando enviar a entrega, o responsável poderá pedir ajustes ou aprovar a incorporação.",
+    action: "Espaço para contribuir sem alterar o texto atual.",
   },
 ];
 
@@ -43,41 +45,45 @@ const workflow = [
       "Dê estrutura às ideias, dividindo a obra em partes e capítulos.",
   },
   {
-    title: "Convide as pessoas",
-    description: "Conecte autores e equipe aos capítulos em que vão colaborar.",
+    title: "Escreva no Trama",
+    description:
+      "Desenvolva os capítulos no editor, com salvamento automático e recuperação de rascunhos locais.",
   },
   {
-    title: "Reúna as entregas",
-    description: "Acompanhe os arquivos e as versões que fazem a obra avançar.",
+    title: "Reúna contribuições",
+    description:
+      "Convide participantes e atribua contribuições por capítulo. Confira as entregas antes de incorporá-las.",
   },
   {
     title: "Revise em conjunto",
-    description: "Troque apontamentos e acompanhe o que precisa de ajustes.",
+    description:
+      "Atribua uma revisão, receba comentários por trecho e acompanhe o parecer e a resolução dos apontamentos.",
   },
   {
-    title: "Aprove cada capítulo",
-    description: "Conclua as etapas com clareza sobre o que foi aprovado.",
+    title: "Leia e exporte",
+    description:
+      "Leia a obra completa, confirme os créditos e exporte em PDF ou DOCX com capa e sumário.",
   },
 ];
 
 const participants = [
   {
-    name: "Organização editorial",
+    name: "Responsável pela obra",
     title: "O todo, sem perder os detalhes.",
     description:
-      "Uma visão da obra para acompanhar capítulos, pessoas e os próximos passos.",
+      "Organize a estrutura, escreva os capítulos, atribua pedidos e decida quais contribuições incorporar à obra.",
   },
   {
-    name: "Autores e organizadores",
+    name: "Pessoas participantes",
     title: "Espaço para construir juntos.",
     description:
-      "Clareza sobre a participação de cada pessoa e sobre o caminho das entregas.",
+      "Consulte a obra como organizador e, ao receber uma atribuição, desenvolva sua contribuição em uma cópia do capítulo.",
   },
   {
     name: "Revisores",
     title: "Cada leitura faz a obra avançar.",
     description:
-      "Um lugar para acompanhar revisões e conectar os apontamentos ao capítulo.",
+      "Quando receber uma revisão, comente os trechos de uma versão fixa e envie seu parecer, sem alterar o capítulo.",
   },
 ];
 
@@ -95,14 +101,15 @@ export default function HomePage() {
             feitas <span>em conjunto.</span>
           </h1>
           <p className={styles.description}>
-            Do primeiro convite ao capítulo aprovado, o Trama conecta as pessoas
-            e as etapas que dão forma à sua obra.
+            Organize sua obra, escreva capítulos e reúna contribuições em um só
+            lugar. Da primeira ideia à revisão, o Trama conecta as pessoas e o
+            trabalho editorial.
           </p>
-          <a className={styles.primaryLink} href="#como-funciona">
+          <a className={styles.primaryLink} href="#como-funciona" data-button>
             Conhecer o fluxo <span aria-hidden="true">↓</span>
           </a>
           <p className={styles.developmentNote}>
-            Um novo espaço para a produção editorial.
+            Escrita, colaboração e revisão em um só espaço.
             <br />
             Produto em desenvolvimento.
           </p>
@@ -129,7 +136,7 @@ export default function HomePage() {
           </div>
           <div className={styles.chapterHeading}>
             <span>Capítulos</span>
-            <span>Etapa atual</span>
+            <span>Pedido editorial</span>
           </div>
           <div
             className={styles.chapterList}
@@ -148,7 +155,7 @@ export default function HomePage() {
                 <span className={styles.chapterNumber}>{chapter.number}</span>
                 <span className={styles.chapterInfo}>
                   <strong>{chapter.title}</strong>
-                  <span>{chapter.author}</span>
+                  <span>{chapter.participant}</span>
                 </span>
                 <span className={styles[chapter.stage]}>{chapter.status}</span>
               </button>
@@ -183,14 +190,14 @@ export default function HomePage() {
           <div>
             <p>Como funciona</p>
             <h2 id="workflow-title">
-              Da ideia à aprovação.
+              Da ideia à obra.
               <br />
               Um capítulo de cada vez.
             </h2>
           </div>
           <p>
-            Este é o caminho que estamos construindo para acompanhar a produção
-            de uma obra no Trama.
+            Escreva por conta própria e convide outras pessoas quando precisar.
+            Acompanhe o trabalho até a leitura completa e a exportação da obra.
           </p>
         </div>
         <ol className={styles.workflow}>
@@ -221,7 +228,9 @@ export default function HomePage() {
           </div>
           <p>
             Uma produção editorial reúne pessoas com contribuições diferentes. O
-            Trama nasce para aproximar esse trabalho.
+            Trama aproxima esse trabalho. Os nomes de autoria são informados nos
+            créditos pelo responsável; participar da obra não atribui autoria
+            automaticamente.
           </p>
         </div>
         <div className={styles.participants}>
