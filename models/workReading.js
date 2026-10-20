@@ -8,7 +8,7 @@ async function read(workId, userId) {
       c.id, c.title, c.position, d.document
       FROM work_parts p JOIN chapters c ON c.part_id = p.id
       JOIN chapter_drafts d ON d.chapter_id = c.id
-      WHERE p.work_id = $1 AND d.revision > 0
+      WHERE p.work_id = $1 AND p.deleted_at IS NULL AND c.deleted_at IS NULL AND d.revision > 0
       ORDER BY p.position, c.position`,
     values: [workId],
   });

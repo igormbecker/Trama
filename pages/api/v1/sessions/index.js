@@ -15,7 +15,7 @@ export default controller.withImpersonationAudit(
 async function postHandler(request, response) {
   response.setHeader("Cache-Control", "private, no-store");
 
-  const userInputValues = request.body;
+  const userInputValues = request.body || {};
   const authenticatedUser = await authentication.authenticate(
     userInputValues.email,
     userInputValues.password,

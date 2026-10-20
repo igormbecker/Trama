@@ -164,7 +164,7 @@ export default function AppLayout({
                     strokeLinejoin="round"
                   />
                 </svg>
-                Minhas obras
+                Meus projetos
               </Link>
               <Link
                 href="/participations"

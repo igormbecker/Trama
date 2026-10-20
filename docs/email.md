@@ -2,11 +2,23 @@
 
 ## Escopo
 
-Infraestrutura para recuperação de senha, convite de acesso e convite para obra. Recuperação e convite para obra já usam o envio; o convite administrativo de acesso à conta permanece pendente. Não há endpoint genérico de disparo.
+Infraestrutura para recuperação de senha, confirmação de e-mail e convite para projeto (obra ou trabalho em grupo). Esses fluxos já usam o envio; o convite administrativo com definição inicial de senha permanece pendente. Não há endpoint genérico de disparo.
 
 `infra/email.js` centraliza o transporte; `models/transactional/index.js` gera HTML e texto simples usando React Email. As regras de negócio continuam nos models de cada funcionalidade. A recuperação usa `waitUntil` de `@vercel/functions` para manter o envio ativo após a resposta genérica; não usar promessas soltas sem aguardar ou sem esse mecanismo nas funções da Vercel. Isso não constitui fila durável.
 
-## Ambientes
+## Confirmação de e-mail
+
+Novas contas, inclusive administrativas e criadas por convite de projeto, recebem confirmação. Contas anteriores à migration ficam dispensadas, sem registro fictício de confirmação. Mudanças de e-mail, inclusive administrativas, exigem confirmar o novo endereço e invalidam os links anteriores, mesmo quando o endereço antigo é restaurado.
+
+`POST /api/v1/email-verification` aceita `{ email }` e responde sempre `202` para endereços válidos, sem revelar existência, confirmação prévia ou limitação de envio. O envio usa `waitUntil`, não uma fila durável. Reenvios são limitados por hash do endereço: uma solicitação por minuto e até cinco por hora. Falhas de entrega removem o token e registram somente mensagem operacional genérica; a pessoa pode solicitar outro link em `/verify-email`, também acessível pelo login.
+
+O link tem token aleatório de 48 bytes no fragmento `#token=...`, expira em 24 horas e exige confirmação explícita na página. `PATCH /api/v1/email-verification` aceita `{ token }`, consome o link e os demais links da conta em transação. O banco guarda somente SHA-256, endereço e geração da verificação. Links expirados, consumidos ou vinculados a outra geração/endereço não funcionam. Não cria sessão nem aceite legal. Personificação não pode confirmar ou pedir envio em nome de terceiros.
+
+Login só informa pendência de confirmação após a senha correta. E-mail desconhecido e senha incorreta têm a mesma resposta e ambos executam bcrypt. Sessões de contas com confirmação pendente não liberam operações autenticadas. A confirmação comprova acesso à caixa postal, não humanidade; limites de login/IP e outras proteções contra abuso seguem pendentes.
+
+Cadastro por convite devolve a mesma mensagem `202` para endereço novo ou existente, sem dados pessoais da conta. Uma repetição não altera nome, senha, perfil ou participação da conta existente. O cadastro público continua fechado; a administração mantém informações explícitas de duplicidade por já ter acesso às contas.
+
+## Ambientes de envio
 
 | Ambiente        | Transporte                                                                                             | Configuração                                                                      |
 | --------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |

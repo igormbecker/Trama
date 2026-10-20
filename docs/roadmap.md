@@ -1,6 +1,6 @@
 # Roadmap do Trama
 
-Revisado em 19/10/2026. Este documento reúne decisões que devem continuar e **trabalho pendente**. As entregas estão resumidas no [README](../README.md); regras e operação ficam nas referências abaixo.
+Revisado em 20/10/2026. Este documento reúne decisões que devem continuar e **trabalho pendente**. As entregas estão resumidas no [README](../README.md); regras e operação ficam nas referências abaixo.
 
 As tarefas concluídas foram retiradas da lista. Implementação local não significa validação de produção. Este documento não autoriza implementar todos os itens nem publicar alterações. Confira o código e [AGENTS.md](../AGENTS.md) antes de retomar.
 
@@ -32,8 +32,14 @@ As migrations até `1792320000000_create-work-credits` foram aplicadas no desenv
 
 ## 2. Obras, estrutura e participantes
 
-- [ ] Definir transferência, arquivamento/exclusão de obras e efeitos sobre conteúdo, participações e créditos. Edição de título/descrição já existe.
-- [ ] Definir exclusão/arquivamento de partes e capítulos, preservando histórico e relações editoriais.
+Projetos podem ser obras literárias (`literary`) ou trabalhos em grupo (`group_assignment`), escolhidos na criação. Registros anteriores continuam literários. A lista Meus projetos tem filtros por tipo. Novos trabalhos recebem duas partes: Elementos textuais, com Introdução, Desenvolvimento e Conclusão; e Elementos pós-textuais, com Referências. As descrições orientam o preenchimento e o editor começa vazio. A estrutura é livre para editar, acrescentar, reordenar e excluir; trabalhos existentes não são modificados. Reutiliza rotas, tabelas, permissões, pedidos editoriais e exportações. Não há tipo científico próprio, ABNT, modelo obrigatório ou campos escolares; uma evolução científica exige definição própria. O tipo não é alterado pela edição de título/descrição.
+
+O responsável pode mover projetos, partes e capítulos/seções para a lixeira, com confirmação na interface. A lixeira fica em `/trash`, acessível na listagem e nos detalhes. O conteúdo permanece no banco com `deleted_at` até a restauração ou exclusão definitiva; não há expiração automática. Excluir para sempre exige digitar o título exato e só aceita itens já na lixeira. DELETE `/api/v1/trash` remove o item e seus descendentes, rascunhos salvos e históricos editoriais em uma transação com trava por obra. Remover um projeto também apaga participações, convites e créditos do projeto, preservando as contas das pessoas. Não há restauração pela interface após essa operação. Arquivos exportados, cópias locais nos navegadores, auditoria operacional e backups seguem suas políticas próprias e não são apagados por essa ação. Itens removidos e seus descendentes ficam indisponíveis na leitura, exportação, convites, pedidos e salvamento. Reservas de edição próprias e de contribuição são invalidadas; após restaurar é necessário obter outra reserva. Rascunhos locais seguem a política de recuperação existente. Restaurar um pai preserva a situação dos filhos excluídos separadamente: primeiro restaura-se projeto/parte, depois esses filhos. Partes e capítulos restaurados retornam ao final da lista, com posições ativas contínuas e reordenação disponível. Créditos salvos manualmente permanecem como estavam; sugestões do histórico ignoram itens na lixeira. Organizadores e administradores sem responsabilidade não gerenciam a lixeira. Participações e convites são preservados; ao restaurar, o acesso segue as permissões e a validade atuais.
+
+- [ ] Conferir os dois tipos no navegador e smartphone, incluindo filtros, seções, contribuições e exportação nos editores finais.
+
+- [ ] Definir transferência e eventual arquivamento de obras e efeitos sobre conteúdo, participações e créditos. Edição de título/descrição e exclusão recuperável já existem.
+- [ ] Definir eventual arquivamento de partes e capítulos, se houver necessidade além da lixeira recuperável.
 - [ ] Definir prazos de entrega e alteração dos prazos; só depois classificar participações como atrasadas.
 - [ ] Avaliar papéis/permissões adicionais se necessário. Organizadores ativos e atribuição por capítulo já existem; autoria não concede acesso.
 - [ ] Exercitar falhas reais de rede e sessão expirada na criação de obras, estrutura e envio de convites.
@@ -78,7 +84,10 @@ Antes do primeiro salvamento dos créditos, contribuições e revisão vêm pree
 
 - [ ] Validar entrega real pelo Resend e aparência Gmail/Outlook para recuperação e convites. Conferir restrições de destinatários em Preview e revisar o aviso de privacidade antes dos envios reais. [E-mails](email.md).
 - [ ] Implementar convite administrativo com definição inicial de senha pelo destinatário. Cadastro por convite de obra não substitui esse fluxo.
-- [ ] Definir confirmação de e-mail e verificação ao alterá-lo.
+      Confirmação de e-mail implementada para novas contas administrativas e por convite: link de uso único com 24 horas, hash SHA-256 no banco e reenvio limitado a uma vez por minuto e cinco por hora/endereço. Login exige confirmação após validar a senha; sessões também bloqueiam contas pendentes. Contas existentes ficam dispensadas, sem fabricar uma data de confirmação. Trocar o endereço exige nova confirmação, inclusive nas contas dispensadas, e invalida links antigos. Envio usa a infraestrutura existente com `waitUntil`; falhas exigem nova solicitação em `/verify-email`, sem fila durável. Validar Resend/Preview antes de afirmar entrega remota.
+
+Login mantém erro genérico e executa comparação de senha também para e-mail desconhecido. Cadastro por convite retorna o mesmo `202` e mensagem para endereço novo ou existente, sem devolver dados da conta. Validação administrativa de duplicidade continua explícita porque a administração já tem acesso à lista de contas. Isso não implementa rate limiting de login, proteção por IP, CAPTCHA ou defesa completa contra ataques distribuídos.
+
 - [ ] Revisar limites de tentativas de login, criação de conta e recuperação. A recuperação já limita pedidos por endereço.
 - [ ] Avaliar senha atual ou nova autenticação para mudanças sensíveis.
 - [ ] Definir invalidação de outras sessões após troca de senha pelos formulários. A recuperação já invalida sessões.
@@ -122,7 +131,7 @@ A identidade visual do site da Bectec é uma intenção separada. Não introduzi
 Planejamento combinado em 19/10/2026. O cadastro continua fechado; registrar estas tarefas não autoriza abrir o acesso nem executar testes de carga em produção. Priorizar confirmação de e-mail, proteção contra abuso e restauração verificada; depois concluir limites e fluxo de cadastro antes de uma abertura gradual.
 
 - [ ] Implementar proteção contra abuso no cadastro e login, com limites de tentativas por conta/endereço e IP, considerando redes compartilhadas e sem expor a existência de contas. Aproveitar a proteção existente da recuperação e avaliar proteção adicional conforme os sinais de abuso.
-- [ ] Implementar confirmação de e-mail com link temporário e uso único, reenvio limitado e verificação ao trocar o endereço. Definir quais operações ficam bloqueadas até a confirmação, incluindo o aceite de convites vinculados ao e-mail.
+- [ ] Validar confirmação obrigatória de e-mail em Preview/Production antes de abrir o cadastro. O fluxo já existe para novas contas e troca de endereço, com bloqueio de login e operações autenticadas até confirmar; eventual cadastro público deve reutilizá-lo.
 - [ ] Definir e aplicar no servidor limites de obras por conta, capítulos e conteúdo total, além de frequência e concorrência de exportações. O limite atual de 1 MiB por capítulo não limita o armazenamento total. Valores e mensagens ainda precisam ser definidos; não há decisão sobre planos pagos.
 - [ ] Integrar o cadastro público ao aceite explícito dos documentos pelo próprio usuário, reutilizando o controle existente de versão e data, com acesso aos textos e bloqueio das operações protegidas enquanto houver pendência. Não fabricar aceite nem tratar aceite dos Termos como consentimento genérico para qualquer uso de dados. Concluir a revisão jurídica indicada na seção 7.
 - [ ] Definir frequência e retenção dos backups, perda máxima de dados aceitável e prazo desejado de recuperação. Testar restauração em banco separado, verificando contas, obras, capítulos, comentários e seus vínculos, sem sobrescrever produção. A existência de um backup não comprova que a restauração funciona.

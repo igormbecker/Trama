@@ -2,8 +2,10 @@ import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import Link from "next/link";
 import styles from "./chapter.module.css";
+import { getProjectLabels } from "./projectLabels";
 
-export default function ExportWorkButtons({ workId, disabled }) {
+export default function ExportWorkButtons({ workId, disabled, projectType }) {
+  const labels = getProjectLabels(projectType);
   const [busy, setBusy, pendingRef] = useActionState("");
   const [error, setError] = useState("");
   async function download(format) {
@@ -21,8 +23,8 @@ export default function ExportWorkButtons({ workId, disabled }) {
           response.status === 401
             ? "Sua sessão expirou. Entre novamente para exportar."
             : response.status === 404
-              ? "Esta obra não está disponível para sua conta."
-              : "Não foi possível exportar a obra. Tente novamente.",
+              ? "Este projeto não está disponível para sua conta."
+              : "Não foi possível exportar o projeto. Tente novamente.",
         );
       url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
@@ -30,7 +32,7 @@ export default function ExportWorkButtons({ workId, disabled }) {
       link.download =
         response.headers
           .get("Content-Disposition")
-          ?.match(/filename="([^"]+)"/)?.[1] || `obra.${format}`;
+          ?.match(/filename="([^"]+)"/)?.[1] || `${labels.name}.${format}`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -48,7 +50,7 @@ export default function ExportWorkButtons({ workId, disabled }) {
     <>
       <div
         className={styles.actions}
-        aria-label="Exportar obra"
+        aria-label={`Exportar ${labels.name}`}
         aria-busy={Boolean(busy)}
       >
         {["docx", "pdf"].map((format) => (
@@ -81,7 +83,7 @@ export default function ExportWorkButtons({ workId, disabled }) {
       </div>
       <p>
         <Link href={`/works/${workId}#work-credits`}>
-          Conferir créditos da obra antes de exportar
+          Conferir créditos antes de exportar
         </Link>
       </p>
       {busy && (

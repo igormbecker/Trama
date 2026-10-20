@@ -13,6 +13,8 @@ import {
 import styles from "./works.module.css";
 import SuccessIcon from "components/shared/SuccessIcon";
 import ChapterEditorialStatus from "./ChapterEditorialStatus";
+import { getProjectLabels } from "./projectLabels";
+import MoveToTrashButton from "./MoveToTrashButton";
 
 function ActionIcon({ action }) {
   const paths = {
@@ -89,7 +91,13 @@ function StructureForm({ initialValues, isChapter, isBusy, onSave, onCancel }) {
   );
 }
 
-export default function StructurePanel({ workId, parts = [], canManage }) {
+export default function StructurePanel({
+  workId,
+  parts = [],
+  canManage,
+  projectType,
+}) {
+  const labels = getProjectLabels(projectType);
   const router = useRouter();
   const [form, setForm] = useState(null);
   const [isBusy, setIsBusy, pendingRef] = useActionState(false);
@@ -184,7 +192,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
       className={styles.structure}
       aria-busy={isBusy}
     >
-      <h2 id="structure-title">Partes e capítulos</h2>
+      <h2 id="structure-title">Partes e {labels.chapters}</h2>
       <LoadingMessage pending={isBusy}>Salvando estrutura…</LoadingMessage>
       {error && <p role="alert">{error}</p>}
       {message && <SuccessMessage>{message}</SuccessMessage>}
@@ -204,13 +212,15 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
           ref={formPanel}
           className={`${styles.panel} ${styles.structureForm}`}
           aria-label={
-            isChapterForm ? "Formulário de capítulo" : "Formulário de parte"
+            isChapterForm
+              ? `Formulário de ${labels.chapter}`
+              : "Formulário de parte"
           }
         >
           <h3>
             {isChapterForm && form.entry.id
               ? `Editar descrição — ${form.entry.title}`
-              : `${form.entry.id ? "Editar" : "Adicionar"} ${isChapterForm ? "capítulo" : "parte"}`}
+              : `${form.entry.id ? "Editar" : "Adicionar"} ${isChapterForm ? labels.chapter : "parte"}`}
           </h3>
           <StructureForm
             key={formPath}
@@ -226,9 +236,9 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
       )}
       {parts.length === 0 && (
         <p>
-          Esta obra ainda não tem partes.{" "}
+          {labels.thisProject} ainda não tem partes.{" "}
           {canManage
-            ? "Adicione uma parte para organizar os capítulos."
+            ? `Adicione uma parte para organizar ${projectType === "group_assignment" ? "as seções" : "os capítulos"}.`
             : "O responsável ainda está organizando a estrutura."}
         </p>
       )}
@@ -263,14 +273,28 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
                   type="button"
                   disabled={isBusy || Boolean(form)}
                   onClick={() => openForm({ partId: part.id, entry: {} })}
-                  aria-label={`Adicionar capítulo em ${part.title}`}
+                  aria-label={`Adicionar ${labels.chapter} em ${part.title}`}
                 >
-                  <ActionIcon action="add" /> Adicionar capítulo
+                  <ActionIcon action="add" /> Adicionar {labels.chapter}
                 </button>
                 {orderButtons(parts, partIndex, basePath)}
+                <MoveToTrashButton
+                  path={`${basePath}/${part.id}`}
+                  title={part.title}
+                  label="Excluir parte"
+                  description="A parte e todas as suas seções/capítulos sairão do projeto, incluindo o texto e os pedidos editoriais associados."
+                  disabled={isBusy || Boolean(form)}
+                />
               </div>
             )}
-            {part.chapters.length === 0 && <p>Nenhum capítulo nesta parte.</p>}
+            {part.chapters.length === 0 && (
+              <p>
+                {projectType === "group_assignment"
+                  ? "Nenhuma seção"
+                  : "Nenhum capítulo"}{" "}
+                nesta parte.
+              </p>
+            )}
             <ol className={styles.workList}>
               {part.chapters.map((chapter, chapterIndex) => (
                 <li key={chapter.id} className={styles.chapter}>
@@ -311,7 +335,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
                         data-button
                         href={`/works/${workId}/chapters/${chapter.id}?write=1`}
                       >
-                        <ActionIcon action="write" /> Escrever capítulo
+                        <ActionIcon action="write" /> Escrever {labels.chapter}
                       </Link>
                       <button
                         type="button"
@@ -328,6 +352,13 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
                         chapterIndex,
                         `${basePath}/${part.id}/chapters`,
                       )}
+                      <MoveToTrashButton
+                        path={`${basePath}/${part.id}/chapters/${chapter.id}`}
+                        title={chapter.title}
+                        label={`Excluir ${labels.chapter}`}
+                        description="Este item sairá da estrutura, da leitura e da exportação, junto com seus pedidos editoriais."
+                        disabled={isBusy || Boolean(form)}
+                      />
                     </div>
                   )}
                 </li>

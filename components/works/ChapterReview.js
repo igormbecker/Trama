@@ -11,6 +11,7 @@ import SuccessMessage from "components/shared/SuccessMessage";
 import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessIcon from "components/shared/SuccessIcon";
 import styles from "./chapter.module.css";
+import { getProjectLabels } from "./projectLabels";
 
 function subscribeViewport(onChange) {
   const viewport = window.matchMedia("(max-width: 800px)");
@@ -28,7 +29,9 @@ export default function ChapterReview({
   onAction,
   success,
   error,
+  projectType,
 }) {
+  const labels = getProjectLabels(projectType);
   const readerRef = useRef(null);
   const commentInputRef = useRef(null);
   const commentRefs = useRef({});
@@ -268,7 +271,7 @@ export default function ChapterReview({
   return (
     <section aria-label="Revisão por comentários">
       <p>
-        Versão do capítulo enviada para revisão (revisão{" "}
+        Versão de {labels.chapter} enviada para revisão (revisão{" "}
         {request.base_chapter_revision}). Os comentários permanecem vinculados a
         este texto, mesmo que o responsável o altere depois.
       </p>

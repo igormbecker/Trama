@@ -8,6 +8,7 @@ import styles from "./works.module.css";
 import useRecordAccess from "components/home/useRecordAccess";
 import WorkDetails from "./WorkDetails";
 import WorkCreditsPanel from "./WorkCreditsPanel";
+import { getProjectLabels } from "./projectLabels";
 
 export default function WorkPage({
   user,
@@ -18,13 +19,14 @@ export default function WorkPage({
   creditsData,
 }) {
   const router = useRouter();
+  const labels = getProjectLabels(work.type);
   useRecordAccess(user.id, work.id);
   return (
     <AppLayout
       backHref="/works"
-      backLabel="Voltar às obras"
+      backLabel="Voltar aos projetos"
       title={`${work.title} | Trama`}
-      description="Detalhes da sua obra no Trama."
+      description={`Detalhes de ${work.title} no Trama.`}
       user={user}
       activePage="works"
     >
@@ -32,14 +34,25 @@ export default function WorkPage({
         className={`${styles.workspace} ${styles.workPage}`}
         aria-labelledby="work-title"
       >
-        <Link href="/works">← Minhas obras</Link>
+        <Link href="/works">← Meus projetos</Link>
+        {work.owner_id === user.id && (
+          <p>
+            <Link href="/trash" prefetch={false}>
+              Abrir lixeira
+            </Link>
+          </p>
+        )}
         {router.query.created === "1" && (
-          <SuccessMessage>Obra criada com sucesso!</SuccessMessage>
+          <SuccessMessage>
+            {labels.title}{" "}
+            {work.type === "group_assignment" ? "criado" : "criada"} com
+            sucesso!
+          </SuccessMessage>
         )}
         <div className={styles.heading}>
           <p>
             {work.owner_id === user.id
-              ? "Obra privada · Você é o responsável"
+              ? `${labels.private} · Você é o responsável`
               : "Você participa como organizador"}
           </p>
           <h1 id="work-title">{work.title}</h1>
@@ -59,20 +72,26 @@ export default function WorkPage({
             >
               <path d="M12 5C8 2 3 3 2 4v16c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Zm0 0v16" />
             </svg>
-            Ler obra
+            Ler {labels.name}
           </Link>
         </div>
         <WorkDetails work={work} canManage={work.owner_id === user.id} />
         {work.owner_id === user.id && (
-          <WorkCreditsPanel workId={work.id} initialData={creditsData} />
+          <WorkCreditsPanel
+            workId={work.id}
+            projectType={work.type}
+            initialData={creditsData}
+          />
         )}
         <StructurePanel
+          projectType={work.type}
           workId={work.id}
           parts={parts}
           canManage={work.owner_id === user.id}
         />
         {work.owner_id === user.id && (
           <ParticipantsPanel
+            projectType={work.type}
             workId={work.id}
             participants={participants}
             invitations={invitations}

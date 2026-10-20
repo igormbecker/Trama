@@ -152,3 +152,12 @@ export class LegalAcceptanceRequiredError extends UnauthorizedError {
     this.action = "Review the documents at /legal/accept.";
   }
 }
+
+export class EmailVerificationRequiredError extends ForbiddenError {
+  constructor() {
+    super();
+    this.name = "EmailVerificationRequiredError";
+    this.message = "Email verification required.";
+    this.action = "Confirm your email at /verify-email.";
+  }
+}

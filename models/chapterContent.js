@@ -8,7 +8,7 @@ async function findChapter(workId, chapterId, executor = database) {
   work.validateId(chapterId);
   const result = await executor.query({
     text: `SELECT c.*, p.title AS part_title, p.position AS part_position
-    FROM chapters c JOIN work_parts p ON p.id = c.part_id WHERE c.id = $1 AND p.work_id = $2`,
+    FROM chapters c JOIN work_parts p ON p.id = c.part_id WHERE c.id = $1 AND p.work_id = $2 AND c.deleted_at IS NULL AND p.deleted_at IS NULL`,
     values: [chapterId, workId],
   });
   if (!result.rowCount)
@@ -57,6 +57,12 @@ async function mutate(workId, chapterId, userId, operation) {
   try {
     client = await database.getNewClient();
     await client.query("BEGIN");
+    const locked = await client.query({
+      text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL FOR UPDATE",
+      values: [workId, userId],
+    });
+    if (!locked.rowCount)
+      throw new NotFoundError({ message: "Work not found." });
     await findChapter(workId, chapterId, client);
     await client.query({
       text: "INSERT INTO chapter_drafts (chapter_id) VALUES ($1) ON CONFLICT DO NOTHING",

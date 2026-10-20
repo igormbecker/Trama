@@ -62,7 +62,8 @@ test("Shows an authenticated account form and moves the theme control into it", 
   });
   const worksHtml = await works.text();
   expect(worksHtml).toContain('href="/account"');
-  expect(worksHtml).not.toContain("<select");
+  expect(worksHtml).not.toContain('id="theme"');
+  expect(worksHtml).toContain('id="project-type"');
   const home = await fetch("http://127.0.0.1:3002/", {
     headers: { Cookie: cookie },
   });

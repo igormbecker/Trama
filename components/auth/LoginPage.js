@@ -37,6 +37,10 @@ export default function LoginPage() {
       setPassword("");
       await router.replace("/home");
     } catch (error) {
+      if (error.verificationRequired) {
+        await router.push("/verify-email");
+        return;
+      }
       setError(error.message);
     } finally {
       setIsSubmitting(false);
@@ -96,7 +100,8 @@ export default function LoginPage() {
           </p>
           {router.query.registration === "complete" ? (
             <SuccessMessage>
-              Conta criada! Entre com seu e-mail e senha.
+              Confira seu e-mail para continuar. Se já tem conta, entre ou
+              recupere sua senha.
             </SuccessMessage>
           ) : null}
           {router.query.recovery === "complete" ? (
@@ -151,6 +156,9 @@ export default function LoginPage() {
           </form>
           <p className={styles.backLink}>
             <Link href="/forgot-password">Esqueci minha senha</Link>
+          </p>
+          <p className={styles.backLink}>
+            <Link href="/verify-email">Confirmar e-mail ou reenviar link</Link>
           </p>
           <p className={styles.formDescription}>
             O acesso é restrito. Solicite sua conta ao administrador do Trama.

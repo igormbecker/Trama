@@ -4,8 +4,11 @@ import { useRouter } from "next/router";
 import { saveStructure } from "./structureClient";
 import styles from "./works.module.css";
 import SuccessIcon from "components/shared/SuccessIcon";
+import { getProjectLabels } from "./projectLabels";
+import MoveToTrashButton from "./MoveToTrashButton";
 
 export default function WorkDetails({ work, canManage }) {
+  const labels = getProjectLabels(work.type);
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(work.title);
@@ -50,17 +53,18 @@ export default function WorkDetails({ work, canManage }) {
     <section
       ref={panel}
       className={`${styles.panel} ${styles.structureForm}`}
-      aria-label="Dados da obra"
+      aria-label={`Dados de ${work.title}`}
     >
       {saved && (
         <p role="status" className={styles.savedNotice}>
           <SuccessIcon />
-          Obra salva com sucesso.
+          {labels.title} {work.type === "group_assignment" ? "salvo" : "salva"}{" "}
+          com sucesso.
         </p>
       )}
       {editing ? (
         <>
-          <h2>Editar obra</h2>
+          <h2>Editar {labels.name}</h2>
           <form onSubmit={save} aria-busy={busy}>
             <label>
               Título
@@ -109,32 +113,42 @@ export default function WorkDetails({ work, canManage }) {
         <>
           <h2>Descrição</h2>
           <p className={styles.description}>
-            {work.description || "Esta obra ainda não tem descrição."}
+            {work.description ||
+              `${labels.thisProject} ainda não tem descrição.`}
           </p>
           {canManage && (
-            <button
-              ref={editButton}
-              type="button"
-              onClick={() => {
-                setTitle(work.title);
-                setDescription(work.description);
-                setSaved(false);
-                setEditing(true);
-              }}
-            >
-              <svg
-                className={styles.actionIcon}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-                aria-hidden="true"
+            <div className={styles.actions}>
+              <button
+                ref={editButton}
+                type="button"
+                onClick={() => {
+                  setTitle(work.title);
+                  setDescription(work.description);
+                  setSaved(false);
+                  setEditing(true);
+                }}
               >
-                <path d="m15 4 5 5M4 20l5-1L21 7l-5-5L4 14v6Z" />
-              </svg>
-              Editar obra
-            </button>
+                <svg
+                  className={styles.actionIcon}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m15 4 5 5M4 20l5-1L21 7l-5-5L4 14v6Z" />
+                </svg>
+                Editar {labels.name}
+              </button>
+              <MoveToTrashButton
+                path={`/api/v1/works/${work.id}`}
+                title={work.title}
+                label={`Excluir ${labels.name}`}
+                description="O projeto inteiro sairá da sua lista e ficará indisponível para participantes. Partes, textos, convites e históricos serão preservados."
+                redirectTo="/works?trashed=1"
+              />
+            </div>
           )}
         </>
       )}

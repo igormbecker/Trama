@@ -2,6 +2,8 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import user from "models/user.js";
 import authentication from "models/authentication.js";
+import { waitUntil } from "@vercel/functions";
+import emailVerification from "models/emailVerification.js";
 
 const router = createRouter();
 router.use(async (request, response, next) => {
@@ -24,14 +26,13 @@ async function getHandler(request, response) {
     .json(user.toPublic(await user.findOneByUsername(request.query.username)));
 }
 async function patchHandler(request, response) {
-  return response.status(200).json(
-    user.toPublic(
-      await user.update(request.query.username, request.body, {
-        allowRoleChange: true,
-        requirePasswordConfirmation: true,
-      }),
-    ),
-  );
+  const updatedUser = await user.update(request.query.username, request.body, {
+    allowRoleChange: true,
+    requirePasswordConfirmation: true,
+  });
+  if (updatedUser.email_verification_required && !updatedUser.email_verified_at)
+    emailVerification.queue(updatedUser.email, waitUntil);
+  return response.status(200).json(user.toPublic(updatedUser));
 }
 async function deleteHandler(request, response) {
   await user.remove(request.query.username, request.administrator.id);

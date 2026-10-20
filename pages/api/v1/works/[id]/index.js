@@ -2,6 +2,7 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import authentication from "models/authentication.js";
 import work from "models/work.js";
+import projectTrash from "models/projectTrash.js";
 
 const router = createRouter();
 router.use(async (request, response, next) => {
@@ -10,6 +11,14 @@ router.use(async (request, response, next) => {
     request.cookies?.trama_session_id,
   );
   return next();
+});
+router.delete(async (request, response) => {
+  await projectTrash.move(
+    request.query.id,
+    request.authenticatedUser.id,
+    "work",
+  );
+  return response.status(204).end();
 });
 router.get(async (request, response) => {
   return response

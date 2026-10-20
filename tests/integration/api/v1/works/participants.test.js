@@ -113,11 +113,21 @@ test("An invitation can create its matching account without granting participati
     password_confirmation: "strong-password-123",
   };
   const registration = await request(path, null, "POST", input);
-  expect(registration.status).toBe(201);
-  const created = await registration.json();
-  expect(created.email).toBe(invitedEmail);
-  expect(created).not.toHaveProperty("password");
-  expect((await request(path, null, "POST", input)).status).toBe(400);
+  expect(registration.status).toBe(202);
+  const publicResult = await registration.json();
+  expect(publicResult).not.toHaveProperty("email");
+  expect(publicResult).not.toHaveProperty("id");
+  const repeated = await request(path, null, "POST", input);
+  expect(repeated.status).toBe(202);
+  expect(await repeated.json()).toEqual(publicResult);
+  const accounts = await database.query({
+    text: "SELECT * FROM users WHERE LOWER(email) = $1",
+    values: [invitedEmail],
+  });
+  expect(accounts.rowCount).toBe(1);
+  const created = accounts.rows[0];
+  expect(created.email_verification_required).toBe(true);
+  expect(created.email_verified_at).toBeNull();
   const participation = await database.query({
     text: "SELECT id FROM work_participants WHERE work_id = $1 AND user_id = $2",
     values: [work.id, created.id],

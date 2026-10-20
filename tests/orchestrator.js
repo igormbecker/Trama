@@ -45,6 +45,14 @@ async function createUser(userObject) {
     email: userObject.email || faker.internet.email(),
     password: userObject.password || "validpassword",
   });
+  // Fixtures bypass verification unless a test explicitly exercises it.
+  if (!userObject.skipEmailVerification) {
+    await database.query({
+      text: "UPDATE users SET email_verified_at = timezone('utc', now()) WHERE id = $1",
+      values: [createdUser.id],
+    });
+    createdUser.email_verified_at = new Date();
+  }
   // Test fixtures are accepted by default; production account creation never fabricates acceptance.
   if (!userObject.skipLegalAcceptance)
     await legalAcceptance.accept(createdUser, {

@@ -1,6 +1,7 @@
 import useActionState from "components/shared/useActionState";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
 import { useTheme } from "components/theme/ThemeProvider";
 import { useAuth } from "components/auth/AuthProvider";
@@ -8,6 +9,7 @@ import { saveAccount } from "./accountClient";
 import styles from "components/users/users.module.css";
 
 export default function AccountPage({ user }) {
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState(user);
   const [values, setValues] = useState({
     name: user.name,
@@ -36,6 +38,10 @@ export default function AccountPage({ user }) {
     setNotice("");
     try {
       const savedUser = await saveAccount(values);
+      if (savedUser.email.toLowerCase() !== currentUser.email.toLowerCase()) {
+        await router.push("/verify-email");
+        return;
+      }
       setCurrentUser(savedUser);
       setValues({
         name: savedUser.name,
@@ -115,6 +121,10 @@ export default function AccountPage({ user }) {
               </div>
               <div className={styles.field}>
                 <label htmlFor="account-email">E-mail</label>
+                <small>
+                  Ao trocar o endereço, confirme o novo e-mail para continuar
+                  usando a conta.
+                </small>
                 <input
                   id="account-email"
                   name="email"

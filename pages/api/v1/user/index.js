@@ -3,6 +3,8 @@ import controller from "infra/controller.js";
 import authentication from "models/authentication.js";
 import { ForbiddenError } from "infra/errors.js";
 import user from "models/user.js";
+import { waitUntil } from "@vercel/functions";
+import emailVerification from "models/emailVerification.js";
 
 const router = createRouter();
 
@@ -38,5 +40,7 @@ async function patchHandler(request, response) {
   );
   if (currentUser.impersonation) throw new ForbiddenError();
   const updatedUser = await user.updateOwnAccount(currentUser, request.body);
+  if (updatedUser.email_verification_required && !updatedUser.email_verified_at)
+    emailVerification.queue(updatedUser.email, waitUntil);
   return response.status(200).json(user.toPublic(updatedUser));
 }
