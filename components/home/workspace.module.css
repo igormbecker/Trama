@@ -33,6 +33,7 @@
   color: var(--muted);
 }
 .resume {
+  box-shadow: var(--panel-shadow);
   padding: 32px;
   background: var(--preview-paper);
   border: 1px solid var(--line);

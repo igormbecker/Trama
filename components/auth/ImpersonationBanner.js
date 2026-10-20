@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import useSWR from "swr";
 import styles from "./impersonation.module.css";
@@ -19,10 +20,10 @@ export default function ImpersonationBanner() {
     loadStatus,
     { refreshInterval: 15000, shouldRetryOnError: false },
   );
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   async function stop() {
-    if (busy) return;
+    if (pendingRef.current) return;
     setBusy(true);
     setError("");
     try {
@@ -55,7 +56,7 @@ export default function ImpersonationBanner() {
           ? "Encerre para voltar à administração."
           : "Limite de 15 minutos. A sessão é compartilhada entre as abas deste navegador."}
       </p>
-      <button type="button" onClick={stop} disabled={busy}>
+      <button type="button" onClick={stop} disabled={busy} aria-busy={busy}>
         {busy ? "Retornando…" : "Encerrar personificação"}
       </button>
       {error || statusError ? (

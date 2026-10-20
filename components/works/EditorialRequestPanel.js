@@ -1,3 +1,5 @@
+import useActionState from "components/shared/useActionState";
+import LoadingMessage from "components/shared/LoadingMessage";
 import { useState } from "react";
 import Link from "next/link";
 import ChapterEditor from "./ChapterEditor";
@@ -43,7 +45,7 @@ export default function EditorialRequestPanel({
   const [instructions, setInstructions] = useState("");
   const [message, setMessage] = useState("");
   const [token, setToken] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [unsaved, setUnsaved] = useState(false);
@@ -56,7 +58,7 @@ export default function EditorialRequestPanel({
   const active = current && ["writing", "waiting"].includes(current.status);
   const assigned = current?.assignee_user_id === user.id && !isOwner;
   async function reviewAction(input) {
-    if (busy) return false;
+    if (pendingRef.current) return false;
     setBusy(true);
     setError("");
     setSuccess("");
@@ -69,7 +71,7 @@ export default function EditorialRequestPanel({
           ),
         );
       else await refresh();
-      if (historyDetails?.request?.id === input.request_id)
+      if (input.request_id && historyDetails?.request?.id === input.request_id)
         setHistoryDetails(
           await chapterRequest(
             `${path}?requestId=${encodeURIComponent(input.request_id)}`,
@@ -78,7 +80,9 @@ export default function EditorialRequestPanel({
       setSuccess(
         input.action === "conclude_review"
           ? "Parecer enviado ao responsável."
-          : "Comentários atualizados.",
+          : input.action === "comment"
+            ? "Comentário salvo com sucesso."
+            : "Comentários atualizados.",
       );
       return true;
     } catch (failure) {
@@ -95,7 +99,7 @@ export default function EditorialRequestPanel({
     return updated;
   }
   async function perform(operation, successText) {
-    if (busy) return;
+    if (pendingRef.current) return;
     setBusy(true);
     setError("");
     setSuccess("");
@@ -123,6 +127,7 @@ export default function EditorialRequestPanel({
     }, "Pedido editorial criado.");
   }
   async function start() {
+    if (pendingRef.current) return;
     setBusy(true);
     setError("");
     let lease;
@@ -175,6 +180,7 @@ export default function EditorialRequestPanel({
     }, "Ajustes solicitados.");
   }
   async function approve(confirmConflict = false) {
+    if (pendingRef.current) return;
     setBusy(true);
     setError("");
     try {
@@ -216,6 +222,8 @@ export default function EditorialRequestPanel({
     );
   }
   async function viewHistory(id) {
+    if (pendingRef.current) return;
+    setBusy(true);
     setError("");
     try {
       setHistoryDetails(
@@ -223,6 +231,8 @@ export default function EditorialRequestPanel({
       );
     } catch (failure) {
       setError(failure.message);
+    } finally {
+      setBusy(false);
     }
   }
   if (!isOwner && !current) return children || null;
@@ -242,6 +252,9 @@ export default function EditorialRequestPanel({
             ? `${kindLabels[current.kind]}${assigneeName ? ` · ${assigneeName}` : ""} · ${requestStatus(current)}`
             : "Solicitar contribuição ou revisão"}
         </summary>
+        <LoadingMessage pending={busy}>
+          Atualizando pedido editorial…
+        </LoadingMessage>
         {assigned && active && (
           <p>
             Você tem um pedido de {kindLabels[current.kind].toLowerCase()} neste
@@ -388,6 +401,7 @@ export default function EditorialRequestPanel({
                       className={styles.correctionButton}
                       type="submit"
                       disabled={busy}
+                      aria-busy={busy}
                     >
                       Pedir ajustes
                     </button>
@@ -507,7 +521,7 @@ export default function EditorialRequestPanel({
               onChange={(event) => setInstructions(event.target.value)}
               disabled={busy}
             />
-            <button type="submit" disabled={busy}>
+            <button type="submit" disabled={busy} aria-busy={busy}>
               Criar pedido
             </button>
           </form>

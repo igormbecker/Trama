@@ -82,3 +82,24 @@ test("Keeps action feedback at the end of the review after completion", () => {
   );
   expect(html).toContain('role="status"');
 });
+
+test("Shows comment save confirmation in the panel header before filters and comments", () => {
+  const html = renderToStaticMarkup(
+    <ChapterReview
+      request={{
+        id: "review",
+        review_document: document,
+        review_comments: [comment],
+      }}
+      editable
+      success="Comentário salvo com sucesso."
+    />,
+  );
+  expect(html.indexOf("Comentário salvo com sucesso.")).toBeLessThan(
+    html.indexOf(">Exibir</label>"),
+  );
+  expect(html.indexOf("Comentário salvo com sucesso.")).toBeLessThan(
+    html.indexOf("Explique o cenário."),
+  );
+  expect(html).toContain('role="status"');
+});

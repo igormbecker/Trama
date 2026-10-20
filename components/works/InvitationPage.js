@@ -1,3 +1,5 @@
+import useActionState from "components/shared/useActionState";
+import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -13,11 +15,11 @@ import { formatInvitationDate } from "./invitationDate";
 export default function InvitationPage({ user, invitation }) {
   const router = useRouter();
   const { mutate: refreshInvitations } = useInvitations(user?.id);
-  const [isBusy, setIsBusy] = useState(false);
+  const [isBusy, setIsBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [declined, setDeclined] = useState(false);
   async function respond(action) {
-    if (isBusy) return;
+    if (pendingRef.current) return;
     setIsBusy(true);
     setError("");
     try {
@@ -79,6 +81,9 @@ export default function InvitationPage({ user, invitation }) {
             </p>
             <p>Válido até {formatInvitationDate(invitation.expires_at)}.</p>
             {error && <p role="alert">{error}</p>}
+            <LoadingMessage pending={isBusy}>
+              Respondendo convite…
+            </LoadingMessage>
             <div className={styles.actions} aria-busy={isBusy}>
               <button
                 type="button"

@@ -1,12 +1,13 @@
+import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import Link from "next/link";
 import styles from "./chapter.module.css";
 
 export default function ExportWorkButtons({ workId, disabled }) {
-  const [busy, setBusy] = useState("");
+  const [busy, setBusy, pendingRef] = useActionState("");
   const [error, setError] = useState("");
   async function download(format) {
-    if (busy) return;
+    if (pendingRef.current) return;
     setBusy(format);
     setError("");
     let url;
@@ -55,6 +56,7 @@ export default function ExportWorkButtons({ workId, disabled }) {
             key={format}
             type="button"
             disabled={disabled || Boolean(busy)}
+            aria-busy={busy === format}
             onClick={() => download(format)}
           >
             <svg

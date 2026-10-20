@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -7,12 +8,12 @@ import { getWorkCoverColor } from "./workCover";
 
 export default function WorksPage({ user, works }) {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (isSubmitting) return;
+    if (pendingRef.current) return;
     const form = new FormData(event.currentTarget);
     setIsSubmitting(true);
     setError("");
@@ -80,7 +81,11 @@ export default function WorksPage({ user, works }) {
               disabled={isSubmitting}
             />
             {error && <p role="alert">{error}</p>}
-            <button type="submit" disabled={isSubmitting}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
               {isSubmitting ? "Criando…" : "Criar obra"}
             </button>
           </form>

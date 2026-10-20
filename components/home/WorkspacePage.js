@@ -144,6 +144,7 @@ export default function WorkspacePage({
               <div className={styles.actions}>
                 <Link
                   className={styles.primary}
+                  data-button
                   href={`/works/${chapter.work.id}/chapters/${chapter.id}${chapter.work.owner_id === user.id ? "?write=1" : ""}`}
                 >
                   {chapter.work.owner_id === user.id
@@ -162,6 +163,7 @@ export default function WorkspacePage({
               </p>
               <Link
                 className={styles.primary}
+                data-button
                 href={works.length ? "/works" : "/works#create-work-title"}
               >
                 {works.length

@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { saveStructure } from "./structureClient";
@@ -20,12 +21,12 @@ export default function WorkCreditsPanel({ workId, initialData }) {
       ]),
     ),
   );
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   async function save(event) {
     event.preventDefault();
-    if (busy) return;
+    if (pendingRef.current) return;
     setBusy(true);
     setSaved(false);
     setError("");
@@ -116,7 +117,7 @@ export default function WorkCreditsPanel({ workId, initialData }) {
             )}
           </div>
         ))}
-        <button type="submit" disabled={busy}>
+        <button type="submit" disabled={busy} aria-busy={busy}>
           {busy ? "Salvando…" : "Salvar créditos"}
         </button>
         {error && <p role="alert">{error}</p>}

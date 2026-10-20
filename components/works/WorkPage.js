@@ -45,6 +45,7 @@ export default function WorkPage({
           <h1 id="work-title">{work.title}</h1>
           <Link
             className={styles.readWorkButton}
+            data-button
             href={`/works/${work.id}/read`}
           >
             <svg

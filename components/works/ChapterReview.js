@@ -8,6 +8,7 @@ import {
 } from "react";
 import ChapterReader from "./ChapterReader";
 import SuccessMessage from "components/shared/SuccessMessage";
+import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessIcon from "components/shared/SuccessIcon";
 import styles from "./chapter.module.css";
 
@@ -132,9 +133,12 @@ export default function ChapterReview({
     <>
       <header className={styles.reviewCommentsHeader}>
         <h4 id={`${panelId}-title`}>Comentários</h4>
+        <LoadingMessage pending={busy}>Atualizando revisão…</LoadingMessage>
         <p aria-live="polite">
           {pendingCount} pendentes · {comments.length - pendingCount} resolvidos
         </p>
+        {error && <p role="alert">{error}</p>}
+        {success && <SuccessMessage>{success}</SuccessMessage>}
         {isMobile && (
           <div className={styles.editorialActions}>
             <button type="button" onClick={() => setExpanded(!expanded)}>
@@ -173,7 +177,7 @@ export default function ChapterReview({
               maxLength={5000}
               disabled={busy}
             />
-            <button type="submit" disabled={busy}>
+            <button type="submit" disabled={busy} aria-busy={busy}>
               Salvar comentário
             </button>
           </form>
@@ -258,8 +262,6 @@ export default function ChapterReview({
             )}
           </div>
         ))}
-        {error && <p role="alert">{error}</p>}
-        {success && <SuccessMessage>{success}</SuccessMessage>}
       </div>
     </>
   );

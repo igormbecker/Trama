@@ -76,6 +76,7 @@ export default function AppLayout({
       {backHref && (
         <Link
           className={styles.floatingBack}
+          data-button
           href={backHref}
           aria-label={backLabel}
           title={backLabel}
@@ -114,6 +115,7 @@ export default function AppLayout({
         {menuOpen && (
           <button
             className={styles.menuBackdrop}
+            data-button-effect="none"
             type="button"
             aria-label="Fechar menu"
             onClick={closeMenu}

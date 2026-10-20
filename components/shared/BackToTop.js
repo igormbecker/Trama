@@ -16,6 +16,7 @@ export default function BackToTop() {
   return (
     <a
       className={styles.backToTop}
+      data-button
       href="#page-top"
       hidden={!visible}
       aria-label="Voltar ao topo"

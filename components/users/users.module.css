@@ -43,8 +43,8 @@
   color: var(--ink);
 }
 .dangerButton {
-  background: var(--error-text);
-  color: var(--paper);
+  background: var(--danger-button-bg);
+  color: var(--danger-button-text);
 }
 .workspace button:disabled {
   opacity: 0.5;
@@ -54,6 +54,7 @@
   filter: brightness(0.93);
 }
 .formPanel {
+  box-shadow: var(--panel-shadow);
   background: var(--preview-paper);
   border: 1px solid var(--line);
   padding: 26px;
@@ -129,6 +130,7 @@
   margin-bottom: 18px;
 }
 .tableContainer {
+  box-shadow: var(--panel-shadow);
   border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
@@ -222,6 +224,7 @@
   padding: 36px 20px;
 }
 .dialog {
+  box-shadow: var(--panel-shadow);
   color: var(--ink);
   background: var(--preview-paper);
   border: 1px solid var(--line);

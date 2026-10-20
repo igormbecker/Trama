@@ -6,6 +6,11 @@
 .site {
   --error-background: #f0d7d2;
   --error-text: #752e2e;
+  --danger-button-bg: #752e2e;
+  --danger-button-text: #fff;
+  --panel-shadow:
+    4px -4px 14px -6px rgb(0 0 0 / 0.16),
+    14px -14px 36px -16px rgb(0 0 0 / 0.24);
   --ink: #30313a;
   --accent: #373a86;
   --muted: #5e5c61;
@@ -65,9 +70,15 @@
 .site select {
   font: inherit;
 }
+.site summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 500;
+}
 .site a:focus-visible,
 .site button:focus-visible,
-.site select:focus-visible {
+.site select:focus-visible,
+.site summary:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 5px;
 }

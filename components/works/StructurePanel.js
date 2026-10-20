@@ -1,3 +1,5 @@
+import useActionState from "components/shared/useActionState";
+import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -71,7 +73,7 @@ function StructureForm({ initialValues, isChapter, isBusy, onSave, onCancel }) {
         </label>
       )}
       <div className={styles.actions}>
-        <button type="submit" disabled={isBusy}>
+        <button type="submit" disabled={isBusy} aria-busy={isBusy}>
           {isBusy ? "Salvando…" : "Salvar"}
         </button>
         <button
@@ -90,7 +92,7 @@ function StructureForm({ initialValues, isChapter, isBusy, onSave, onCancel }) {
 export default function StructurePanel({ workId, parts = [], canManage }) {
   const router = useRouter();
   const [form, setForm] = useState(null);
-  const [isBusy, setIsBusy] = useState(false);
+  const [isBusy, setIsBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [savedEntry, setSavedEntry] = useState(null);
@@ -124,7 +126,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
     setForm(null);
   }
   async function perform(path, method, input, closeForm = false) {
-    if (isBusy) return;
+    if (pendingRef.current) return;
     setIsBusy(true);
     setError("");
     setMessage("");
@@ -183,6 +185,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
       aria-busy={isBusy}
     >
       <h2 id="structure-title">Partes e capítulos</h2>
+      <LoadingMessage pending={isBusy}>Salvando estrutura…</LoadingMessage>
       {error && <p role="alert">{error}</p>}
       {message && <SuccessMessage>{message}</SuccessMessage>}
       {canManage && (
@@ -305,6 +308,7 @@ export default function StructurePanel({ workId, parts = [], canManage }) {
                     <div className={styles.actions}>
                       <Link
                         className={styles.writeButton}
+                        data-button
                         href={`/works/${workId}/chapters/${chapter.id}?write=1`}
                       >
                         <ActionIcon action="write" /> Escrever capítulo

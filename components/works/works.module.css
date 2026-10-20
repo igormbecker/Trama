@@ -74,6 +74,11 @@
   font-size: 24px;
   margin-bottom: 16px;
 }
+.panel,
+.emptyState,
+.participationCard {
+  box-shadow: var(--panel-shadow);
+}
 .panel p {
   color: var(--muted);
   line-height: 1.6;
@@ -310,8 +315,8 @@
   background: var(--surface);
 }
 .panel .dangerButton {
-  background: var(--error-text);
-  color: var(--paper);
+  background: var(--danger-button-bg);
+  color: var(--danger-button-text);
 }
 .structure > h2 {
   font-size: 28px;
@@ -372,8 +377,25 @@
 .workPage .readWorkButton {
   min-height: 44px;
   padding: 8px 12px;
+  border: 1px solid var(--line);
+  background: var(--preview-paper);
+  color: var(--ink);
   font-size: 14px;
   line-height: 1.4;
+}
+.workPage .panel button[type="submit"],
+.workPage .writeButton {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper);
+}
+.workPage .panel button.dangerButton {
+  background: var(--danger-button-bg);
+  border-color: var(--danger-button-bg);
+  color: var(--danger-button-text);
+}
+.workPage .panel button:disabled {
+  cursor: default;
 }
 .workPage .actionIcon {
   width: 16px;

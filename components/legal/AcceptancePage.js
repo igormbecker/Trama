@@ -1,3 +1,4 @@
+import useActionState from "components/shared/useActionState";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -8,11 +9,11 @@ export default function AcceptancePage({ user, legalStatus, impersonating }) {
   const router = useRouter();
   const [accepted, setAccepted] = useState(false);
   const [refused, setRefused] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy, pendingRef] = useActionState(false);
   const [error, setError] = useState("");
   async function submit(event) {
     event.preventDefault();
-    if (!accepted || busy || impersonating) return;
+    if (!accepted || pendingRef.current || impersonating) return;
     setBusy(true);
     setError("");
     try {
