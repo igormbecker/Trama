@@ -59,7 +59,7 @@
   .menuControl {
     display: block;
     position: sticky;
-    top: 12px;
+    top: calc(var(--impersonation-banner-height, 0px) + 12px);
     grid-column: 1 / -1;
     grid-row: 1;
     align-self: start;
@@ -72,11 +72,11 @@
   }
   .sidebarClip {
     position: sticky;
-    top: 12px;
+    top: calc(var(--impersonation-banner-height, 0px) + 12px);
     grid-column: 1;
     grid-row: 1;
     align-self: start;
-    max-height: calc(100dvh - 24px);
+    max-height: calc(100dvh - var(--impersonation-banner-height, 0px) - 24px);
     overflow-y: auto;
     overscroll-behavior: contain;
     background: var(--paper);
@@ -168,7 +168,10 @@
 @media (max-width: 800px) {
   .frame .menuToggle {
     position: fixed;
-    top: max(12px, env(safe-area-inset-top));
+    top: calc(
+      var(--impersonation-banner-height, 0px) +
+        max(12px, env(safe-area-inset-top))
+    );
     left: max(12px, env(safe-area-inset-left));
     transform: none;
     z-index: 32;
@@ -180,7 +183,10 @@
   }
   .floatingBack {
     position: fixed;
-    top: max(12px, env(safe-area-inset-top));
+    top: calc(
+      var(--impersonation-banner-height, 0px) +
+        max(12px, env(safe-area-inset-top))
+    );
     left: max(68px, calc(env(safe-area-inset-left) + 56px));
     z-index: 29;
     display: flex;
@@ -197,7 +203,7 @@
   .menuBackdrop {
     display: block;
     position: fixed;
-    inset: 0;
+    inset: var(--impersonation-banner-height, 0px) 0 0;
     z-index: 30;
     border: 0;
     background: #0006;
@@ -208,7 +214,7 @@
   }
   .sidebarClip {
     position: fixed;
-    inset: 0 auto 0 0;
+    inset: var(--impersonation-banner-height, 0px) auto 0 0;
     width: min(290px, 85vw);
     z-index: 31;
     overflow-y: auto;
