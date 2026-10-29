@@ -1,23 +1,24 @@
 # Trama
 
-Aplicação de escrita e colaboração editorial para organizar obras privadas, capítulos, contribuições e revisões. Desenvolvida pela **Bectec — Tecnologia e Desenvolvimento de Software**.
+Aplicação de escrita e colaboração editorial para organizar obras literárias e trabalhos em grupo privados, capítulos, seções, contribuições e revisões. Desenvolvida pela **Bectec — Tecnologia e Desenvolvimento de Software**.
 
 ## Funcionalidades
 
-- **Obras:** criação, título e descrição editáveis, partes e capítulos ordenáveis, capas ilustrativas e leitura contínua com sumário.
-- **Escrita:** editor de texto rico com salvamento automático/manual, recuperação local de rascunhos, reserva por aba e proteção contra sobrescritas concorrentes.
+- **Projetos:** obras literárias e trabalhos em grupo, com filtros por tipo, título e descrição editáveis, partes e capítulos/seções ordenáveis, capas ilustrativas e leitura contínua com sumário. Novos trabalhos recebem uma estrutura inicial editável com Introdução, Desenvolvimento, Conclusão e Referências, sem modelo acadêmico obrigatório.
+- **Escrita:** editor de texto rico com salvamento automático/manual, recuperação local de rascunhos, reserva por aba e proteção contra sobrescritas concorrentes. No computador, a barra fica no início do campo; no celular, acompanha a rolagem no topo do editor, abaixo da navegação, com ações adicionais em “Mais” e preservação da seleção ao tocar nos botões.
+- **Lixeira:** exclusão recuperável de projetos, partes e capítulos/seções pelo responsável, com restauração. A exclusão definitiva exige confirmação pelo título exato e remove o item e suas dependências.
 - **Participantes:** convites de organizadores por e-mail, cadastro restrito pelo convite, aceite/recusa em Meus convites e revogação de acesso.
 - **Contribuições:** cópia editável do capítulo, entrega, ajustes e incorporação pelo responsável, preservando o texto anterior para consulta e restauração.
-- **Revisões:** leitura de versão fixa, comentários em trechos selecionados e parecer Aprovado ou Correções solicitadas, sem modificar o capítulo.
+- **Revisões:** leitura de versão fixa, comentários em trechos selecionados e parecer Aprovado ou Correções solicitadas, sem modificar o capítulo. O responsável pode resolver e reabrir comentários, preservando o histórico; o painel fica na lateral no computador e pode ser expandido no celular.
 - **Minhas participações:** pedidos atribuídos à conta, separados em andamento e concluídos, com status e contador de ações pendentes atualizado automaticamente.
 - **Exportação:** PDF e DOCX com capa, créditos confirmados, descrição da obra e sumário. O responsável informa a autoria; o histórico apenas sugere colaboradores e revisores.
-- **Conta e administração:** login/logout, recuperação de senha, edição da própria conta, gestão administrativa de usuários e personificação temporária de contas comuns para suporte, com auditoria.
+- **Conta e administração:** login/logout, confirmação de e-mail, recuperação de senha, edição da própria conta, gestão administrativa de usuários e personificação temporária de contas comuns para suporte, com auditoria.
 - **Documentos legais:** Termos de Uso, Aviso de Privacidade e aceite explícito por versão.
 - **Interface:** temas claro/escuro, navegação móvel, menu lateral recolhível, atalhos de retorno e botão para voltar ao topo.
 
-O responsável gerencia a obra, escreve e aprova contribuições. Organizadores ativos consultam; só trabalham em contribuição ou revisão quando recebem um pedido. Papéis de acesso não atribuem autoria. A exportação é exclusiva do responsável.
+O responsável gerencia o projeto, escreve e aprova contribuições. Organizadores ativos consultam; só trabalham em contribuição ou revisão quando recebem um pedido. Papéis de acesso não atribuem autoria. A exportação é exclusiva do responsável.
 
-O cadastro público está fechado. Contas são criadas por administrador ou convite válido de obra. Sessões expiram em 24 horas, sem renovação automática. Rascunhos e histórico locais não sincronizam entre dispositivos.
+O cadastro público está fechado. Contas são criadas por administrador ou convite válido de projeto. Novas contas precisam confirmar o e-mail antes do login; contas anteriores à implantação dessa exigência ficam dispensadas. Trocar o e-mail exige confirmar o novo endereço. Sessões expiram em 24 horas, sem renovação automática. Rascunhos e histórico locais não sincronizam entre dispositivos.
 
 ## Tecnologias e organização
 
@@ -95,7 +96,7 @@ Confirme o banco antes de aplicar migrations. Não reverta migrations automatica
 
 Na Vercel, [vercel.json](vercel.json) define `npm run migrations:deploy && npm run build`. O runner exige `DATABASE_URL_UNPOOLED` direta e usa TLS, trava e transação. Falhas de migration interrompem o build; falha posterior de compilação não desfaz migrations concluídas. [Procedimento de deploy](docs/deployment-migrations.md).
 
-Envio real de e-mails, ambientes remotos e aparência do DOCX em Word/LibreOffice ainda exigem as validações do roadmap. Implementação local não significa deploy ou validação de produção.
+Envio real de e-mails, ambientes remotos, comportamento da barra de formatação com teclado e seleção no smartphone físico (especialmente Safari no iPhone) e aparência do DOCX em Word/LibreOffice ainda exigem as validações do roadmap. Implementação local não significa deploy ou validação de produção.
 
 ## Documentação
 

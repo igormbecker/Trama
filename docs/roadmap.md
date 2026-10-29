@@ -1,11 +1,12 @@
 # Roadmap do Trama
 
-Revisado em 20/10/2026. Este documento reúne decisões que devem continuar e **trabalho pendente**. As entregas estão resumidas no [README](../README.md); regras e operação ficam nas referências abaixo.
+Revisado em 29/10/2026. Este documento reúne decisões que devem continuar e **trabalho pendente**. As entregas estão resumidas no [README](../README.md); regras e operação ficam nas referências abaixo.
 
 As tarefas concluídas foram retiradas da lista. Implementação local não significa validação de produção. Este documento não autoriza implementar todos os itens nem publicar alterações. Confira o código e [AGENTS.md](../AGENTS.md) antes de retomar.
 
 ## Decisões e referências
 
+- Manter os roadmaps também no AI-Memory do projeto, atualizando a memória quando houver mudanças de planejamento. Cópia de referência em `planning/roadmap.md`, no workspace `default`, projeto `igormbecker-trama`. Consultar este arquivo e conferir o código antes de retomar.
 - Preservar JavaScript, Pages Router, controllers de API, models e infraestrutura PostgreSQL com consultas parametrizadas. Não migrar arquitetura por iniciativa própria.
 - Interface em português brasileiro; arquivos e identificadores em inglês. Preservar Inter, temas de papel/carvão quente, marca Trama e créditos Bectec.
 - Responsável gerencia e escreve livremente. Organizador ativo consulta; contribuição/revisão exige atribuição por capítulo. Revisão comenta uma versão fixa e emite parecer, sem alterar o capítulo. [Regras editoriais](editorial-rules.md).
@@ -24,6 +25,7 @@ Existem configuração de migrations antes do build da Vercel e workflows de tes
 - [ ] Confirmar preparação inicial do banco e criação explícita do primeiro administrador por ambiente, sem promoção por nome ou e-mail.
 - [ ] Validar workflows remotos e definir gates de entrega, incluindo build; não presumir proteção de branch ou deploy automático pela `main`.
 - [ ] Definir backups/retenção e testar restauração.
+- [ ] Planejar migração coordenada do Neon e das funções Vercel para São Paulo, preparando o banco antes da virada da aplicação. Conferir região do deploy ativo, versões PostgreSQL, conexões e variáveis de produção/preview; criar novo projeto Neon em `sa-east-1`, preservando os ambientes independentes. Fazer backup privado com `pg_dump`, restauração de ensaio e conferência de registros, relacionamentos e textos; preservar os segredos necessários às contas sem registrá-los no Git. Validar em Preview com funções em `gru1`: login, projetos, capítulos, salvamento, revisão, exportação e migrations antes do build. Na virada de produção, impedir gravações inclusive por APIs/deploys antigos, fazer cópia final, conferir dados, atualizar conexões da aplicação e `DATABASE_URL_UNPOOLED`, selecionar `gru1` e realizar novo deploy. Validar antes de liberar gravações e comparar latência antes/depois. Manter origem e backups até concluir a validação; rollback após novas gravações exige preservar/reconciliar esses dados, nunca simplesmente voltar ao banco antigo. Este item registra planejamento, não execução nem autorização para migrar/publicar.
 - [ ] Revisar logs e erros sem registrar credenciais, tokens ou conteúdo sensível.
 
 Continuidade: em 17/10/2026 foram configurados projeto Vercel `trama`, Neon `trama` (US East 2), branches independentes `production`/`preview` e variáveis por ambiente. Ambas receberam cópias iniciais de `trama_dev`, sem sessões ou reservas ativas; alterações posteriores são independentes. Backups privados ficam fora do Git. Ao copiar contas, preservar o segredo de senhas correspondente sem registrá-lo nos documentos.
@@ -62,6 +64,10 @@ O salvamento de comentários não consulta histórico sem identificador: após s
 - [ ] Avaliar mensagens, termos de participação e gestão de editoras/equipes após confirmar necessidade e prioridade.
 
 ## 4. Editor, rascunhos e versões
+
+A barra de formatação é compartilhada pelo capítulo e pela contribuição. No computador, fica no início do campo, com a área de texto limitada à altura existente, sem acompanhar a rolagem da página. Em telas de até 600 px, usa somente CSS sticky no topo do editor, abaixo dos controles de navegação e do aviso de personificação; o texto rola com a página. Negrito, itálico e desfazer ficam visíveis; “Mais” reúne listas, estilo de parágrafo, link e refazer. Botões preservam a seleção ao toque/clique e a formatação não força rolagem. A tentativa anterior de fixar a barra acima do teclado com `VisualViewport` foi rejeitada após uso no iPhone: ocupava espaço, sobrepunha controles e havia dificuldade para chegar ao fim da página. Foram removidos os observadores de viewport/seleção/tamanho, o reposicionamento automático da página e o espaço inferior dinâmico. Não reintroduzir esse controle de rolagem como solução presumida. A nova apresentação ainda exige validação no Safari do iPhone e em Preview; teste de navegador em tela reduzida não substitui o aparelho físico.
+
+- [ ] Validar a barra em smartphone físico, especialmente Safari no iPhone: texto longo, teclado aberto/fechado, último parágrafo selecionado, negrito/itálico, “Mais”, listas, títulos, links, desfazer/refazer, rotação, zoom e temas. Conferir capítulo principal e contribuição, menu lateral/personificação e salvamento; o trecho deve continuar selecionado e visível sem voltar ao topo. Confirmar também em Preview antes de considerar a melhoria validada remotamente.
 
 Referência da V1: Tiptap MIT 3.32.0, JSONB separado da descrição, limite de 1 MiB por capítulo, salvamento após 2 segundos de pausa ou a cada 15 segundos, IndexedDB por conta/capítulo e reserva por aba de 90 segundos renovada a cada 25 segundos. Revisões de gravação impedem sobrescrita. Cópias locais pendentes permanecem após logout e saem ao salvar/descartar. Sem importação, anexos ou imagens no editor.
 

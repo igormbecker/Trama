@@ -8,6 +8,7 @@ import { localDraft } from "./localDraft";
 import { chapterRequest } from "./chapterClient";
 import { preserveWordHeadings } from "./wordHeadings";
 import ChapterReader from "./ChapterReader";
+import EditorToolbar from "./EditorToolbar";
 import SuccessIcon from "components/shared/SuccessIcon";
 import styles from "./chapter.module.css";
 import { getProjectLabels } from "./projectLabels";
@@ -244,30 +245,22 @@ export default function ChapterEditor({
       editor.getAttributes("link").href || "https://",
     );
     if (href === null) return;
-    if (!href) editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    if (!href)
+      editor
+        .chain()
+        .focus(undefined, { scrollIntoView: false })
+        .extendMarkRange("link")
+        .unsetLink()
+        .run();
     else if (/^(https?:\/\/|mailto:)/i.test(href.trim()))
       editor
         .chain()
-        .focus()
+        .focus(undefined, { scrollIntoView: false })
         .extendMarkRange("link")
         .setLink({ href: href.trim() })
         .run();
     else setError("Use um endereço iniciado por https://, http:// ou mailto:.");
   }
-  const controls = [
-    ["Negrito", "bold", () => editor.chain().focus().toggleBold().run()],
-    ["Itálico", "italic", () => editor.chain().focus().toggleItalic().run()],
-    [
-      "Lista",
-      "bulletList",
-      () => editor.chain().focus().toggleBulletList().run(),
-    ],
-    [
-      "Lista numerada",
-      "orderedList",
-      () => editor.chain().focus().toggleOrderedList().run(),
-    ],
-  ];
   return (
     <section aria-label={`Editor: ${labels.chapter}`}>
       {recovery && (
@@ -345,99 +338,14 @@ export default function ChapterEditor({
         </button>
       )}
       {localError && <p role="alert">{localError}</p>}
-      <div className={styles.toolbar} role="group" aria-label="Formatação">
-        {controls.map(([label, mark, action]) => (
-          <button
-            key={label}
-            title={label}
-            aria-label={label}
-            type="button"
-            disabled={!ready || blocked || !editor}
-            aria-pressed={editor?.isActive(mark) || false}
-            onClick={action}
-          >
-            <span
-              aria-hidden="true"
-              className={
-                mark === "bold"
-                  ? styles.boldIcon
-                  : mark === "italic"
-                    ? styles.italicIcon
-                    : styles.listIcon
-              }
-            >
-              {mark === "bold"
-                ? "B"
-                : mark === "italic"
-                  ? "I"
-                  : mark === "bulletList"
-                    ? "• ≡"
-                    : "1 ≡"}
-            </span>
-          </button>
-        ))}
-        <select
-          aria-label="Estilo do parágrafo"
+      <div className={styles.editorSurface}>
+        <EditorToolbar
+          editor={editor}
           disabled={!ready || blocked || !editor}
-          value={
-            [1, 2, 3].find((level) => editor?.isActive("heading", { level })) ||
-            "paragraph"
-          }
-          onChange={(event) =>
-            event.target.value === "paragraph"
-              ? editor.chain().focus().setParagraph().run()
-              : editor
-                  .chain()
-                  .focus()
-                  .setHeading({ level: Number(event.target.value) })
-                  .run()
-          }
-        >
-          <option value="paragraph">Parágrafo</option>
-          <option value="1">Título 1</option>
-          <option value="2">Título 2</option>
-          <option value="3">Título 3</option>
-        </select>
-        <button
-          type="button"
-          disabled={!ready || blocked || !editor}
-          onClick={link}
-          title="Link"
-          aria-label="Link"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          disabled={!ready || blocked || !editor}
-          onClick={() => editor.chain().focus().undo().run()}
-          title="Desfazer"
-          aria-label="Desfazer"
-        >
-          <span aria-hidden="true">↶</span>
-        </button>
-        <button
-          type="button"
-          disabled={!ready || blocked || !editor}
-          onClick={() => editor.chain().focus().redo().run()}
-          title="Refazer"
-          aria-label="Refazer"
-        >
-          <span aria-hidden="true">↷</span>
-        </button>
+          onLink={link}
+        />
+        <EditorContent editor={editor} className={styles.editor} />
       </div>
-      <EditorContent editor={editor} className={styles.editor} />
       <p className={styles.hint}>
         Somente texto e formatação · Até 1 MB por {labels.chapter} · Salvamento
         após 2 segundos de pausa ou a cada 15 segundos.

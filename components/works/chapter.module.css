@@ -218,6 +218,13 @@
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+.editorSurface {
+  position: relative;
+  min-width: 0;
+}
+.toolbarSlot {
+  position: static;
+}
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -228,6 +235,12 @@
   border-bottom: 0;
   border-radius: 10px 10px 0 0;
   background: var(--preview-paper);
+}
+.toolbarExtra {
+  display: contents;
+}
+.workspace .toolbar .toolbarMore {
+  display: none;
 }
 .workspace .toolbar button,
 .workspace .toolbar select {
@@ -254,19 +267,6 @@
   background: var(--preview-paper);
   font-size: 0.875rem;
 }
-.workspace .toolbar button:nth-of-type(3),
-.workspace .toolbar button:nth-last-of-type(2) {
-  margin-left: 12px;
-  position: relative;
-}
-.toolbar button:nth-of-type(3)::before,
-.toolbar button:nth-last-of-type(2)::before {
-  content: "";
-  position: absolute;
-  left: -9px;
-  height: 20px;
-  border-left: 1px solid var(--line);
-}
 .workspace .toolbar button:hover:not(:disabled),
 .workspace .toolbar button[aria-pressed="true"] {
   background: var(--line);
@@ -278,18 +278,6 @@
 .toolbar select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-}
-.boldIcon {
-  font-weight: 750;
-  font-size: 1.125rem;
-}
-.italicIcon {
-  font-family: Georgia, serif;
-  font-style: italic;
-}
-.listIcon {
-  font-size: 1rem;
-  white-space: nowrap;
 }
 .reading,
 .editor :global(.tiptap),
@@ -423,6 +411,52 @@
   }
   .editor :global(.tiptap) {
     padding: 16px;
+    max-height: none;
+    border-radius: 10px;
+  }
+  .toolbarSlot {
+    position: sticky;
+    top: calc(
+      var(--impersonation-banner-height, 0px) +
+        max(12px, env(safe-area-inset-top)) + 56px
+    );
+    z-index: 10;
+  }
+  .toolbar {
+    border-bottom: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .workspace .toolbar button,
+  .workspace .toolbar select {
+    min-height: 44px;
+    height: 44px;
+  }
+  .workspace .toolbar button {
+    min-width: 44px;
+    flex-shrink: 0;
+  }
+  .workspace .toolbar .toolbarMore {
+    display: inline-flex;
+    width: auto;
+    margin-left: auto;
+    padding: 0 12px;
+    font-size: 0.875rem;
+  }
+  .toolbarExtra {
+    display: none;
+  }
+  .toolbarExtra[data-expanded="true"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+  }
+  .workspace .toolbar select {
+    order: 0;
+    min-width: 0;
+    max-width: 140px;
+    margin: 0;
   }
   .reading,
   .editor :global(.tiptap) {
