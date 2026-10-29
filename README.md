@@ -5,7 +5,7 @@ Aplicação de escrita e colaboração editorial para organizar obras literária
 ## Funcionalidades
 
 - **Projetos:** obras literárias e trabalhos em grupo, com filtros por tipo, título e descrição editáveis, partes e capítulos/seções ordenáveis, capas ilustrativas e leitura contínua com sumário. Novos trabalhos recebem uma estrutura inicial editável com Introdução, Desenvolvimento, Conclusão e Referências, sem modelo acadêmico obrigatório.
-- **Escrita:** editor de texto rico com salvamento automático/manual, recuperação local de rascunhos, reserva por aba e proteção contra sobrescritas concorrentes. A barra acompanha a rolagem no computador e a área visível no celular, com ações adicionais em “Mais” e preservação da seleção ao tocar nos botões.
+- **Escrita:** editor de texto rico com salvamento automático/manual, recuperação local de rascunhos, reserva por aba e proteção contra sobrescritas concorrentes. No computador, a barra fica no início do campo; no celular, acompanha a rolagem no topo do editor, abaixo da navegação, com ações adicionais em “Mais” e preservação da seleção ao tocar nos botões.
 - **Lixeira:** exclusão recuperável de projetos, partes e capítulos/seções pelo responsável, com restauração. A exclusão definitiva exige confirmação pelo título exato e remove o item e suas dependências.
 - **Participantes:** convites de organizadores por e-mail, cadastro restrito pelo convite, aceite/recusa em Meus convites e revogação de acesso.
 - **Contribuições:** cópia editável do capítulo, entrega, ajustes e incorporação pelo responsável, preservando o texto anterior para consulta e restauração.

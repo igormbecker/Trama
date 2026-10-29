@@ -3,9 +3,7 @@ import EditorToolbar from "components/works/EditorToolbar";
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
   useState: () => [false, jest.fn()],
-  useRef: () => ({ current: null }),
   useId: () => "toolbar-more",
-  useEffect: jest.fn(),
 }));
 
 function find(node, predicate) {
@@ -28,7 +26,6 @@ test.each(["mouse", "touch", "pen"])(
     const tree = EditorToolbar({
       editor,
       disabled: false,
-      surfaceRef: { current: null },
     });
     const button = find(
       tree,
@@ -50,7 +47,6 @@ test("Keeps formatting disabled while editing is blocked", () => {
   const tree = EditorToolbar({
     editor: null,
     disabled: true,
-    surfaceRef: { current: null },
   });
   expect(
     find(tree, (node) => node.props?.["aria-label"] === "Negrito").props

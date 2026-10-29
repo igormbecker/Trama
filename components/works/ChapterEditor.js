@@ -52,7 +52,6 @@ export default function ChapterEditor({
   const [needsLogin, setNeedsLogin] = useState(false);
   const [saving, setSaving] = useState(false);
   const [manualSaving, setManualSaving] = useState(false);
-  const surfaceRef = useRef(null);
   const timer = useRef(null);
   const queue = useRef(Promise.resolve());
   const running = useRef(false);
@@ -339,11 +338,10 @@ export default function ChapterEditor({
         </button>
       )}
       {localError && <p role="alert">{localError}</p>}
-      <div ref={surfaceRef} className={styles.editorSurface}>
+      <div className={styles.editorSurface}>
         <EditorToolbar
           editor={editor}
           disabled={!ready || blocked || !editor}
-          surfaceRef={surfaceRef}
           onLink={link}
         />
         <EditorContent editor={editor} className={styles.editor} />

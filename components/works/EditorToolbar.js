@@ -1,28 +1,9 @@
-import { useEffect, useId, useRef, useState } from "react";
-import { observeToolbarPosition } from "./editorToolbarPosition";
+import { useId, useState } from "react";
 import styles from "./chapter.module.css";
 
-export default function EditorToolbar({
-  editor,
-  disabled,
-  surfaceRef,
-  onLink,
-}) {
+export default function EditorToolbar({ editor, disabled, onLink }) {
   const [expanded, setExpanded] = useState(false);
-  const toolbarRef = useRef(null);
-  const slotRef = useRef(null);
   const moreId = useId();
-
-  useEffect(
-    () =>
-      observeToolbarPosition(
-        surfaceRef.current,
-        toolbarRef.current,
-        slotRef.current,
-        window,
-      ),
-    [surfaceRef],
-  );
   function preserveSelection(event) {
     event.preventDefault();
   }
@@ -47,13 +28,8 @@ export default function EditorToolbar({
   }
 
   return (
-    <div ref={slotRef} className={styles.toolbarSlot}>
-      <div
-        ref={toolbarRef}
-        className={styles.toolbar}
-        role="group"
-        aria-label="Formatação"
-      >
+    <div className={styles.toolbarSlot}>
+      <div className={styles.toolbar} role="group" aria-label="Formatação">
         {button(
           "Negrito",
           <strong>B</strong>,
