@@ -1,4 +1,4 @@
-export const maximumRecordingMilliseconds = 120000;
+export const maximumRecordingMilliseconds = 240000;
 export const maximumAudioBytes = 4 * 1024 * 1024;
 
 export function textToParagraphs(text) {

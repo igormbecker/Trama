@@ -80,3 +80,43 @@ test("Short recordings settle only their measured duration instead of consuming 
   expect(settlement).toBeDefined();
   expect(settlement[0].values[1]).toBe(10);
 });
+
+test("Reserves four minutes and settles a three-minute recording without truncating its duration", async () => {
+  const client = setup({
+    account_seconds: "0",
+    hourly_attempts: "0",
+    daily_attempts: "0",
+  });
+  transcribeAudio.mockResolvedValue({ text: "Texto.", duration: 180 });
+  await voiceTranscription.create("user", Buffer.from("a"), "audio/webm");
+  const reservation = client.query.mock.calls.find(
+    ([query]) =>
+      typeof query === "object" && query.text.includes("INSERT INTO"),
+  );
+  expect(reservation[0].values[2]).toBe(240);
+  expect(database.query.mock.calls[0][0].values[1]).toBe(180);
+});
+test.each([
+  { account_seconds: "1561", hourly_attempts: "0", daily_attempts: "0" },
+  {
+    account_seconds: "0",
+    hourly_seconds: "5761",
+    hourly_attempts: "0",
+    daily_attempts: "0",
+  },
+  {
+    account_seconds: "0",
+    daily_seconds: "23761",
+    hourly_attempts: "0",
+    daily_attempts: "0",
+  },
+])(
+  "Rejects a reservation that would exceed account or shared audio budgets",
+  async (usage) => {
+    setup(usage);
+    await expect(
+      voiceTranscription.create("user", Buffer.from("a"), "audio/webm"),
+    ).rejects.toMatchObject({ statusCode: 429 });
+    expect(transcribeAudio).not.toHaveBeenCalled();
+  },
+);

@@ -42,7 +42,7 @@ function setup() {
     },
   };
 }
-test("Pauses do not consume recording time and reaching two minutes stops capture", async () => {
+test("Pauses do not consume recording time and reaching four minutes stops capture", async () => {
   const { recorder, advance, track } = setup();
   await recorder.start();
   advance(30000);
@@ -52,8 +52,12 @@ test("Pauses do not consume recording time and reaching two minutes stops captur
   recorder.resume();
   advance(90000);
   recorder.tick();
-  expect(recorder.state()).toBe("finished");
+  expect(recorder.state()).toBe("recording");
   expect(recorder.elapsed()).toBe(120000);
+  advance(120000);
+  recorder.tick();
+  expect(recorder.state()).toBe("finished");
+  expect(recorder.elapsed()).toBe(240000);
   expect(track.stop).toHaveBeenCalled();
   expect(recorder.audio().size).toBeGreaterThan(0);
 });

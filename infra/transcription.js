@@ -24,7 +24,7 @@ export async function transcribeAudio(
     audio.length > maximumAudioBytes
   ) {
     throw new ValidationError({
-      message: "Áudio inválido. Use uma gravação de até 2 minutos e 4 MB.",
+      message: "Áudio inválido. Use uma gravação de até 4 minutos e 4 MB.",
     });
   }
   if (!apiKey) {
@@ -85,9 +85,9 @@ export async function transcribeAudio(
         "Não foi possível reconhecer texto neste áudio. Confira a gravação.",
     });
   }
-  if (typeof result.duration === "number" && result.duration > 122) {
+  if (typeof result.duration === "number" && result.duration > 242) {
     throw new ValidationError({
-      message: "A gravação ultrapassa o limite de 2 minutos.",
+      message: "A gravação ultrapassa o limite de 4 minutos.",
     });
   }
   const text = result.text.trim();
