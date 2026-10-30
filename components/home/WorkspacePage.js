@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import QuickWriteButton from "./QuickWriteButton";
 import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import useInvitations from "components/works/useInvitations";
@@ -78,9 +79,12 @@ export default function WorkspacePage({
     >
       <section className={styles.workspace} aria-labelledby="workspace-title">
         <header className={styles.heading}>
-          <p>Olá, {user.name}.</p>
-          <h1 id="workspace-title">Seu espaço</h1>
-          <p>Continue suas ideias de onde você parou.</p>
+          <div>
+            <p>Olá, {user.name}.</p>
+            <h1 id="workspace-title">Seu espaço</h1>
+            <p>Continue suas ideias de onde você parou.</p>
+          </div>
+          <QuickWriteButton userId={user.id} />
         </header>
         {invitations?.length > 0 && (
           <aside className={styles.invitation}>
@@ -144,7 +148,7 @@ export default function WorkspacePage({
               <p>{chapter.part_title}</p>
               <div className={styles.actions}>
                 <Link
-                  className={styles.primary}
+                  className={styles.secondary}
                   data-button
                   href={`/works/${chapter.work.id}/chapters/${chapter.id}${chapter.work.owner_id === user.id ? "?write=1" : ""}`}
                 >
