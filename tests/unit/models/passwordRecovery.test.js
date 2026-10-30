@@ -40,7 +40,9 @@ test("Removes an undeliverable token and does not expose the provider error", as
   });
   expect(database.query).toHaveBeenLastCalledWith(
     expect.objectContaining({
-      text: "DELETE FROM password_recovery_tokens WHERE token_hash = $1",
+      text: expect.stringMatching(
+        /DELETE\s+FROM\s+password_recovery_tokens\s+WHERE\s+token_hash = \$1/,
+      ),
     }),
   );
 });

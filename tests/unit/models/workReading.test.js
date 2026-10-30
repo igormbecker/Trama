@@ -40,7 +40,9 @@ test("Loads only saved chapter documents in editorial order without exposing lea
   const query = database.query.mock.calls[0][0];
   expect(query.values).toEqual(["work"]);
   expect(query.text).toContain("d.revision > 0");
-  expect(query.text).toContain("ORDER BY p.position, c.position");
+  expect(query.text.replace(/\s+/g, " ")).toContain(
+    "ORDER BY p.position, c.position",
+  );
   expect(query.text).not.toContain("lease_token");
 });
 

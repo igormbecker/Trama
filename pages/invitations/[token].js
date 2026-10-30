@@ -17,17 +17,21 @@ export async function getServerSideProps({ req, res, params }) {
       req.cookies?.trama_session_id,
     );
   } catch (error) {
-    if (error instanceof LegalAcceptanceRequiredError)
+    if (error instanceof LegalAcceptanceRequiredError) {
       return { redirect: { destination: "/legal/accept", permanent: false } };
-    if (error instanceof UnauthorizedError)
+    }
+    if (error instanceof UnauthorizedError) {
       return { props: { user: null, invitation: null } };
+    }
     throw error;
   }
   let invitation = null;
   try {
     invitation = await workInvitation.findForUser(params.token, currentUser.id);
   } catch (error) {
-    if (!(error instanceof NotFoundError)) throw error;
+    if (!(error instanceof NotFoundError)) {
+      throw error;
+    }
   }
   return {
     props: {

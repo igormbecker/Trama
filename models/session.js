@@ -11,12 +11,15 @@ async function create(userId) {
   const results = await database.query({
     text: `
       INSERT INTO
-        sessions (token, user_id, expires_at)
+        sessions (
+          token,
+          user_id,
+          expires_at
+        )
       VALUES
         ($1, $2, $3)
       RETURNING
-        *
-      ;
+        *;
     `,
     values: [token, userId, expiresAt],
   });
@@ -39,8 +42,7 @@ async function findOneValidByToken(token) {
         token = $1
         AND expires_at > now()
       LIMIT
-        1
-      ;
+        1;
     `,
     values: [token],
   });
@@ -66,8 +68,7 @@ async function expireByToken(token) {
         updated_at = now()
       WHERE
         token = $1
-        AND expires_at > now()
-      ;
+        AND expires_at > now();
     `,
     values: [token],
   });

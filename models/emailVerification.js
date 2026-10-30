@@ -12,16 +12,21 @@ function origin() {
   if (
     process.env.NODE_ENV === "test" ||
     process.env.TRAMA_TEST_SERVER === "true"
-  )
+  ) {
     return "http://127.0.0.1:3002";
-  if (process.env.NODE_ENV === "development") return "http://localhost:3001";
-  if (process.env.VERCEL_ENV === "production")
+  }
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:3001";
+  }
+  if (process.env.VERCEL_ENV === "production") {
     return "https://trama.bectec.com.br";
+  }
   if (
     process.env.VERCEL_ENV === "preview" &&
     /^[a-z0-9-]+\.vercel\.app$/i.test(process.env.VERCEL_URL || "")
-  )
+  ) {
     return `https://${process.env.VERCEL_URL}`;
+  }
   throw new ServiceError({ message: "Verification origin is not configured." });
 }
 
@@ -29,27 +34,68 @@ async function request(input) {
   const address = validateRequest(input);
   const base = origin();
   const allowed = await database.query({
-    text: `INSERT INTO email_verification_requests (address_hash, requested_at, window_started_at, request_count)
-      VALUES ($1, now(), now(), 1)
-      ON CONFLICT (address_hash) DO UPDATE SET requested_at = now(),
+    text: `
+      INSERT INTO
+        email_verification_requests (
+          address_hash,
+          requested_at,
+          window_started_at,
+          request_count
+        )
+      VALUES
+        ($1, now(), now(), 1)
+      ON CONFLICT
+        (address_hash)
+      DO UPDATE
+      SET
+        requested_at = now(),
         window_started_at = CASE WHEN email_verification_requests.window_started_at < now() - interval '1 hour' THEN now() ELSE email_verification_requests.window_started_at END,
         request_count = CASE WHEN email_verification_requests.window_started_at < now() - interval '1 hour' THEN 1 ELSE email_verification_requests.request_count + 1 END
-      WHERE email_verification_requests.requested_at < now() - interval '1 minute'
-        AND (email_verification_requests.window_started_at < now() - interval '1 hour' OR email_verification_requests.request_count < 5)
-      RETURNING address_hash`,
+      WHERE
+        email_verification_requests.requested_at < now() - interval '1 minute'
+        AND (email_verification_requests.window_started_at < now() - interval '1 hour'
+            OR email_verification_requests.request_count < 5)
+      RETURNING
+        address_hash
+    `,
     values: [digest(address)],
   });
-  if (!allowed.rowCount) return;
+  if (!allowed.rowCount) {
+    return;
+  }
   const accounts = await database.query({
-    text: "SELECT id, email, email_verification_version FROM users WHERE LOWER(email) = $1 AND email_verification_required AND email_verified_at IS NULL",
+    text: `
+      SELECT
+        id,
+        email,
+        email_verification_version
+      FROM
+        users
+      WHERE
+        LOWER(email) = $1
+        AND email_verification_required
+        AND email_verified_at IS NULL
+    `,
     values: [address],
   });
   const account = accounts.rows[0];
-  if (!account) return;
+  if (!account) {
+    return;
+  }
   const token = randomBytes(48).toString("hex");
   const hash = digest(token);
   await database.query({
-    text: "INSERT INTO email_verification_tokens (token_hash, user_id, email, verification_version) VALUES ($1, $2, $3, $4)",
+    text: `
+      INSERT INTO
+        email_verification_tokens (
+          token_hash,
+          user_id,
+          email,
+          verification_version
+        )
+      VALUES
+        ($1, $2, $3, $4)
+    `,
     values: [
       hash,
       account.id,
@@ -75,7 +121,12 @@ async function request(input) {
     });
   } catch {
     await database.query({
-      text: "DELETE FROM email_verification_tokens WHERE token_hash = $1",
+      text: `
+        DELETE FROM
+          email_verification_tokens
+        WHERE
+          token_hash = $1
+      `,
       values: [hash],
     });
     throw new ServiceError({
@@ -95,24 +146,52 @@ async function confirm(input) {
     Object.keys(input).length !== 1 ||
     typeof input.token !== "string" ||
     !/^[a-f0-9]{96}$/.test(input.token)
-  )
+  ) {
     throw invalidLink();
+  }
   const hash = digest(input.token);
   const lookup = await database.query({
-    text: "SELECT user_id FROM email_verification_tokens WHERE token_hash = $1",
+    text: `
+      SELECT
+        user_id
+      FROM
+        email_verification_tokens
+      WHERE
+        token_hash = $1
+    `,
     values: [hash],
   });
-  if (!lookup.rowCount) throw invalidLink();
+  if (!lookup.rowCount) {
+    throw invalidLink();
+  }
   let client;
   try {
     client = await database.getNewClient();
     await client.query("BEGIN");
     const accounts = await client.query({
-      text: "SELECT * FROM users WHERE id = $1 FOR UPDATE",
+      text: `
+        SELECT
+          *
+        FROM
+          users
+        WHERE
+          id = $1
+        FOR UPDATE
+      `,
       values: [lookup.rows[0].user_id],
     });
     const tokens = await client.query({
-      text: "SELECT * FROM email_verification_tokens WHERE token_hash = $1 AND used_at IS NULL AND expires_at > clock_timestamp() FOR UPDATE",
+      text: `
+        SELECT
+          *
+        FROM
+          email_verification_tokens
+        WHERE
+          token_hash = $1
+          AND used_at IS NULL
+          AND expires_at > clock_timestamp()
+        FOR UPDATE
+      `,
       values: [hash],
     });
     const account = accounts.rows[0];
@@ -123,14 +202,31 @@ async function confirm(input) {
       account.email_verified_at ||
       account.email.toLowerCase() !== token.email ||
       account.email_verification_version !== token.verification_version
-    )
+    ) {
       throw invalidLink();
+    }
     await client.query({
-      text: "UPDATE users SET email_verified_at = timezone('utc', now()), updated_at = timezone('utc', now()) WHERE id = $1",
+      text: `
+        UPDATE
+          users
+        SET
+          email_verified_at = timezone('utc', now()),
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+      `,
       values: [account.id],
     });
     await client.query({
-      text: "UPDATE email_verification_tokens SET used_at = timezone('utc', now()) WHERE user_id = $1 AND used_at IS NULL",
+      text: `
+        UPDATE
+          email_verification_tokens
+        SET
+          used_at = timezone('utc', now())
+        WHERE
+          user_id = $1
+          AND used_at IS NULL
+      `,
       values: [account.id],
     });
     await client.query("COMMIT");

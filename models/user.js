@@ -4,7 +4,16 @@ import password from "models/password.js";
 
 async function findOneById(id) {
   const results = await database.query({
-    text: "SELECT * FROM users WHERE id = $1 LIMIT 1;",
+    text: `
+      SELECT
+        *
+      FROM
+        users
+      WHERE
+        id = $1
+      LIMIT
+        1;
+    `,
     values: [id],
   });
 
@@ -26,15 +35,15 @@ async function findOneByUsername(username) {
   async function runSelectQuery(username) {
     const results = await database.query({
       text: `
-      SELECT
-        * 
-      FROM 
-        users
-      WHERE
-        LOWER(username) = LOWER($1)
-      LIMIT
-        1
-      ;`,
+        SELECT
+          *
+        FROM
+          users
+        WHERE
+          LOWER(username) = LOWER($1)
+        LIMIT
+          1;
+      `,
       values: [username],
     });
 
@@ -58,15 +67,15 @@ async function findOneByEmail(email) {
   async function runSelectQuery(email) {
     const results = await database.query({
       text: `
-      SELECT
-        * 
-      FROM 
-        users
-      WHERE
-        LOWER(email) = LOWER($1)
-      LIMIT
-        1
-      ;`,
+        SELECT
+          *
+        FROM
+          users
+        WHERE
+          LOWER(email) = LOWER($1)
+        LIMIT
+          1;
+      `,
       values: [email],
     });
 
@@ -94,13 +103,18 @@ async function create(userInputValues) {
   async function runInsertQuery(userInputValues) {
     const results = await database.query({
       text: `
-      INSERT INTO 
-        users (name, username, email, password) 
-      VALUES 
-        ($1, $2, $3, $4)
-      RETURNING
-        *
-      ;`,
+        INSERT INTO
+          users (
+            name,
+            username,
+            email,
+            password
+          )
+        VALUES
+          ($1, $2, $3, $4)
+        RETURNING
+          *;
+      `,
       values: [
         userInputValues.name,
         userInputValues.username,
@@ -301,13 +315,15 @@ async function update(
 async function validateUniqueUsername(username, excludedId = null) {
   const results = await database.query({
     text: `
-    SELECT
-      username 
-    FROM 
-      users
-    WHERE
-      LOWER(username) = LOWER($1) AND ($2::uuid IS NULL OR id <> $2)
-    ;`,
+      SELECT
+        username
+      FROM
+        users
+      WHERE
+        LOWER(username) = LOWER($1)
+        AND ($2::uuid IS NULL
+            OR id <> $2);
+    `,
     values: [username, excludedId],
   });
 
@@ -322,13 +338,15 @@ async function validateUniqueUsername(username, excludedId = null) {
 async function validateUniqueEmail(email, excludedId = null) {
   const results = await database.query({
     text: `
-    SELECT
-      email 
-    FROM 
-      users
-    WHERE
-      LOWER(email) = LOWER($1) AND ($2::uuid IS NULL OR id <> $2)
-    ;`,
+      SELECT
+        email
+      FROM
+        users
+      WHERE
+        LOWER(email) = LOWER($1)
+        AND ($2::uuid IS NULL
+            OR id <> $2);
+    `,
     values: [email, excludedId],
   });
 
@@ -359,19 +377,47 @@ function toPublic(storedUser) {
 
 async function findAll() {
   const result = await database.query(
-    "SELECT id, name, username, email, is_admin, created_at, updated_at FROM users ORDER BY LOWER(name), id;",
+    `
+      SELECT
+        id,
+        name,
+        username,
+        email,
+        is_admin,
+        created_at,
+        updated_at
+      FROM
+        users
+      ORDER BY
+        LOWER(name),
+        id;
+    `,
   );
   return result.rows.map(toPublic);
 }
 
 async function requireAnotherAdministrator(client, userId) {
   const target = await client.query({
-    text: "SELECT is_admin FROM users WHERE id = $1",
+    text: `
+      SELECT
+        is_admin
+      FROM
+        users
+      WHERE
+        id = $1
+    `,
     values: [userId],
   });
   if (target.rows[0]?.is_admin) {
     const result = await client.query(
-      "SELECT count(*)::int AS count FROM users WHERE is_admin = true",
+      `
+        SELECT
+          count(*)::int AS count
+        FROM
+          users
+        WHERE
+          is_admin = true
+      `,
     );
     if (result.rows[0].count <= 1) {
       throw new ValidationError({
@@ -397,11 +443,28 @@ async function remove(username, administratorId) {
     await client.query("LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE");
     await requireAnotherAdministrator(client, target.id);
     await client.query({
-      text: "SELECT id FROM users WHERE id = $1 FOR UPDATE",
+      text: `
+        SELECT
+          id
+        FROM
+          users
+        WHERE
+          id = $1
+        FOR UPDATE
+      `,
       values: [target.id],
     });
     const ownedWorks = await client.query({
-      text: "SELECT id FROM works WHERE owner_id = $1 LIMIT 1",
+      text: `
+        SELECT
+          id
+        FROM
+          works
+        WHERE
+          owner_id = $1
+        LIMIT
+          1
+      `,
       values: [target.id],
     });
     if (ownedWorks.rowCount > 0) {
@@ -412,11 +475,21 @@ async function remove(username, administratorId) {
       });
     }
     await client.query({
-      text: "DELETE FROM sessions WHERE user_id = $1;",
+      text: `
+        DELETE FROM
+          sessions
+        WHERE
+          user_id = $1;
+      `,
       values: [target.id],
     });
     await client.query({
-      text: "DELETE FROM users WHERE id = $1;",
+      text: `
+        DELETE FROM
+          users
+        WHERE
+          id = $1;
+      `,
       values: [target.id],
     });
     await client.query("COMMIT");

@@ -9,8 +9,22 @@ import {
 
 async function record(context, event, details = {}, client = database) {
   await client.query({
-    text: `INSERT INTO impersonation_audit (administrator_id, represented_user_id, session_id, event, method, path, status_code, expires_at, request_id)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+    text: `
+      INSERT INTO
+        impersonation_audit (
+          administrator_id,
+          represented_user_id,
+          session_id,
+          event,
+          method,
+          path,
+          status_code,
+          expires_at,
+          request_id
+        )
+      VALUES
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `,
     values: [
       context.user_id,
       context.impersonated_user_id,
@@ -27,9 +41,19 @@ async function record(context, event, details = {}, client = database) {
 
 async function status(token) {
   const current = await session.findOneValidByToken(token);
-  if (!current.impersonated_user_id) return { active: false };
+  if (!current.impersonated_user_id) {
+    return { active: false };
+  }
   const result = await database.query({
-    text: "SELECT id, name FROM users WHERE id = $1",
+    text: `
+      SELECT
+        id,
+        name
+      FROM
+        users
+      WHERE
+        id = $1
+    `,
     values: [current.impersonated_user_id],
   });
   return {
@@ -47,48 +71,101 @@ async function change(token, targetId) {
     client = await database.getNewClient();
     await client.query("BEGIN");
     const result = await client.query({
-      text: "SELECT * FROM sessions WHERE id = $1 AND expires_at > now() FOR UPDATE",
+      text: `
+        SELECT
+          *
+        FROM
+          sessions
+        WHERE
+          id = $1
+          AND expires_at > now()
+        FOR UPDATE
+      `,
       values: [stored.id],
     });
     const current = result.rows[0];
-    if (!current) throw new UnauthorizedError();
+    if (!current) {
+      throw new UnauthorizedError();
+    }
     const actors = await client.query({
-      text: "SELECT id, is_admin FROM users WHERE id = $1 FOR SHARE",
+      text: `
+        SELECT
+          id,
+          is_admin
+        FROM
+          users
+        WHERE
+          id = $1
+        FOR SHARE
+      `,
       values: [current.user_id],
     });
-    if (!actors.rows[0]?.is_admin) throw new ForbiddenError();
+    if (!actors.rows[0]?.is_admin) {
+      throw new ForbiddenError();
+    }
     if (targetId !== undefined) {
-      if (current.impersonated_user_id) throw new ForbiddenError();
+      if (current.impersonated_user_id) {
+        throw new ForbiddenError();
+      }
       if (
         typeof targetId !== "string" ||
         !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
           targetId,
         )
-      )
+      ) {
         throw new ValidationError({ message: "Choose a valid user." });
+      }
       const targets = await client.query({
-        text: "SELECT id, is_admin FROM users WHERE id = $1 FOR SHARE",
+        text: `
+          SELECT
+            id,
+            is_admin
+          FROM
+            users
+          WHERE
+            id = $1
+          FOR SHARE
+        `,
         values: [targetId],
       });
       if (
         !targets.rows[0] ||
         targets.rows[0].is_admin ||
         targetId === current.user_id
-      )
+      ) {
         throw new ForbiddenError();
+      }
       await legalAcceptance.assertAccepted(current.user_id);
       await legalAcceptance.assertAccepted(targetId);
       const updated = await client.query({
-        text: `UPDATE sessions SET impersonated_user_id = $2,
-        impersonation_expires_at = LEAST(expires_at, timezone('utc', now()) + interval '15 minutes'),
-        updated_at = timezone('utc', now()) WHERE id = $1 RETURNING *`,
+        text: `
+          UPDATE
+            sessions
+          SET
+            impersonated_user_id = $2,
+            impersonation_expires_at = LEAST(expires_at, timezone('utc', now()) + interval '15 minutes'),
+            updated_at = timezone('utc', now())
+          WHERE
+            id = $1
+          RETURNING
+            *
+        `,
         values: [current.id, targetId],
       });
       await record(updated.rows[0], "started", {}, client);
     } else if (current.impersonated_user_id) {
       await record(current, "ended", {}, client);
       await client.query({
-        text: "UPDATE sessions SET impersonated_user_id = NULL, impersonation_expires_at = NULL, updated_at = timezone('utc', now()) WHERE id = $1",
+        text: `
+          UPDATE
+            sessions
+          SET
+            impersonated_user_id = NULL,
+            impersonation_expires_at = NULL,
+            updated_at = timezone('utc', now())
+          WHERE
+            id = $1
+        `,
         values: [current.id],
       });
     }

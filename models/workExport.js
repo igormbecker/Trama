@@ -31,7 +31,9 @@ export function exportBlocks(reading) {
   const heading = (text, level, pageBreak = false, sectionId) =>
     blocks.push({ level, pageBreak, sectionId, runs: [{ text }] });
   function inline(node) {
-    if (node.type === "hardBreak") return { text: "\n" };
+    if (node.type === "hardBreak") {
+      return { text: "\n" };
+    }
     const marks = node.marks || [];
     return {
       text: node.text || "",
@@ -61,7 +63,9 @@ export function exportBlocks(reading) {
           visit(child, depth + 1, childIndex === 0 ? marker : ""),
         );
       });
-    } else (node.content || []).forEach((child) => visit(child, depth));
+    } else {
+      (node.content || []).forEach((child) => visit(child, depth));
+    }
   }
   heading(reading.work.title, 1);
   const creditGroups = [
@@ -78,7 +82,9 @@ export function exportBlocks(reading) {
       true,
     );
     for (const [group, label] of creditGroups) {
-      if (!reading.credits[group]?.length) continue;
+      if (!reading.credits[group]?.length) {
+        continue;
+      }
       heading(label, 3);
       for (const line of reading.credits[group])
         blocks.push({ level: 0, runs: [{ text: line }] });
@@ -371,7 +377,9 @@ export function generatePdf(reading) {
           pdf.font(section.level === 2 ? "bold" : "regular").fontSize(11);
           const height =
             pdf.heightOfString(section.runs[0].text, { width }) + 12;
-          if (cursorY + height > pdf.page.height - 84) contentsPage();
+          if (cursorY + height > pdf.page.height - 84) {
+            contentsPage();
+          }
           contentsRows.push({
             section,
             page: pdf.bufferedPageRange().count - 1,
@@ -458,15 +466,21 @@ export function generatePdf(reading) {
             continue;
           }
           const width = pdf.widthOfString(token);
-          if (cursorX + width > right && cursorX > left) nextLine();
+          if (cursorX + width > right && cursorX > left) {
+            nextLine();
+          }
           if (/^\s+$/u.test(token)) {
-            if (cursorX > left) cursorX += width;
+            if (cursorX > left) {
+              cursorX += width;
+            }
             continue;
           }
           if (width > right - left) {
             for (const character of token) {
               const characterWidth = pdf.widthOfString(character);
-              if (cursorX + characterWidth > right) nextLine();
+              if (cursorX + characterWidth > right) {
+                nextLine();
+              }
               pdf.text(character, cursorX, cursorY, {
                 lineBreak: false,
                 link: run.href || null,

@@ -20,10 +20,12 @@ export async function getServerSideProps({ req, res }) {
       },
     };
   } catch (error) {
-    if (error instanceof LegalAcceptanceRequiredError)
+    if (error instanceof LegalAcceptanceRequiredError) {
       return { redirect: { destination: "/legal/accept", permanent: false } };
-    if (error instanceof UnauthorizedError)
+    }
+    if (error instanceof UnauthorizedError) {
       return { redirect: { destination: "/login", permanent: false } };
+    }
     throw error;
   }
 }

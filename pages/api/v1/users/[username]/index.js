@@ -30,8 +30,12 @@ async function patchHandler(request, response) {
     allowRoleChange: true,
     requirePasswordConfirmation: true,
   });
-  if (updatedUser.email_verification_required && !updatedUser.email_verified_at)
+  if (
+    updatedUser.email_verification_required &&
+    !updatedUser.email_verified_at
+  ) {
     emailVerification.queue(updatedUser.email, waitUntil);
+  }
   return response.status(200).json(user.toPublic(updatedUser));
 }
 async function deleteHandler(request, response) {

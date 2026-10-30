@@ -13,7 +13,9 @@ router.use((request, response, next) => {
     } catch {
       throw new ForbiddenError();
     }
-    if (host !== request.headers.host) throw new ForbiddenError();
+    if (host !== request.headers.host) {
+      throw new ForbiddenError();
+    }
   }
   return next();
 });

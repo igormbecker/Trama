@@ -14,7 +14,14 @@ async function getHandler(request, response) {
   const dbMaxConnectionsResult = await database.query(`SHOW max_connections;`);
   const dbName = process.env.POSTGRES_DB || "local_db";
   const dbOpenedConnResult = await database.query({
-    text: `SELECT COUNT(*)::int AS opened_connections FROM pg_stat_activity WHERE datname = $1;`,
+    text: `
+      SELECT
+        COUNT(*)::int AS opened_connections
+      FROM
+        pg_stat_activity
+      WHERE
+        datname = $1;
+    `,
     values: [dbName],
   });
 
