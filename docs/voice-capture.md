@@ -38,6 +38,8 @@ O servidor mantém os bytes somente durante a requisição e não persiste áudi
 
 A prévia de uma ideia fica bloqueada após iniciar sua criação, para que uma resposta incerta possa ser repetida com o mesmo conteúdo. Descartar a gravação não apaga um projeto que eventualmente já tenha sido criado. A exclusão de um projeto continua pelo fluxo de lixeira existente.
 
+A prévia prepara a fonte Blob com carregamento explícito e retorno inicial ao tempo zero após os metadados; não chama play automaticamente. O usuário relatou gravação correta no celular e silêncio na primeira reprodução antes desse ajuste; a correção ainda exige nova conferência no aparelho.
+
 ## Validação pendente
 
 - Configurar a chave local e avaliar áudio real em português, nomes, silêncio, ruído, pontuação e parágrafos.

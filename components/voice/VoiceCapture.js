@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import useConfirmation from "components/shared/useConfirmation";
 import { createVoiceRecorder, maximumAudioBytes } from "./voiceRecorder";
 import { localDraft } from "components/works/localDraft";
+import { prepareAudioPreview } from "./audioPreview";
 import MicrophoneIcon from "components/icons/MicrophoneIcon";
 import VoiceActionIcon from "components/icons/VoiceActionIcon";
 import TrashActionIcon from "components/icons/TrashActionIcon";
@@ -455,15 +456,6 @@ export default function VoiceCapture({
 
 function AudioPreview({ audio }) {
   const element = useRef(null);
-  useEffect(() => {
-    const url = URL.createObjectURL(audio);
-    const player = element.current;
-    player.src = url;
-    return () => {
-      player.pause();
-      player.removeAttribute("src");
-      URL.revokeObjectURL(url);
-    };
-  }, [audio]);
-  return <audio ref={element} controls preload="metadata" />;
+  useEffect(() => prepareAudioPreview(element.current, audio), [audio]);
+  return <audio ref={element} controls preload="auto" />;
 }
