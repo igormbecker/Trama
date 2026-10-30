@@ -4,15 +4,16 @@ Aplicação de escrita e colaboração editorial para organizar obras literária
 
 ## Funcionalidades
 
-- **Projetos:** obras literárias e trabalhos em grupo, com filtros por tipo, título e descrição editáveis, partes e capítulos/seções ordenáveis, capas ilustrativas e leitura contínua com sumário. Novos trabalhos recebem uma estrutura inicial editável com Introdução, Desenvolvimento, Conclusão e Referências, sem modelo acadêmico obrigatório.
-- **Escrita:** editor de texto rico com salvamento automático/manual, recuperação local de rascunhos, reserva por aba e proteção contra sobrescritas concorrentes. No computador, a barra fica no início do campo; no celular, acompanha a rolagem no topo do editor, abaixo da navegação, com ações adicionais em “Mais” e preservação da seleção ao tocar nos botões.
-- **Lixeira:** exclusão recuperável de projetos, partes e capítulos/seções pelo responsável, com restauração. A exclusão definitiva exige confirmação pelo título exato e remove o item e suas dependências.
+- **Projetos:** obras literárias e trabalhos em grupo, com filtros por tipo, título e descrição editáveis, partes e capítulos/seções ordenáveis, capas ilustrativas e leitura contínua com sumário. Novos trabalhos recebem uma estrutura inicial editável com Introdução, Desenvolvimento, Conclusão e Referências, sem modelo acadêmico obrigatório. A criação começa recolhida e abre por “+ Criar projeto”. Ações de partes e capítulos/seções ficam em menus de três pontos no celular ou quando não cabem em uma linha no computador.
+- **Escrita:** editor de texto rico com salvamento automático/manual, recuperação local de rascunhos, reserva por aba e proteção contra sobrescritas concorrentes. No computador, a escrita do responsável abre em modo foco, com editor ampliado, barra de formatação acompanhando a rolagem e menu e detalhes do capítulo inicialmente recolhidos, disponíveis pelos respectivos botões. No celular, “Formatar texto” fica junto aos controles superiores e abre as opções, inicialmente ocultas. Os botões preservam a seleção ao toque.
+- **Escrita rápida:** “Começar a escrever”, em Seu espaço, cria um rascunho literário privado com parte e capítulo iniciais e abre a escrita. Títulos e estrutura podem ser editados depois.
+- **Lixeira:** acesso pelo último item do menu da conta e exclusão recuperável de projetos, partes e capítulos/seções pelo responsável, com restauração. A exclusão definitiva exige confirmação pelo título exato e remove o item e suas dependências.
 - **Participantes:** convites de organizadores por e-mail, cadastro restrito pelo convite, aceite/recusa em Meus convites e revogação de acesso.
 - **Contribuições:** cópia editável do capítulo, entrega, ajustes e incorporação pelo responsável, preservando o texto anterior para consulta e restauração.
 - **Revisões:** leitura de versão fixa, comentários em trechos selecionados e parecer Aprovado ou Correções solicitadas, sem modificar o capítulo. O responsável pode resolver e reabrir comentários, preservando o histórico; o painel fica na lateral no computador e pode ser expandido no celular.
 - **Minhas participações:** pedidos atribuídos à conta, separados em andamento e concluídos, com status e contador de ações pendentes atualizado automaticamente.
 - **Exportação:** PDF e DOCX com capa, créditos confirmados, descrição da obra e sumário. O responsável informa a autoria; o histórico apenas sugere colaboradores e revisores.
-- **Conta e administração:** login/logout, confirmação de e-mail, recuperação de senha, edição da própria conta, gestão administrativa de usuários e personificação temporária de contas comuns para suporte, com auditoria.
+- **Conta e administração:** login/logout, confirmação de e-mail, recuperação de senha, edição da própria conta, gestão administrativa de usuários e personificação temporária de contas comuns para suporte, com auditoria. As ações Personificar, Editar e Remover ficam no menu de três pontos de cada usuário, no computador e no celular.
 - **Documentos legais:** Termos de Uso, Aviso de Privacidade e aceite explícito por versão.
 - **Interface:** temas claro/escuro, navegação móvel, menu lateral recolhível, atalhos de retorno e botão para voltar ao topo.
 
@@ -33,7 +34,7 @@ JavaScript, Next.js com **Pages Router**, React, Tiptap, PostgreSQL, `pg`, `node
 | `tests/`      | Testes unitários e de integração                |
 | `docs/`       | Regras, operação, continuidade e pendências     |
 
-A base nasceu dos estudos do Curso.Dev e preserva a separação entre apresentação, controllers, models e infraestrutura. Não utiliza ORM.
+A base nasceu dos estudos do Curso.Dev e preserva a separação entre apresentação, controllers, models e infraestrutura. Não utiliza ORM. Consultas SQL são organizadas por cláusula e os desenhos SVG ficam em componentes nomeados de ícones/marca, separados das telas, para facilitar a leitura do código.
 
 ## Executar localmente
 

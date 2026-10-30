@@ -13,9 +13,12 @@ async function sendRecoveryRequest(method, body, successStatus) {
       "Não foi possível conectar. Verifique sua conexão e tente novamente.",
     );
   }
-  if (response.status === successStatus) return;
-  if (response.status === 403)
+  if (response.status === successStatus) {
+    return;
+  }
+  if (response.status === 403) {
     throw new Error("Encerre a personificação antes de recuperar uma senha.");
+  }
   if (response.status === 400) {
     const result = await response.json().catch(() => ({}));
     const messages = {

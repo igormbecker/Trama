@@ -1,3 +1,4 @@
+import EditIcon from "components/icons/EditIcon";
 import useActionState from "components/shared/useActionState";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
@@ -20,14 +21,18 @@ export default function WorkDetails({ work, canManage }) {
   const panel = useRef(null);
   const editButton = useRef(null);
   useEffect(() => {
-    if (editing) titleField.current?.focus();
-    else if (saved)
+    if (editing) {
+      titleField.current?.focus();
+    } else if (saved) {
       panel.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    }
   }, [editing, saved]);
 
   async function save(event) {
     event.preventDefault();
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -128,17 +133,7 @@ export default function WorkDetails({ work, canManage }) {
                   setEditing(true);
                 }}
               >
-                <svg
-                  className={styles.actionIcon}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="m15 4 5 5M4 20l5-1L21 7l-5-5L4 14v6Z" />
-                </svg>
+                <EditIcon className={styles.actionIcon} />
                 Editar {labels.name}
               </button>
               <MoveToTrashButton

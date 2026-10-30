@@ -33,34 +33,46 @@ export default function WorkspacePage({
       let activity;
       try {
         activity = readActivity(window.localStorage, user.id);
-        if (!active) return;
+        if (!active) {
+          return;
+        }
         setRecent(recentWorks(activity, works));
         setChapter(null);
         setHistoryError("");
         const last = activity.chapter;
         const work = works.find((work) => work.id === last?.workId);
-        if (!last || !work) return;
+        if (!last || !work) {
+          return;
+        }
         const response = await fetch(
           `/api/v1/works/${encodeURIComponent(work.id)}/chapters/${encodeURIComponent(last.chapterId)}`,
           { credentials: "same-origin", cache: "no-store" },
         );
-        if (!active) return;
+        if (!active) {
+          return;
+        }
         if (!response.ok) {
-          if (![401, 404].includes(response.status))
+          if (![401, 404].includes(response.status)) {
             setHistoryError(
               "Não foi possível carregar o último texto. Você pode abrir o projeto pela lista abaixo.",
             );
+          }
           return;
         }
         const content = await response.json();
-        if (active) setChapter({ work, ...content.chapter });
+        if (active) {
+          setChapter({ work, ...content.chapter });
+        }
       } catch {
-        if (active)
+        if (active) {
           setHistoryError(
             "O histórico está indisponível neste momento. Você pode continuar por Meus projetos.",
           );
+        }
       } finally {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
     load();

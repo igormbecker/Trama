@@ -3,7 +3,9 @@ import chapterRequest from "models/chapterRequest";
 
 export async function getServerSideProps(context) {
   const result = await getWorksProps(context);
-  if (!result.props) return result;
+  if (!result.props) {
+    return result;
+  }
   const participations = await chapterRequest.findForAssignee(
     result.props.user.id,
   );

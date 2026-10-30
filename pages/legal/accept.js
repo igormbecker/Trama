@@ -10,8 +10,9 @@ export async function getServerSideProps({ req, res }) {
       { allowPendingLegalAcceptance: true },
     );
     const status = await legalAcceptance.status(current.id);
-    if (status.enabled && !status.required)
+    if (status.enabled && !status.required) {
       return { redirect: { destination: "/home", permanent: false } };
+    }
     return {
       props: {
         user: { id: current.id, name: current.name },
@@ -20,8 +21,9 @@ export async function getServerSideProps({ req, res }) {
       },
     };
   } catch (error) {
-    if (error instanceof UnauthorizedError)
+    if (error instanceof UnauthorizedError) {
       return { redirect: { destination: "/login", permanent: false } };
+    }
     throw error;
   }
 }

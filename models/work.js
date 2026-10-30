@@ -24,8 +24,9 @@ function validateInput(input, { allowType = false } = {}) {
     throw new ValidationError({ message: "Invalid work data." });
   }
   const type = input.type === undefined ? "literary" : input.type;
-  if (allowType && !["literary", "group_assignment"].includes(type))
+  if (allowType && !["literary", "group_assignment"].includes(type)) {
     throw new ValidationError({ message: "Invalid project type." });
+  }
   return { title, description, type };
 }
 
@@ -39,18 +40,51 @@ async function create(ownerId, input) {
       client = await database.getNewClient();
       await client.query("BEGIN");
       const result = await client.query({
-        text: "INSERT INTO works (owner_id, title, description, type) VALUES ($1, $2, $3, $4) RETURNING *",
+        text: `
+          INSERT INTO
+            works (
+              owner_id,
+              title,
+              description,
+              type
+            )
+          VALUES
+            ($1, $2, $3, $4)
+          RETURNING
+            *
+        `,
         values: [ownerId, title, description, type],
       });
       const created = result.rows[0];
       for (const [partIndex, part] of groupAssignmentStructure.entries()) {
         const inserted = await client.query({
-          text: "INSERT INTO work_parts (work_id, title, position) VALUES ($1, $2, $3) RETURNING id",
+          text: `
+            INSERT INTO
+              work_parts (
+                work_id,
+                title,
+                position
+              )
+            VALUES
+              ($1, $2, $3)
+            RETURNING
+              id
+          `,
           values: [created.id, part.title, partIndex + 1],
         });
         for (const [sectionIndex, section] of part.sections.entries())
           await client.query({
-            text: "INSERT INTO chapters (part_id, title, description, position) VALUES ($1, $2, $3, $4)",
+            text: `
+              INSERT INTO
+                chapters (
+                  part_id,
+                  title,
+                  description,
+                  position
+                )
+              VALUES
+                ($1, $2, $3, $4)
+            `,
             values: [
               inserted.rows[0].id,
               section.title,
@@ -69,7 +103,19 @@ async function create(ownerId, input) {
     }
   }
   const result = await database.query({
-    text: "INSERT INTO works (owner_id, title, description, type) VALUES ($1, $2, $3, $4) RETURNING *",
+    text: `
+      INSERT INTO
+        works (
+          owner_id,
+          title,
+          description,
+          type
+        )
+      VALUES
+        ($1, $2, $3, $4)
+      RETURNING
+        *
+    `,
     values: [ownerId, title, description, type],
   });
   return result.rows[0];
@@ -79,19 +125,52 @@ async function update(id, userId, input) {
   validateId(id);
   const { title, description } = validateInput(input);
   const result = await database.query({
-    text: `UPDATE works SET title = $3, description = $4, updated_at = timezone('utc', now())
-      WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL RETURNING *`,
+    text: `
+      UPDATE
+        works
+      SET
+        title = $3,
+        description = $4,
+        updated_at = timezone('utc', now())
+      WHERE
+        id = $1
+        AND owner_id = $2
+        AND deleted_at IS NULL
+      RETURNING
+        *
+    `,
     values: [id, userId, title, description],
   });
-  if (!result.rowCount) throw new NotFoundError({ message: "Work not found." });
+  if (!result.rowCount) {
+    throw new NotFoundError({ message: "Work not found." });
+  }
   return result.rows[0];
 }
 
 async function findAllForUser(userId) {
   const result = await database.query({
-    text: `SELECT w.* FROM works w WHERE w.deleted_at IS NULL AND (w.owner_id = $1 OR EXISTS
-      (SELECT 1 FROM work_participants p WHERE p.work_id = w.id AND p.user_id = $1 AND p.removed_at IS NULL))
-      ORDER BY w.created_at DESC, w.id DESC`,
+    text: `
+      SELECT
+        w.*
+      FROM
+        works w
+      WHERE
+        w.deleted_at IS NULL
+        AND (w.owner_id = $1
+            OR EXISTS (
+              SELECT
+                1
+              FROM
+                work_participants p
+              WHERE
+                p.work_id = w.id
+                AND p.user_id = $1
+                AND p.removed_at IS NULL
+            ))
+      ORDER BY
+        w.created_at DESC,
+        w.id DESC
+    `,
     values: [userId],
   });
   return result.rows;
@@ -107,17 +186,38 @@ function validateId(id) {
 async function findOneById(id, userId) {
   validateId(id);
   const result = await database.query({
-    text: `SELECT w.* FROM works w WHERE w.id = $1 AND w.deleted_at IS NULL AND (w.owner_id = $2 OR EXISTS
-      (SELECT 1 FROM work_participants p WHERE p.work_id = w.id AND p.user_id = $2 AND p.removed_at IS NULL))`,
+    text: `
+      SELECT
+        w.*
+      FROM
+        works w
+      WHERE
+        w.id = $1
+        AND w.deleted_at IS NULL
+        AND (w.owner_id = $2
+            OR EXISTS (
+              SELECT
+                1
+              FROM
+                work_participants p
+              WHERE
+                p.work_id = w.id
+                AND p.user_id = $2
+                AND p.removed_at IS NULL
+            ))
+    `,
     values: [id, userId],
   });
-  if (!result.rowCount) throw new NotFoundError({ message: "Work not found." });
+  if (!result.rowCount) {
+    throw new NotFoundError({ message: "Work not found." });
+  }
   return result.rows[0];
 }
 async function requireOwner(id, userId) {
   const storedWork = await findOneById(id, userId);
-  if (storedWork.owner_id !== userId)
+  if (storedWork.owner_id !== userId) {
     throw new NotFoundError({ message: "Work not found." });
+  }
   return storedWork;
 }
 const work = {

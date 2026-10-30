@@ -15,7 +15,9 @@ export function createDraftWriter({ revision, save }) {
       return revision;
     },
     async flush() {
-      if (saving || generation === savedGeneration) return;
+      if (saving || generation === savedGeneration) {
+        return;
+      }
       saving = true;
       const sentGeneration = generation;
       try {

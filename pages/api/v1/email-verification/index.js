@@ -14,9 +14,13 @@ router.use(async (request, response, next) => {
       const current = await session.findOneValidByToken(
         request.cookies.trama_session_id,
       );
-      if (current.impersonated_user_id) throw new ForbiddenError();
+      if (current.impersonated_user_id) {
+        throw new ForbiddenError();
+      }
     } catch (error) {
-      if (!(error instanceof UnauthorizedError)) throw error;
+      if (!(error instanceof UnauthorizedError)) {
+        throw error;
+      }
     }
   }
   return next();

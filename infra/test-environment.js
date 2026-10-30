@@ -3,7 +3,9 @@ const dotenv = require("dotenv");
 const { expand } = require("dotenv-expand");
 
 function isIsolatedConnectionUrl(value) {
-  if (!value) return true;
+  if (!value) {
+    return true;
+  }
   try {
     const connection = new URL(value);
     return (

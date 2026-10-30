@@ -63,9 +63,15 @@ export default function ChapterReview({
   );
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (isMobile && panelOpen && dialog && !dialog.open) dialog.showModal();
-    if ((!isMobile || !panelOpen) && dialog?.open) dialog.close();
-    if (!panelOpen) return;
+    if (isMobile && panelOpen && dialog && !dialog.open) {
+      dialog.showModal();
+    }
+    if ((!isMobile || !panelOpen) && dialog?.open) {
+      dialog.close();
+    }
+    if (!panelOpen) {
+      return;
+    }
     const target = focusInput
       ? commentInputRef.current
       : commentRefs.current[activeCommentId];
@@ -79,7 +85,9 @@ export default function ChapterReview({
     setFocusInput(false);
     setPanelOpen(true);
     // Also focus on repeated clicks on the same marked passage.
-    if (!isMobile || panelOpen) commentRefs.current[id]?.focus();
+    if (!isMobile || panelOpen) {
+      commentRefs.current[id]?.focus();
+    }
   }
   function closePanel() {
     setPanelOpen(false);
@@ -96,16 +104,21 @@ export default function ChapterReview({
     mark?.scrollIntoView({ block: "center" });
   }
   const captureSelection = useCallback(() => {
-    if (!editable) return;
+    if (!editable) {
+      return;
+    }
     const selected = window.getSelection();
-    if (!selected?.rangeCount || selected.isCollapsed) return;
+    if (!selected?.rangeCount || selected.isCollapsed) {
+      return;
+    }
     const range = selected.getRangeAt(0);
     const root = readerRef.current;
     if (
       !root.contains(range.startContainer) ||
       !root.contains(range.endContainer)
-    )
+    ) {
       return;
+    }
     const prefix = range.cloneRange();
     prefix.selectNodeContents(root);
     prefix.setEnd(range.startContainer, range.startOffset);
@@ -298,7 +311,9 @@ export default function ChapterReview({
           onClick={() => {
             setFocusInput(true);
             setPanelOpen(true);
-            if (!isMobile || panelOpen) commentInputRef.current?.focus();
+            if (!isMobile || panelOpen) {
+              commentInputRef.current?.focus();
+            }
           }}
         >
           Comentar trecho

@@ -94,7 +94,9 @@ export async function copyInvitationLink(
   let field;
   const previousFocus = documentObject?.activeElement;
   try {
-    if (!documentObject?.execCommand) throw new Error("Clipboard unavailable");
+    if (!documentObject?.execCommand) {
+      throw new Error("Clipboard unavailable");
+    }
     field = documentObject.createElement("textarea");
     field.value = link;
     field.setAttribute("readonly", "");
@@ -105,7 +107,9 @@ export async function copyInvitationLink(
     documentObject.body.appendChild(field);
     field.focus();
     field.select();
-    if (!documentObject.execCommand("copy")) throw new Error("Copy failed");
+    if (!documentObject.execCommand("copy")) {
+      throw new Error("Copy failed");
+    }
   } catch {
     throw new Error(
       "Não foi possível copiar automaticamente. Selecione o link e copie manualmente.",

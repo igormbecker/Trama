@@ -1,3 +1,11 @@
+import NavigationToggleIcon from "components/icons/NavigationToggleIcon";
+import HomeIcon from "components/icons/HomeIcon";
+import ProjectsIcon from "components/icons/ProjectsIcon";
+import ChecklistIcon from "components/icons/ChecklistIcon";
+import MailIcon from "components/icons/MailIcon";
+import AccountIcon from "components/icons/AccountIcon";
+import UsersIcon from "components/icons/UsersIcon";
+import TrashMenuIcon from "components/icons/TrashMenuIcon";
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import HomeLayout from "components/home/HomeLayout";
@@ -27,18 +35,28 @@ export default function AppLayout({
   initialParticipations,
   backHref,
   backLabel = "Voltar",
+  writingFocus = false,
 }) {
-  const [menuChoice, setMenuOpen] = useState(null);
+  const [menuChoice, setMenuChoice] = useState(null);
   const isMobile = useSyncExternalStore(
     subscribeViewport,
     isMobileViewport,
     serverViewport,
   );
-  const menuOpen = menuChoice ?? !isMobile;
+  const focusMode = !isMobile && writingFocus;
+  const menuOpen =
+    menuChoice?.focusMode === focusMode
+      ? menuChoice.open
+      : !isMobile && !writingFocus;
+  function setMenuOpen(open) {
+    setMenuChoice({ focusMode, open });
+  }
   const toggleRef = useRef(null);
   const sidebarRef = useRef(null);
   useEffect(() => {
-    if (isMobile || !sidebarRef.current) return;
+    if (isMobile || !sidebarRef.current) {
+      return;
+    }
     return observeSidebarHeight(sidebarRef.current);
   }, [isMobile]);
   function closeMobileMenu(event) {
@@ -91,7 +109,9 @@ export default function AppLayout({
           <span>Voltar</span>
         </Link>
       )}
-      <div className={`${styles.frame} ${menuOpen ? "" : styles.menuClosed}`}>
+      <div
+        className={`${styles.frame} ${menuOpen ? "" : styles.menuClosed} ${writingFocus ? styles.writingFrame : ""}`}
+      >
         <div className={styles.menuControl}>
           <button
             ref={toggleRef}
@@ -103,19 +123,7 @@ export default function AppLayout({
             title={menuOpen ? "Ocultar menu" : "Mostrar menu"}
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d={menuIconPath} />
-            </svg>
+            <NavigationToggleIcon path={menuIconPath} />
           </button>
         </div>
         {menuOpen && (
@@ -134,7 +142,9 @@ export default function AppLayout({
           inert={!menuOpen}
           aria-hidden={!menuOpen}
           onKeyDown={(event) => {
-            if (event.key === "Escape") closeMenu();
+            if (event.key === "Escape") {
+              closeMenu();
+            }
           }}
         >
           <aside className={styles.sidebar}>
@@ -149,28 +159,14 @@ export default function AppLayout({
                 href="/home"
                 aria-current={activePage === "home" ? "page" : undefined}
               >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <HomeIcon />
                 Seu espaço
               </Link>
               <Link
                 href="/works"
                 aria-current={activePage === "works" ? "page" : undefined}
               >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M12 5C8 2 3 3 2 4v16c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Zm0 0v16"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <ProjectsIcon />
                 Meus projetos
               </Link>
               <Link
@@ -179,15 +175,7 @@ export default function AppLayout({
                   activePage === "participations" ? "page" : undefined
                 }
               >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M9 5h11M9 12h11M9 19h11M3 5l1 1 2-2M3 12l1 1 2-2M3 19l1 1 2-2"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <ChecklistIcon />
                 Minhas participações
                 {participationCount > 0 && (
                   <span
@@ -202,23 +190,7 @@ export default function AppLayout({
                 href="/invitations"
                 aria-current={activePage === "invitations" ? "page" : undefined}
               >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <rect
-                    x="3"
-                    y="5"
-                    width="18"
-                    height="14"
-                    rx="2"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="m3 6 9 7 9-7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <MailIcon />
                 Meus convites
                 {invitationCount > 0 && (
                   <span
@@ -233,20 +205,7 @@ export default function AppLayout({
                 href="/account"
                 aria-current={activePage === "account" ? "page" : undefined}
               >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle
-                    cx="12"
-                    cy="7"
-                    r="4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M4 22v-2a8 8 0 0 1 16 0v2"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                </svg>
+                <AccountIcon />
                 Minha conta
               </Link>
               {user.is_admin ? (
@@ -254,24 +213,17 @@ export default function AppLayout({
                   href="/users"
                   aria-current={activePage === "users" ? "page" : undefined}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <circle
-                      cx="9"
-                      cy="7"
-                      r="3"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M2 21v-3a7 7 0 0 1 14 0v3M16 4a3 3 0 0 1 0 6m3 4a6 6 0 0 1 3 5v2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+                  <UsersIcon />
                   Usuários
                 </Link>
               ) : null}
+              <Link
+                href="/trash"
+                aria-current={activePage === "trash" ? "page" : undefined}
+              >
+                <TrashMenuIcon />
+                Lixeira
+              </Link>
             </nav>
             <p className={styles.role}>
               {user.is_admin ? "Administrador" : "Sua conta"}

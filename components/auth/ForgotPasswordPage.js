@@ -13,7 +13,9 @@ export default function ForgotPasswordPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setError("");
     setIsSubmitting(true);
     try {

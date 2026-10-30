@@ -22,7 +22,9 @@ export function createQuickDraftStarter({
   }
 
   function getAttempt() {
-    if (attempt) return attempt;
+    if (attempt) {
+      return attempt;
+    }
     let saved;
     try {
       saved = JSON.parse(storage.getItem(storageKey));
@@ -59,7 +61,9 @@ export function createQuickDraftStarter({
           body: JSON.stringify(getAttempt()),
           signal: controller.signal,
         });
-        if (response.ok) created = await response.json();
+        if (response.ok) {
+          created = await response.json();
+        }
       } catch {
         throw new Error(
           "Não foi possível abrir o rascunho. Tente novamente; a mesma tentativa será retomada.",
@@ -68,7 +72,9 @@ export function createQuickDraftStarter({
         clearTimeout(timeout);
       }
       if (!response.ok) {
-        if ([400, 409].includes(response.status)) clearAttempt();
+        if ([400, 409].includes(response.status)) {
+          clearAttempt();
+        }
         const messages = {
           400: "Não foi possível preparar o rascunho. Clique novamente para tentar outra vez.",
           401: "Sua sessão expirou. Entre novamente para começar a escrever.",
@@ -84,7 +90,9 @@ export function createQuickDraftStarter({
     }
     try {
       const navigated = await navigate(destination);
-      if (!navigated) throw new Error("Navigation interrupted");
+      if (!navigated) {
+        throw new Error("Navigation interrupted");
+      }
     } catch {
       throw new Error(
         "Seu rascunho já foi criado, mas não foi possível abrir o editor. Clique novamente para abri-lo.",
@@ -97,10 +105,11 @@ export function createQuickDraftStarter({
   return {
     destination: () => destination,
     start() {
-      if (!running)
+      if (!running) {
         running = run().finally(() => {
           running = null;
         });
+      }
       return running;
     },
   };

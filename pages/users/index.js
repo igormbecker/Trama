@@ -26,8 +26,9 @@ export async function getServerSideProps({ req, res }) {
       },
     };
   } catch (error) {
-    if (error instanceof LegalAcceptanceRequiredError)
+    if (error instanceof LegalAcceptanceRequiredError) {
       return { redirect: { destination: "/legal/accept", permanent: false } };
+    }
     if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
       return {
         redirect: {

@@ -38,9 +38,15 @@ async function patchHandler(request, response) {
   const currentUser = await authentication.authenticateSession(
     request.cookies?.trama_session_id,
   );
-  if (currentUser.impersonation) throw new ForbiddenError();
+  if (currentUser.impersonation) {
+    throw new ForbiddenError();
+  }
   const updatedUser = await user.updateOwnAccount(currentUser, request.body);
-  if (updatedUser.email_verification_required && !updatedUser.email_verified_at)
+  if (
+    updatedUser.email_verification_required &&
+    !updatedUser.email_verified_at
+  ) {
     emailVerification.queue(updatedUser.email, waitUntil);
+  }
   return response.status(200).json(user.toPublic(updatedUser));
 }

@@ -1,5 +1,6 @@
+import AddIcon from "components/icons/AddIcon";
 import useActionState from "components/shared/useActionState";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
@@ -14,12 +15,22 @@ export default function WorksPage({ user, works }) {
   const [error, setError] = useState("");
   const [type, setType] = useState("literary");
   const [filter, setFilter] = useState("all");
+  const [createOpen, setCreateOpen] = useState(false);
+  const projectTypeInput = useRef(null);
+  const createTrigger = useRef(null);
+  useEffect(() => {
+    if (createOpen) {
+      projectTypeInput.current?.focus();
+    }
+  }, [createOpen]);
   const labels = getProjectLabels(type);
   const visibleWorks = filterProjects(works, filter);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     const form = new FormData(event.currentTarget);
     setIsSubmitting(true);
     setError("");
@@ -64,9 +75,25 @@ export default function WorksPage({ user, works }) {
       <section className={styles.workspace} aria-labelledby="works-title">
         <div className={styles.heading}>
           <p>Olá, {user.name}.</p>
-          <h1 id="works-title">Meus projetos</h1>
+          <div className={styles.projectsHeading}>
+            <h1 id="works-title">Meus projetos</h1>
+            <button
+              type="button"
+              ref={createTrigger}
+              className={styles.createProjectToggle}
+              aria-expanded={createOpen}
+              aria-controls="create-project-panel"
+              disabled={isSubmitting}
+              onClick={() => {
+                setCreateOpen(true);
+                projectTypeInput.current?.focus();
+              }}
+            >
+              <AddIcon className={styles.actionIcon} />
+              Criar projeto
+            </button>
+          </div>
           <p>Um espaço para suas ideias começarem a ganhar forma.</p>
-          <Link href="/trash">Abrir lixeira</Link>
         </div>
         {router.query?.trashed === "1" && (
           <SuccessMessage>
@@ -74,12 +101,18 @@ export default function WorksPage({ user, works }) {
             precisar.
           </SuccessMessage>
         )}
-        <section className={styles.panel} aria-labelledby="create-work-title">
+        <section
+          id="create-project-panel"
+          className={styles.panel}
+          aria-labelledby="create-work-title"
+          hidden={!createOpen}
+        >
           <h2 id="create-work-title">Criar um projeto</h2>
           <p>O projeto é privado. Você decide quem pode participar.</p>
           <form onSubmit={handleSubmit} aria-busy={isSubmitting}>
             <label htmlFor="project-type">Tipo de projeto</label>
             <select
+              ref={projectTypeInput}
               id="project-type"
               name="type"
               value={type}
@@ -114,13 +147,26 @@ export default function WorksPage({ user, works }) {
               disabled={isSubmitting}
             />
             {error && <p role="alert">{error}</p>}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              aria-busy={isSubmitting}
-            >
-              {isSubmitting ? "Criando…" : `Criar ${labels.name}`}
-            </button>
+            <div className={styles.actions}>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+              >
+                {isSubmitting ? "Criando…" : `Criar ${labels.name}`}
+              </button>
+              <button
+                type="button"
+                className={styles.cancelProjectButton}
+                disabled={isSubmitting}
+                onClick={() => {
+                  setCreateOpen(false);
+                  createTrigger.current?.focus();
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
           </form>
         </section>
         <div className={styles.projectFilter}>

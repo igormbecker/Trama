@@ -13,7 +13,9 @@ router.use(async (request, response, next) => {
     } catch {
       throw new ForbiddenError();
     }
-    if (origin.host !== request.headers.host) throw new ForbiddenError();
+    if (origin.host !== request.headers.host) {
+      throw new ForbiddenError();
+    }
   }
   request.currentUser = await authentication.authenticateSession(
     request.cookies?.trama_session_id,

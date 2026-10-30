@@ -1,8 +1,10 @@
+import LinkIcon from "components/icons/LinkIcon";
 import { useId, useState } from "react";
 import styles from "./chapter.module.css";
 
 export default function EditorToolbar({ editor, disabled, onLink }) {
   const [expanded, setExpanded] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const moreId = useId();
   function preserveSelection(event) {
     event.preventDefault();
@@ -29,7 +31,25 @@ export default function EditorToolbar({ editor, disabled, onLink }) {
 
   return (
     <div className={styles.toolbarSlot}>
-      <div className={styles.toolbar} role="group" aria-label="Formatação">
+      <button
+        type="button"
+        className={styles.mobileFormatToggle}
+        aria-expanded={mobileOpen}
+        aria-controls={`${moreId}-formatting`}
+        disabled={disabled}
+        onPointerDown={preserveSelection}
+        onMouseDown={preserveSelection}
+        onClick={() => setMobileOpen(!mobileOpen)}
+      >
+        Formatar texto
+      </button>
+      <div
+        id={`${moreId}-formatting`}
+        className={styles.toolbar}
+        role="group"
+        aria-label="Formatação"
+        data-mobile-open={mobileOpen}
+      >
         {button(
           "Negrito",
           <strong>B</strong>,
@@ -93,23 +113,7 @@ export default function EditorToolbar({ editor, disabled, onLink }) {
             <option value="2">Título 2</option>
             <option value="3">Título 3</option>
           </select>
-          {button(
-            "Link",
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2" />
-            </svg>,
-            onLink,
-            "link",
-          )}
+          {button("Link", <LinkIcon />, onLink, "link")}
           {button("Refazer", "↷", () => chain().redo().run())}
         </div>
       </div>

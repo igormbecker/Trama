@@ -76,8 +76,10 @@ function withImpersonationAudit(handler) {
         const current = await session.findOneValidByToken(
           request.cookies.trama_session_id,
         );
-        if (current.impersonated_user_id) context = current;
-        if (context)
+        if (current.impersonated_user_id) {
+          context = current;
+        }
+        if (context) {
           await impersonation.record(context, "request_started", {
             request_id: requestId,
             method: request.method,
@@ -85,9 +87,11 @@ function withImpersonationAudit(handler) {
               .split("?")[0]
               .replace(/[a-f0-9]{96}/giu, "[token]"),
           });
+        }
       } catch (error) {
-        if (!(error instanceof UnauthorizedError))
+        if (!(error instanceof UnauthorizedError)) {
           return onErrorHandler(error, request, response);
+        }
       }
     }
     try {

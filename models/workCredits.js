@@ -11,8 +11,9 @@ function validate(input) {
     Array.isArray(input) ||
     Object.keys(input).length !== 3 ||
     Object.keys(input).some((key) => !groups.includes(key))
-  )
+  ) {
     throw new ValidationError({ message: "Invalid work credits." });
+  }
   const credits = emptyCredits();
   for (const group of groups) {
     if (
@@ -25,18 +26,26 @@ function validate(input) {
           line.length > (group === "authors" ? 255 : 1000) ||
           Array.from(line).some((character) => character.charCodeAt(0) < 32),
       )
-    )
+    ) {
       throw new ValidationError({
         message:
           "Use up to 50 credit lines per group, with up to 255 characters per author and 1000 per contribution or review.",
       });
+    }
     credits[group] = [...new Set(input[group].map((line) => line.trim()))];
   }
   return credits;
 }
 async function findStored(workId) {
   const result = await database.query({
-    text: "SELECT document FROM work_credits WHERE work_id = $1",
+    text: `
+      SELECT
+        document
+      FROM
+        work_credits
+      WHERE
+        work_id = $1
+    `,
     values: [workId],
   });
   return result.rows[0]?.document || null;
@@ -49,11 +58,30 @@ async function read(workId, userId) {
   const stored = await findStored(workId);
   const credits = stored || emptyCredits();
   const result = await database.query({
-    text: `SELECT DISTINCT r.kind, u.name, c.title FROM chapter_requests r
-      JOIN users u ON u.id = r.assignee_user_id JOIN chapters c ON c.id = r.chapter_id
-      JOIN work_parts p ON p.id = c.part_id WHERE p.work_id = $1 AND p.deleted_at IS NULL AND c.deleted_at IS NULL
-      AND r.status = 'approved' AND (r.kind = 'review' OR r.restored_at IS NULL)
-      ORDER BY u.name, c.title`,
+    text: `
+      SELECT
+        DISTINCT r.kind,
+        u.name,
+        c.title
+      FROM
+        chapter_requests r
+      JOIN
+        users u ON u.id = r.assignee_user_id
+      JOIN
+        chapters c ON c.id = r.chapter_id
+      JOIN
+        work_parts p ON p.id = c.part_id
+      WHERE
+        p.work_id = $1
+        AND p.deleted_at IS NULL
+        AND c.deleted_at IS NULL
+        AND r.status = 'approved'
+        AND (r.kind = 'review'
+            OR r.restored_at IS NULL)
+      ORDER BY
+        u.name,
+        c.title
+    `,
     values: [workId],
   });
   const suggestions = emptyCredits();
@@ -71,13 +99,38 @@ async function update(workId, userId, input) {
     client = await database.getNewClient();
     await client.query("BEGIN");
     const locked = await client.query({
-      text: "SELECT id FROM works WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL FOR UPDATE",
+      text: `
+        SELECT
+          id
+        FROM
+          works
+        WHERE
+          id = $1
+          AND owner_id = $2
+          AND deleted_at IS NULL
+        FOR UPDATE
+      `,
       values: [workId, userId],
     });
-    if (!locked.rowCount)
+    if (!locked.rowCount) {
       throw new NotFoundError({ message: "Work not found." });
+    }
     await client.query({
-      text: "INSERT INTO work_credits (work_id, document) VALUES ($1, $2) ON CONFLICT (work_id) DO UPDATE SET document = EXCLUDED.document, updated_at = timezone('utc', now())",
+      text: `
+        INSERT INTO
+          work_credits (
+            work_id,
+            document
+          )
+        VALUES
+          ($1, $2)
+        ON CONFLICT
+          (work_id)
+        DO UPDATE
+        SET
+          document = EXCLUDED.document,
+          updated_at = timezone('utc', now())
+      `,
       values: [workId, JSON.stringify(credits)],
     });
     await client.query("COMMIT");

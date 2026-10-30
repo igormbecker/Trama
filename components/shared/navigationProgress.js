@@ -1,12 +1,16 @@
 export function trackNavigation({ events, document, currentUrl, onChange }) {
   let activeUrl = null;
   function start(url, { shallow } = {}) {
-    if (shallow) return;
+    if (shallow) {
+      return;
+    }
     activeUrl = url;
     onChange(true);
   }
   function finish(url) {
-    if (url !== activeUrl) return;
+    if (url !== activeUrl) {
+      return;
+    }
     activeUrl = null;
     onChange(false);
   }
@@ -21,15 +25,17 @@ export function trackNavigation({ events, document, currentUrl, onChange }) {
       event.metaKey ||
       event.shiftKey ||
       event.altKey
-    )
+    ) {
       return;
+    }
     const anchor = event.target?.closest?.("a[href]");
     if (
       !anchor ||
       anchor.hasAttribute("download") ||
       (anchor.target && anchor.target !== "_self")
-    )
+    ) {
       return;
+    }
     const current = new URL(currentUrl());
     const destination = new URL(anchor.href, current);
     if (
@@ -37,8 +43,9 @@ export function trackNavigation({ events, document, currentUrl, onChange }) {
       (destination.pathname === current.pathname &&
         destination.search === current.search &&
         destination.hash)
-    )
+    ) {
       return;
+    }
     event.preventDefault();
     event.stopImmediatePropagation();
   }

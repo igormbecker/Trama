@@ -1,3 +1,4 @@
+import TrashActionIcon from "components/icons/TrashActionIcon";
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import useActionState from "components/shared/useActionState";
@@ -20,16 +21,23 @@ export default function MoveToTrashButton({
   const dialog = useRef(null);
   const headingId = useId();
   useEffect(() => {
-    if (open) dialog.current?.showModal();
+    if (open) {
+      dialog.current?.showModal();
+    }
   }, [open]);
   async function move() {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
       await saveStructure(path, "DELETE");
-      if (redirectTo) await router.push(redirectTo);
-      else await router.replace(router.asPath, undefined, { scroll: false });
+      if (redirectTo) {
+        await router.push(redirectTo);
+      } else {
+        await router.replace(router.asPath, undefined, { scroll: false });
+      }
       dialog.current?.close();
       setOpen(false);
       onMoved?.();
@@ -51,7 +59,7 @@ export default function MoveToTrashButton({
           setOpen(true);
         }}
       >
-        {label}
+        <TrashActionIcon className={styles.actionIcon} /> {label}
       </button>
       {open && (
         <dialog
@@ -59,8 +67,11 @@ export default function MoveToTrashButton({
           className={`${styles.panel} ${styles.trashDialog}`}
           aria-labelledby={headingId}
           onCancel={(event) => {
-            if (pendingRef.current) event.preventDefault();
-            else setOpen(false);
+            if (pendingRef.current) {
+              event.preventDefault();
+            } else {
+              setOpen(false);
+            }
           }}
         >
           <h2 id={headingId}>Mover para a lixeira?</h2>

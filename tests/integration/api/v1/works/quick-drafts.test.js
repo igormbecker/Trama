@@ -173,7 +173,7 @@ test("Rolls back the work and part when chapter creation fails", async () => {
   const client = await database.getNewClient();
   const originalQuery = client.query.bind(client);
   client.query = (query) =>
-    query?.text?.startsWith("INSERT INTO chapters")
+    /^\s*INSERT\s+INTO\s+chapters\b/.test(query?.text || "")
       ? Promise.reject(new Error("Chapter insert failed"))
       : originalQuery(query);
   const connection = jest

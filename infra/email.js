@@ -31,7 +31,9 @@ function validateMessage(message) {
 }
 
 function getDeliveryEnvironment() {
-  if (process.env.TRAMA_TEST_SERVER === "true") return "test";
+  if (process.env.TRAMA_TEST_SERVER === "true") {
+    return "test";
+  }
   if (["development", "test"].includes(process.env.NODE_ENV)) {
     return process.env.NODE_ENV;
   }
@@ -93,7 +95,9 @@ async function send(message) {
       idempotencyKey: message.idempotencyKey,
       signal: AbortSignal.timeout(10000),
     });
-    if (result.error || !result.data?.id) throw deliveryError();
+    if (result.error || !result.data?.id) {
+      throw deliveryError();
+    }
     return { id: result.data.id };
   } catch {
     throw deliveryError();

@@ -4,12 +4,16 @@ function inline(text) {
   return text
     .split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/gu)
     .map((part, index) => {
-      if (part.startsWith("**"))
+      if (part.startsWith("**")) {
         return <strong key={index}>{part.slice(2, -2)}</strong>;
-      if (part.startsWith("`"))
+      }
+      if (part.startsWith("`")) {
         return <code key={index}>{part.slice(1, -1)}</code>;
+      }
       const link = /^\[([^\]]+)\]\(([^)]+)\)$/u.exec(part);
-      if (!link) return part;
+      if (!link) {
+        return part;
+      }
       const href =
         { "terms-of-use.md": "/terms", "privacy-notice.md": "/privacy" }[
           link[2]
@@ -34,7 +38,7 @@ export default function LegalText({ content }) {
         return <Heading key={index}>{inline(heading[2])}</Heading>;
       }
       const lines = block.split("\n");
-      if (lines.every((line) => line.startsWith("- ")))
+      if (lines.every((line) => line.startsWith("- "))) {
         return (
           <ul key={index}>
             {lines.map((line, item) => (
@@ -42,6 +46,7 @@ export default function LegalText({ content }) {
             ))}
           </ul>
         );
+      }
       if (lines.length > 2 && lines.every((line) => line.startsWith("|"))) {
         const cells = (line) =>
           line

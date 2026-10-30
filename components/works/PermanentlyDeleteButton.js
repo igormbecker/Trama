@@ -14,11 +14,15 @@ export default function PermanentlyDeleteButton({ item, disabled, onDeleted }) {
   const headingId = useId();
   const fieldId = useId();
   useEffect(() => {
-    if (open) dialog.current?.showModal();
+    if (open) {
+      dialog.current?.showModal();
+    }
   }, [open]);
   async function remove(event) {
     event.preventDefault();
-    if (pendingRef.current || confirmation !== item.title) return;
+    if (pendingRef.current || confirmation !== item.title) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -61,8 +65,11 @@ export default function PermanentlyDeleteButton({ item, disabled, onDeleted }) {
           className={`${styles.panel} ${styles.trashDialog}`}
           aria-labelledby={headingId}
           onCancel={(event) => {
-            if (pendingRef.current) event.preventDefault();
-            else setOpen(false);
+            if (pendingRef.current) {
+              event.preventDefault();
+            } else {
+              setOpen(false);
+            }
           }}
         >
           <h2 id={headingId}>Excluir para sempre?</h2>

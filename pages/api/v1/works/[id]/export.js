@@ -16,8 +16,9 @@ router.use(async (request, response, next) => {
 });
 router.get(async (request, response) => {
   const format = request.query.format;
-  if (!["docx", "pdf"].includes(format))
+  if (!["docx", "pdf"].includes(format)) {
     throw new ValidationError({ message: "Choose docx or pdf." });
+  }
   await work.requireOwner(request.query.id, request.authenticatedUser.id);
   const reading = await workReading.read(
     request.query.id,

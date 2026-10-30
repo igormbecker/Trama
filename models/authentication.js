@@ -15,17 +15,22 @@ async function authenticate(providedEmail, providedPassword) {
     typeof providedPassword !== "string" ||
     providedEmail.length > 254 ||
     providedPassword.length > 128
-  )
+  ) {
     throw new UnauthorizedError({
       message: "Invalid email or password.",
       action: "Check your credentials and try again.",
     });
+  }
   try {
     const storedUser = await findUserByEmail(providedEmail);
     await validatePassword(providedPassword, storedUser.password);
 
-    if (storedUser.email_verification_required && !storedUser.email_verified_at)
+    if (
+      storedUser.email_verification_required &&
+      !storedUser.email_verified_at
+    ) {
       throw new EmailVerificationRequiredError();
+    }
     return storedUser;
   } catch (error) {
     if (error instanceof UnauthorizedError) {
@@ -85,26 +90,33 @@ async function authenticateSession(
 
   try {
     const actor = await user.findOneById(storedSession.user_id);
-    if (actor.email_verification_required && !actor.email_verified_at)
+    if (actor.email_verification_required && !actor.email_verified_at) {
       throw new UnauthorizedError();
-    if (!allowPendingLegalAcceptance)
+    }
+    if (!allowPendingLegalAcceptance) {
       await legalAcceptance.assertAccepted(actor.id);
-    if (!storedSession.impersonated_user_id) return actor;
+    }
+    if (!storedSession.impersonated_user_id) {
+      return actor;
+    }
     if (
       !actor.is_admin ||
       new Date(storedSession.impersonation_expires_at) <= new Date()
-    )
+    ) {
       throw new UnauthorizedError();
+    }
     const represented = await user.findOneById(
       storedSession.impersonated_user_id,
     );
     if (
       represented.email_verification_required &&
       !represented.email_verified_at
-    )
+    ) {
       throw new UnauthorizedError();
-    if (!allowPendingLegalAcceptance)
+    }
+    if (!allowPendingLegalAcceptance) {
       await legalAcceptance.assertAccepted(represented.id);
+    }
     return {
       ...represented,
       is_admin: false,

@@ -21,15 +21,20 @@ export async function getServerSideProps({ req, res, params }) {
       },
     };
   } catch (error) {
-    if (error instanceof LegalAcceptanceRequiredError)
+    if (error instanceof LegalAcceptanceRequiredError) {
       return { redirect: { destination: "/legal/accept", permanent: false } };
-    if (!(error instanceof UnauthorizedError)) throw error;
+    }
+    if (!(error instanceof UnauthorizedError)) {
+      throw error;
+    }
   }
   try {
     const invitation = await workInvitation.findForRegistration(params.token);
     return { props: { invitation: JSON.parse(JSON.stringify(invitation)) } };
   } catch (error) {
-    if (error instanceof NotFoundError) return { notFound: true };
+    if (error instanceof NotFoundError) {
+      return { notFound: true };
+    }
     throw error;
   }
 }

@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import AppLayout from "components/app/AppLayout";
 import { listUsers, saveUser, removeUser } from "./usersClient";
 import styles from "./users.module.css";
+import UserActionsMenu from "./UserActionsMenu";
+import UserActionIcon from "./UserActionIcon";
 
 const emptyValues = { name: "", username: "", email: "", password: "" };
 
@@ -41,7 +43,9 @@ export default function UsersPage({ user, initialUsers }) {
   }, [deletingUser]);
 
   useEffect(() => {
-    if (representingUser) impersonationTitle.current?.focus();
+    if (representingUser) {
+      impersonationTitle.current?.focus();
+    }
   }, [representingUser]);
 
   function openForm(selectedUser = null) {
@@ -162,7 +166,9 @@ export default function UsersPage({ user, initialUsers }) {
   }
 
   async function startImpersonation() {
-    if (pendingRef.current || !representingUser) return;
+    if (pendingRef.current || !representingUser) {
+      return;
+    }
     setIsBusy(true);
     setError("");
     try {
@@ -173,10 +179,11 @@ export default function UsersPage({ user, initialUsers }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: representingUser.id }),
       });
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           "Não foi possível personificar esta conta. Confira sua sessão e o perfil do usuário.",
         );
+      }
       // Reload to discard React and SWR state from the previous identity.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign("/home");
@@ -216,7 +223,7 @@ export default function UsersPage({ user, initialUsers }) {
             onClick={() => openForm()}
             disabled={isBusy}
           >
-            Adicionar usuário
+            <UserActionIcon action="add" /> Adicionar usuário
           </button>
         </div>
         <LoadingMessage pending={isBusy}>Atualizando usuários…</LoadingMessage>
@@ -432,6 +439,7 @@ export default function UsersPage({ user, initialUsers }) {
             onClick={refreshList}
             disabled={isBusy}
           >
+            <UserActionIcon action="refresh" />{" "}
             {isBusy ? "Aguarde..." : "Atualizar lista"}
           </button>
         </div>
@@ -476,7 +484,7 @@ export default function UsersPage({ user, initialUsers }) {
                     </span>
                   </td>
                   <td data-label="Ações">
-                    <div className={styles.rowActions}>
+                    <UserActionsMenu name={entry.name} disabled={isBusy}>
                       {!entry.is_admin && entry.id !== user.id ? (
                         <button
                           type="button"
@@ -487,7 +495,7 @@ export default function UsersPage({ user, initialUsers }) {
                             setError("");
                           }}
                         >
-                          Personificar
+                          <UserActionIcon action="impersonate" /> Personificar
                         </button>
                       ) : null}
                       <button
@@ -496,7 +504,7 @@ export default function UsersPage({ user, initialUsers }) {
                         onClick={() => openForm(entry)}
                         disabled={isBusy}
                       >
-                        Editar
+                        <UserActionIcon action="edit" /> Editar
                       </button>
                       <button
                         type="button"
@@ -513,9 +521,9 @@ export default function UsersPage({ user, initialUsers }) {
                           setDeleteError("");
                         }}
                       >
-                        Remover
+                        <UserActionIcon action="remove" /> Remover
                       </button>
-                    </div>
+                    </UserActionsMenu>
                   </td>
                 </tr>
               ))}

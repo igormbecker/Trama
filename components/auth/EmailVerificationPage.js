@@ -23,7 +23,9 @@ export default function EmailVerificationPage() {
 
   async function submit(event) {
     event.preventDefault();
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     setMessage("");
@@ -45,10 +47,11 @@ export default function EmailVerificationPage() {
         setConfirmed(true);
         setToken("");
         setMessage("E-mail confirmado! Você já pode entrar no Trama.");
-      } else
+      } else {
         setMessage(
           "Se houver confirmação pendente para este endereço, enviaremos um e-mail. Confira também o spam. Aguarde um minuto antes de solicitar novamente.",
         );
+      }
     } catch {
       setError("Não foi possível conectar. Tente novamente.");
     } finally {

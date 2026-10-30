@@ -11,7 +11,9 @@ export async function getServerSideProps({ query, res }) {
       },
     };
   } catch (error) {
-    if (error instanceof NotFoundError) return { notFound: true };
+    if (error instanceof NotFoundError) {
+      return { notFound: true };
+    }
     throw error;
   }
 }

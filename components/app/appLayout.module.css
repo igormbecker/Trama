@@ -171,7 +171,8 @@
   .frame .menuToggle {
     position: fixed;
     top: calc(
-      var(--impersonation-banner-height, 0px) +
+      var(--visual-viewport-top, 0px) +
+        var(--impersonation-banner-height, 0px) +
         max(12px, env(safe-area-inset-top))
     );
     left: max(12px, env(safe-area-inset-left));
@@ -186,7 +187,8 @@
   .floatingBack {
     position: fixed;
     top: calc(
-      var(--impersonation-banner-height, 0px) +
+      var(--visual-viewport-top, 0px) +
+        var(--impersonation-banner-height, 0px) +
         max(12px, env(safe-area-inset-top))
     );
     left: max(68px, calc(env(safe-area-inset-left) + 56px));
@@ -257,5 +259,25 @@
   .sidebar,
   .sidebarClip {
     transition: none;
+  }
+}
+
+@media (min-width: 801px) {
+  .frame.writingFrame {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .frame .menuToggle {
+    width: 40px;
+    height: 40px;
+  }
+  .floatingBack {
+    left: max(60px, calc(env(safe-area-inset-left) + 48px));
+    height: 40px;
+    padding: 0 10px;
+    font-size: 14px;
   }
 }
