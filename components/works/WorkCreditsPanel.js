@@ -28,7 +28,9 @@ export default function WorkCreditsPanel({ workId, initialData, projectType }) {
   const [saved, setSaved] = useState(false);
   async function save(event) {
     event.preventDefault();
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setSaved(false);
     setError("");

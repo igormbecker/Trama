@@ -60,25 +60,33 @@ export default function EditorialRequestPanel({
   const active = current && ["writing", "waiting"].includes(current.status);
   const assigned = current?.assignee_user_id === user.id && !isOwner;
   async function reviewAction(input) {
-    if (pendingRef.current) return false;
+    if (pendingRef.current) {
+      return false;
+    }
     setBusy(true);
     setError("");
     setSuccess("");
     try {
       await chapterRequest(path, "PATCH", input);
-      if (input.request_id && current?.id === input.request_id)
+      if (input.request_id && current?.id === input.request_id) {
         setRequestContent(
           await chapterRequest(
             `${path}?requestId=${encodeURIComponent(input.request_id)}`,
           ),
         );
-      else await refresh();
-      if (input.request_id && historyDetails?.request?.id === input.request_id)
+      } else {
+        await refresh();
+      }
+      if (
+        input.request_id &&
+        historyDetails?.request?.id === input.request_id
+      ) {
         setHistoryDetails(
           await chapterRequest(
             `${path}?requestId=${encodeURIComponent(input.request_id)}`,
           ),
         );
+      }
       setSuccess(
         input.action === "conclude_review"
           ? "Parecer enviado ao responsável."
@@ -101,7 +109,9 @@ export default function EditorialRequestPanel({
     return updated;
   }
   async function perform(operation, successText) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     setSuccess("");
@@ -129,7 +139,9 @@ export default function EditorialRequestPanel({
     }, "Pedido editorial criado.");
   }
   async function start() {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     let lease;
@@ -138,10 +150,11 @@ export default function EditorialRequestPanel({
       await refresh();
       setToken(lease.token);
     } catch (failure) {
-      if (lease)
+      if (lease) {
         await chapterRequest(`${path}/lease`, "DELETE", {
           token: lease.token,
         }).catch(() => {});
+      }
       setError(failure.message);
     } finally {
       setBusy(false);
@@ -182,7 +195,9 @@ export default function EditorialRequestPanel({
     }, "Ajustes solicitados.");
   }
   async function approve(confirmConflict = false) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -211,8 +226,9 @@ export default function EditorialRequestPanel({
       !window.confirm(
         "Restaurar o texto anterior à aprovação? O texto atual será substituído, mas continuará registrado nesta entrega.",
       )
-    )
+    ) {
       return;
+    }
     await perform(
       () =>
         chapterRequest(path, "PATCH", {
@@ -224,7 +240,9 @@ export default function EditorialRequestPanel({
     );
   }
   async function viewHistory(id) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -237,7 +255,9 @@ export default function EditorialRequestPanel({
       setBusy(false);
     }
   }
-  if (!isOwner && !current) return children || null;
+  if (!isOwner && !current) {
+    return children || null;
+  }
   const assigneeName = assigned
     ? "Você"
     : participants.find(
@@ -246,6 +266,7 @@ export default function EditorialRequestPanel({
   return (
     <>
       <details
+        id="chapter-editorial-details"
         className={styles.editorialDisclosure}
         open={Boolean(assigned && active)}
       >
@@ -418,11 +439,12 @@ export default function EditorialRequestPanel({
                 type="button"
                 disabled={busy}
                 onClick={() => {
-                  if (window.confirm("Cancelar este pedido editorial?"))
+                  if (window.confirm("Cancelar este pedido editorial?")) {
                     perform(
                       () => chapterRequest(path, "PATCH", { action: "cancel" }),
                       "Pedido cancelado.",
                     );
+                  }
                 }}
               >
                 Cancelar pedido

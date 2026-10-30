@@ -4,7 +4,9 @@ const key = (userId) => `trama:activity:v1:${userId}`;
 export function readActivity(storage, userId) {
   try {
     const value = JSON.parse(storage.getItem(key(userId)));
-    if (!value || !Array.isArray(value.works)) return emptyActivity();
+    if (!value || !Array.isArray(value.works)) {
+      return emptyActivity();
+    }
     const chapter = value.chapter;
     return {
       works: [

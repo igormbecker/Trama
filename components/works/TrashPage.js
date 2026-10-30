@@ -15,7 +15,9 @@ export default function TrashPage({ user, items }) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   async function restore(item) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusyId(item.id);
     setError("");
     setMessage("");
@@ -37,7 +39,7 @@ export default function TrashPage({ user, items }) {
   return (
     <AppLayout
       user={user}
-      activePage="works"
+      activePage="trash"
       title="Lixeira | Trama"
       description="Restaure seus projetos, partes e textos."
       backHref="/works"

@@ -1,3 +1,4 @@
+import ReadingIcon from "components/icons/ReadingIcon";
 import SuccessMessage from "components/shared/SuccessMessage";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -35,13 +36,6 @@ export default function WorkPage({
         aria-labelledby="work-title"
       >
         <Link href="/works">← Meus projetos</Link>
-        {work.owner_id === user.id && (
-          <p>
-            <Link href="/trash" prefetch={false}>
-              Abrir lixeira
-            </Link>
-          </p>
-        )}
         {router.query.created === "1" && (
           <SuccessMessage>
             {labels.title}{" "}
@@ -61,17 +55,7 @@ export default function WorkPage({
             data-button
             href={`/works/${work.id}/read`}
           >
-            <svg
-              className={styles.actionIcon}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M12 5C8 2 3 3 2 4v16c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Zm0 0v16" />
-            </svg>
+            <ReadingIcon className={styles.actionIcon} />
             Ler {labels.name}
           </Link>
         </div>

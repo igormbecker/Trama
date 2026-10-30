@@ -1,3 +1,4 @@
+import ActionIcon from "components/icons/StructureActionIcon";
 import useActionState from "components/shared/useActionState";
 import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
@@ -15,28 +16,8 @@ import SuccessIcon from "components/shared/SuccessIcon";
 import ChapterEditorialStatus from "./ChapterEditorialStatus";
 import { getProjectLabels } from "./projectLabels";
 import MoveToTrashButton from "./MoveToTrashButton";
-
-function ActionIcon({ action }) {
-  const paths = {
-    add: "M12 5v14M5 12h14",
-    edit: "m15 4 5 5M4 20l5-1L21 7l-5-5L4 14v6Z",
-    write: "M14 3H5v18h14V11M8 8h3M8 12h3m2 3 2-5 5-5 3 3-5 5-5 2Z",
-  };
-  return (
-    <svg
-      className={styles.actionIcon}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d={paths[action]} />
-    </svg>
-  );
-}
+import MobileStructureMenu from "./MobileStructureMenu";
+import StructureEntry from "./StructureEntry";
 
 function StructureForm({ initialValues, isChapter, isBusy, onSave, onCancel }) {
   const [title, setTitle] = useState(initialValues.title || "");
@@ -127,14 +108,17 @@ export default function StructurePanel({
     }
   }, [form, savedEntry]);
   useEffect(() => {
-    if (savedEntry && savedNotice.current)
+    if (savedEntry && savedNotice.current) {
       focusSavedChapter(savedNotice.current);
+    }
   }, [savedEntry]);
   function cancelForm() {
     setForm(null);
   }
   async function perform(path, method, input, closeForm = false) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setIsBusy(true);
     setError("");
     setMessage("");
@@ -147,7 +131,9 @@ export default function StructurePanel({
       } else {
         setMessage("Estrutura salva com sucesso.");
       }
-      if (closeForm) setForm(null);
+      if (closeForm) {
+        setForm(null);
+      }
     } catch (error) {
       setError(error.message);
     } finally {
@@ -168,7 +154,8 @@ export default function StructurePanel({
           aria-label={`Mover ${items[index].title} para cima`}
           onClick={() => move(items, index, -1, path)}
         >
-          ↑
+          <span aria-hidden="true">↑</span>
+          <span className={styles.orderLabel}>Mover para cima</span>
         </button>
         <button
           type="button"
@@ -176,7 +163,8 @@ export default function StructurePanel({
           aria-label={`Mover ${items[index].title} para baixo`}
           onClick={() => move(items, index, 1, path)}
         >
-          ↓
+          <span aria-hidden="true">↓</span>
+          <span className={styles.orderLabel}>Mover para baixo</span>
         </button>
       </span>
     );
@@ -192,21 +180,23 @@ export default function StructurePanel({
       className={styles.structure}
       aria-busy={isBusy}
     >
-      <h2 id="structure-title">Partes e {labels.chapters}</h2>
-      <LoadingMessage pending={isBusy}>Salvando estrutura…</LoadingMessage>
-      {error && <p role="alert">{error}</p>}
-      {message && <SuccessMessage>{message}</SuccessMessage>}
-      {canManage && (
-        <div className={styles.panel}>
+      <div className={styles.structureHeading}>
+        <h2 id="structure-title">Partes e {labels.chapters}</h2>
+        {canManage && (
           <button
             type="button"
+            className={styles.addPartButton}
             disabled={isBusy || Boolean(form)}
             onClick={() => openForm({ entry: {} })}
           >
-            <ActionIcon action="add" /> Adicionar parte
+            <ActionIcon className={styles.actionIcon} action="add" /> Adicionar
+            parte
           </button>
-        </div>
-      )}
+        )}
+      </div>
+      <LoadingMessage pending={isBusy}>Salvando estrutura…</LoadingMessage>
+      {error && <p role="alert">{error}</p>}
+      {message && <SuccessMessage>{message}</SuccessMessage>}
       {form && (
         <section
           ref={formPanel}
@@ -244,7 +234,7 @@ export default function StructurePanel({
       )}
       <ol className={styles.workList}>
         {parts.map((part, partIndex) => (
-          <li key={part.id} className={styles.panel}>
+          <StructureEntry key={part.id} className={styles.panel}>
             {savedEntry?.type === "part" && savedEntry.id === part.id && (
               <p
                 ref={savedNotice}
@@ -256,35 +246,90 @@ export default function StructurePanel({
                 Parte salva com sucesso.
               </p>
             )}
-            <h3>
-              {part.position}. {part.title}
-            </h3>
-            {canManage && (
-              <div className={styles.actions}>
+            <div className={styles.structureEntryHeading}>
+              <h3>
+                {part.position}. {part.title}
+              </h3>
+              {canManage && (
                 <button
                   type="button"
+                  className={styles.structureHeadingAction}
                   disabled={isBusy || Boolean(form)}
-                  onClick={() => openForm({ entry: part })}
-                  aria-label={`Editar parte ${part.title}`}
+                  onClick={() => openForm({ partId: part.id, entry: {} })}
+                  aria-label={`Adicionar ${labels.chapter} em ${part.title}`}
                 >
-                  <ActionIcon action="edit" /> Editar parte
+                  <ActionIcon className={styles.actionIcon} action="add" />{" "}
+                  Adicionar {labels.chapter}
                 </button>
+              )}
+              {canManage && (
+                <MobileStructureMenu
+                  label="Opções da parte"
+                  title={part.title}
+                  disabled={isBusy || Boolean(form)}
+                >
+                  <button
+                    type="button"
+                    className={styles.overflowOnlyAction}
+                    disabled={isBusy || Boolean(form)}
+                    onClick={() => openForm({ partId: part.id, entry: {} })}
+                  >
+                    <ActionIcon className={styles.actionIcon} action="add" />{" "}
+                    Adicionar {labels.chapter}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isBusy || Boolean(form)}
+                    onClick={() => openForm({ entry: part })}
+                    aria-label={`Editar parte ${part.title}`}
+                  >
+                    <ActionIcon className={styles.actionIcon} action="edit" />{" "}
+                    Editar parte
+                  </button>
+                  {orderButtons(parts, partIndex, basePath)}
+                  <MoveToTrashButton
+                    path={`${basePath}/${part.id}`}
+                    title={part.title}
+                    label="Excluir parte"
+                    description="A parte e todas as suas seções/capítulos sairão do projeto, incluindo o texto e os pedidos editoriais associados."
+                    disabled={isBusy || Boolean(form)}
+                  />
+                </MobileStructureMenu>
+              )}
+            </div>
+            {canManage && (
+              <div
+                data-structure-actions
+                className={`${styles.actions} ${styles.structurePrimaryActions}`}
+              >
                 <button
                   type="button"
                   disabled={isBusy || Boolean(form)}
                   onClick={() => openForm({ partId: part.id, entry: {} })}
                   aria-label={`Adicionar ${labels.chapter} em ${part.title}`}
                 >
-                  <ActionIcon action="add" /> Adicionar {labels.chapter}
+                  <ActionIcon className={styles.actionIcon} action="add" />{" "}
+                  Adicionar {labels.chapter}
                 </button>
-                {orderButtons(parts, partIndex, basePath)}
-                <MoveToTrashButton
-                  path={`${basePath}/${part.id}`}
-                  title={part.title}
-                  label="Excluir parte"
-                  description="A parte e todas as suas seções/capítulos sairão do projeto, incluindo o texto e os pedidos editoriais associados."
-                  disabled={isBusy || Boolean(form)}
-                />
+                <div className={styles.desktopStructureActions}>
+                  <button
+                    type="button"
+                    disabled={isBusy || Boolean(form)}
+                    onClick={() => openForm({ entry: part })}
+                    aria-label={`Editar parte ${part.title}`}
+                  >
+                    <ActionIcon className={styles.actionIcon} action="edit" />{" "}
+                    Editar parte
+                  </button>
+                  {orderButtons(parts, partIndex, basePath)}
+                  <MoveToTrashButton
+                    path={`${basePath}/${part.id}`}
+                    title={part.title}
+                    label="Excluir parte"
+                    description="A parte e todas as suas seções/capítulos sairão do projeto, incluindo o texto e os pedidos editoriais associados."
+                    disabled={isBusy || Boolean(form)}
+                  />
+                </div>
               </div>
             )}
             {part.chapters.length === 0 && (
@@ -297,7 +342,7 @@ export default function StructurePanel({
             )}
             <ol className={styles.workList}>
               {part.chapters.map((chapter, chapterIndex) => (
-                <li key={chapter.id} className={styles.chapter}>
+                <StructureEntry key={chapter.id} className={styles.chapter}>
                   {savedEntry?.type === "chapter" &&
                     savedEntry.id === chapter.id && (
                       <p
@@ -310,11 +355,58 @@ export default function StructurePanel({
                         Descrição salva com sucesso.
                       </p>
                     )}
-                  <h4>
-                    <Link href={`/works/${workId}/chapters/${chapter.id}`}>
-                      {part.position}.{chapter.position}. {chapter.title}
-                    </Link>
-                  </h4>
+                  <div className={styles.structureEntryHeading}>
+                    <h4>
+                      <Link href={`/works/${workId}/chapters/${chapter.id}`}>
+                        {part.position}.{chapter.position}. {chapter.title}
+                      </Link>
+                    </h4>
+                    {canManage && (
+                      <MobileStructureMenu
+                        label={`Opções ${projectType === "group_assignment" ? "da seção" : "do capítulo"}`}
+                        title={chapter.title}
+                        disabled={isBusy || Boolean(form)}
+                      >
+                        <Link
+                          className={styles.writeButton}
+                          data-button
+                          href={`/works/${workId}/chapters/${chapter.id}?write=1`}
+                        >
+                          <ActionIcon
+                            className={styles.actionIcon}
+                            action="write"
+                          />{" "}
+                          Escrever {labels.chapter}
+                        </Link>
+                        <button
+                          type="button"
+                          disabled={isBusy || Boolean(form)}
+                          onClick={() =>
+                            openForm({ partId: part.id, entry: chapter })
+                          }
+                          aria-label={`Editar descrição de ${chapter.title}`}
+                        >
+                          <ActionIcon
+                            className={styles.actionIcon}
+                            action="edit"
+                          />{" "}
+                          Editar descrição
+                        </button>
+                        {orderButtons(
+                          part.chapters,
+                          chapterIndex,
+                          `${basePath}/${part.id}/chapters`,
+                        )}
+                        <MoveToTrashButton
+                          path={`${basePath}/${part.id}/chapters/${chapter.id}`}
+                          title={chapter.title}
+                          label={`Excluir ${labels.chapter}`}
+                          description="Este item sairá da estrutura, da leitura e da exportação, junto com seus pedidos editoriais."
+                          disabled={isBusy || Boolean(form)}
+                        />
+                      </MobileStructureMenu>
+                    )}
+                  </div>
                   <ChapterEditorialStatus request={chapter.editorial_request} />
                   {chapter.description && (
                     <div
@@ -329,42 +421,55 @@ export default function StructurePanel({
                     </div>
                   )}
                   {canManage && (
-                    <div className={styles.actions}>
+                    <div
+                      data-structure-actions
+                      className={`${styles.actions} ${styles.structurePrimaryActions}`}
+                    >
                       <Link
                         className={styles.writeButton}
                         data-button
                         href={`/works/${workId}/chapters/${chapter.id}?write=1`}
                       >
-                        <ActionIcon action="write" /> Escrever {labels.chapter}
+                        <ActionIcon
+                          className={styles.actionIcon}
+                          action="write"
+                        />{" "}
+                        Escrever {labels.chapter}
                       </Link>
-                      <button
-                        type="button"
-                        disabled={isBusy || Boolean(form)}
-                        onClick={() =>
-                          openForm({ partId: part.id, entry: chapter })
-                        }
-                        aria-label={`Editar descrição de ${chapter.title}`}
-                      >
-                        <ActionIcon action="edit" /> Editar descrição
-                      </button>
-                      {orderButtons(
-                        part.chapters,
-                        chapterIndex,
-                        `${basePath}/${part.id}/chapters`,
-                      )}
-                      <MoveToTrashButton
-                        path={`${basePath}/${part.id}/chapters/${chapter.id}`}
-                        title={chapter.title}
-                        label={`Excluir ${labels.chapter}`}
-                        description="Este item sairá da estrutura, da leitura e da exportação, junto com seus pedidos editoriais."
-                        disabled={isBusy || Boolean(form)}
-                      />
+                      <div className={styles.desktopStructureActions}>
+                        <button
+                          type="button"
+                          disabled={isBusy || Boolean(form)}
+                          onClick={() =>
+                            openForm({ partId: part.id, entry: chapter })
+                          }
+                          aria-label={`Editar descrição de ${chapter.title}`}
+                        >
+                          <ActionIcon
+                            className={styles.actionIcon}
+                            action="edit"
+                          />{" "}
+                          Editar descrição
+                        </button>
+                        {orderButtons(
+                          part.chapters,
+                          chapterIndex,
+                          `${basePath}/${part.id}/chapters`,
+                        )}
+                        <MoveToTrashButton
+                          path={`${basePath}/${part.id}/chapters/${chapter.id}`}
+                          title={chapter.title}
+                          label={`Excluir ${labels.chapter}`}
+                          description="Este item sairá da estrutura, da leitura e da exportação, junto com seus pedidos editoriais."
+                          disabled={isBusy || Boolean(form)}
+                        />
+                      </div>
                     </div>
                   )}
-                </li>
+                </StructureEntry>
               ))}
             </ol>
-          </li>
+          </StructureEntry>
         ))}
       </ol>
     </section>

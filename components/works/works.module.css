@@ -122,6 +122,9 @@
   max-width: 100%;
 }
 .projectFilter p {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 14px;
   color: var(--muted);
 }
 .panel button {
@@ -489,4 +492,302 @@
   justify-items: start;
   gap: 10px;
   margin: 12px 0 24px;
+}
+
+.desktopStructureActions {
+  display: contents;
+}
+.structureMenuTrigger,
+.orderLabel {
+  display: none;
+}
+.structureMenu {
+  width: 100%;
+  max-width: 100%;
+  max-height: 80dvh;
+  inset: auto 0 0;
+  margin: 0;
+  padding: 12px 20px max(24px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 18px 18px 0 0;
+  background: var(--preview-paper);
+  color: var(--ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.structureMenu::backdrop {
+  background: rgb(0 0 0 / 0.4);
+}
+.structureMenuHandle {
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 16px;
+  border-radius: 4px;
+  background: var(--line);
+}
+.structureMenuHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.structureMenuHeading h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.structureMenuTitle {
+  margin: 4px 0 16px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.workPage .structureMenuHeading button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 24px;
+  background: transparent;
+  border-color: transparent;
+}
+.workPage .structureMenu .structureMenuOptions > a,
+.workPage .structureMenu .structureMenuOptions > button,
+.workPage .structureMenu .structureMenuOptions > .orderActions > button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  font-size: 16px;
+  background: var(--preview-paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  text-align: left;
+}
+.structureMenuOptions > .orderActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.structureMenuOptions .orderLabel {
+  display: inline;
+}
+.workPage .structureMenu .structureMenuOptions > button.dangerButton {
+  border-color: var(--danger-button-bg);
+  background: var(--danger-button-bg);
+  margin-top: 8px;
+  color: var(--danger-button-text);
+}
+@media (max-width: 800px) {
+  .structureEntryHeading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .structureEntryHeading > h3,
+  .structureEntryHeading > h4 {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .workPage .structureEntryHeading > .structureMenuTrigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  .desktopStructureActions {
+    display: none;
+  }
+  .structurePrimaryActions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+  .workPage .structurePrimaryActions > button,
+  .workPage .structurePrimaryActions > .writeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 46px;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+  }
+}
+
+.structureMenuOptions {
+  display: grid;
+  gap: 8px;
+}
+.projectsHeading {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 18px;
+}
+.heading .projectsHeading h1 {
+  margin: 0;
+}
+.createProjectToggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--preview-paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.createProjectToggle:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.structureHeadingAction {
+  display: none;
+}
+@media (max-width: 800px) {
+  .structureEntryHeading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px;
+  }
+  .workPage .structureEntryHeading > .structureHeadingAction {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    white-space: nowrap;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+  }
+  .structure .structurePrimaryActions {
+    display: none;
+  }
+}
+@media (max-width: 420px) {
+  .structureEntryHeading {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .structureEntryHeading > .structureMenuTrigger {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .structureEntryHeading > .structureHeadingAction {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+}
+
+.panel button.cancelProjectButton {
+  background: var(--preview-paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.workPage .structureMenu .structureMenuOptions > a {
+  box-sizing: border-box;
+  text-decoration: none;
+}
+@media (max-width: 800px) {
+  .chapter > .structureEntryHeading {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.workPage .structureMenu .structureMenuOptions > .overflowOnlyAction {
+  display: none;
+}
+@media (min-width: 801px) {
+  .structure .structurePrimaryActions {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .structurePrimaryActions > button,
+  .structurePrimaryActions > a,
+  .desktopStructureActions > button,
+  .desktopStructureActions > .orderActions {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  [data-compact-actions="true"] > .structurePrimaryActions {
+    max-height: 0;
+    margin: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  [data-compact-actions="true"] > .structureEntryHeading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  [data-compact-actions="true"] > .structureEntryHeading > h3,
+  [data-compact-actions="true"] > .structureEntryHeading > h4 {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .workPage
+    [data-compact-actions="true"]
+    > .structureEntryHeading
+    > .structureMenuTrigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  .workPage .structureMenu .structureMenuOptions > .overflowOnlyAction {
+    display: flex;
+  }
+}
+
+.structureHeading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 24px;
+}
+.structureHeading h2 {
+  margin: 0;
+}
+.workPage .addPartButton {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--preview-paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.workPage .addPartButton:disabled {
+  opacity: 0.65;
+  cursor: default;
 }

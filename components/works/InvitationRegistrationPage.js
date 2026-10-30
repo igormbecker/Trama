@@ -17,7 +17,9 @@ export default function InvitationRegistrationPage({ invitation }) {
 
   async function submit(event) {
     event.preventDefault();
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -34,10 +36,11 @@ export default function InvitationRegistrationPage({ invitation }) {
           }),
         },
       );
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           "Não foi possível criar a conta. Confira os dados ou tente outro nome de usuário.",
         );
+      }
       await router.replace("/login?registration=complete");
     } catch (failure) {
       setError(failure.message);

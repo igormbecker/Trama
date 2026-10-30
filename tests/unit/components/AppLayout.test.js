@@ -67,3 +67,34 @@ test("Signals new assignments in the menu without counting deliveries awaiting t
   );
   expect(html).toContain('aria-label="1 pedido aguardando sua ação"');
 });
+
+test("Writing focus collapses the desktop menu and keeps navigation available", () => {
+  const html = renderToStaticMarkup(
+    <AppLayout user={{ id: "user", name: "Alice" }} writingFocus>
+      Writing content
+    </AppLayout>,
+  );
+  expect(html).toContain('aria-expanded="false"');
+  expect(html).toContain("Mostrar menu");
+  expect(html).toContain("Writing content");
+});
+
+test.each([false, true])(
+  "Trash is the last navigation item for admin=%s and marks the active page",
+  (isAdmin) => {
+    const html = renderToStaticMarkup(
+      <AppLayout
+        user={{ id: "user", name: "Alice", is_admin: isAdmin }}
+        activePage="trash"
+      >
+        Content
+      </AppLayout>,
+    );
+    const nav = html.match(/<nav[\s\S]*?<\/nav>/)[0];
+    expect(nav).toMatch(
+      /<a(?=[^>]*href="\/trash")(?=[^>]*aria-current="page")[^>]*>/,
+    );
+    expect(nav).toMatch(/Lixeira<\/a><\/nav>$/);
+    expect(nav).not.toMatch(/href="\/works" aria-current="page"/);
+  },
+);

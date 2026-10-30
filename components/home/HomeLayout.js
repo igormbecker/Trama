@@ -1,10 +1,16 @@
+import TramaMarkIcon from "components/icons/TramaMarkIcon";
+import TramaThreadIcon from "components/icons/TramaThreadIcon";
 import Head from "next/head";
+import { useEffect, useRef } from "react";
+import observeVisualViewport from "components/app/observeVisualViewport";
 import BackToTop from "components/shared/BackToTop";
 import { useAuth } from "components/auth/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTheme } from "components/theme/ThemeProvider";
 import styles from "./homeLayout.module.css";
+
+export { TramaMarkIcon as TramaMark };
 
 export const systemStatusLink = "/status";
 
@@ -24,49 +30,6 @@ export function Brand() {
   );
 }
 
-export function TramaMark() {
-  return (
-    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path
-        d="M5 7h22M5 16h22M5 25h22M10 3v26M22 3v26"
-        stroke="currentColor"
-        strokeWidth="3"
-      />
-      <path d="M10 7h12v9H10z" fill="currentColor" />
-    </svg>
-  );
-}
-
-function TramaThread() {
-  return (
-    <svg
-      className={styles.footerMark}
-      viewBox="0 0 76 44"
-      fill="none"
-      aria-hidden="true"
-    >
-      <ellipse
-        cx="28"
-        cy="19"
-        rx="22"
-        ry="12"
-        transform="rotate(-25 28 19)"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <ellipse
-        cx="46"
-        cy="25"
-        rx="22"
-        ry="12"
-        transform="rotate(-25 46 25)"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-    </svg>
-  );
-}
-
 export default function HomeLayout({
   children,
   title = "Trama — Gestão editorial colaborativa",
@@ -75,6 +38,13 @@ export default function HomeLayout({
   showThemeControl = true,
   hasFloatingNavigation = false,
 }) {
+  const siteRef = useRef(null);
+  useEffect(() => {
+    if (!hasFloatingNavigation || !siteRef.current) {
+      return;
+    }
+    return observeVisualViewport(siteRef.current);
+  }, [hasFloatingNavigation]);
   const { theme, setTheme } = useTheme();
   const { isAuthenticated } = useAuth();
   const brandPath = isAuthenticated ? "/home" : "/";
@@ -90,7 +60,13 @@ export default function HomeLayout({
         : router.asPath || "/";
 
   return (
-    <div id="page-top" className={styles.site} lang="pt-BR" data-theme={theme}>
+    <div
+      ref={siteRef}
+      id="page-top"
+      className={styles.site}
+      lang="pt-BR"
+      data-theme={theme}
+    >
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -111,7 +87,7 @@ export default function HomeLayout({
           href={brandPath}
           aria-label={brandLabel}
         >
-          <TramaMark />
+          <TramaMarkIcon />
           <span>trama</span>
         </Link>
         <nav aria-label="Navegação principal">
@@ -144,7 +120,7 @@ export default function HomeLayout({
             href={brandPath}
             aria-label={brandLabel}
           >
-            <TramaMark />
+            <TramaMarkIcon />
             <span>trama</span>
           </Link>
           <div className={styles.footerMessage}>
@@ -153,7 +129,7 @@ export default function HomeLayout({
               <br />
               Uma obra construída em conjunto.
             </p>
-            <TramaThread />
+            <TramaThreadIcon className={styles.footerMark} />
           </div>
         </div>
         <div className={styles.footerBottom}>

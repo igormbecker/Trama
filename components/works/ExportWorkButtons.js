@@ -1,3 +1,4 @@
+import DownloadIcon from "components/icons/DownloadIcon";
 import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import Link from "next/link";
@@ -9,7 +10,9 @@ export default function ExportWorkButtons({ workId, disabled, projectType }) {
   const [busy, setBusy, pendingRef] = useActionState("");
   const [error, setError] = useState("");
   async function download(format) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(format);
     setError("");
     let url;
@@ -18,7 +21,7 @@ export default function ExportWorkButtons({ workId, disabled, projectType }) {
         `/api/v1/works/${workId}/export?format=${format}`,
         { credentials: "same-origin", cache: "no-store" },
       );
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           response.status === 401
             ? "Sua sessão expirou. Entre novamente para exportar."
@@ -26,6 +29,7 @@ export default function ExportWorkButtons({ workId, disabled, projectType }) {
               ? "Este projeto não está disponível para sua conta."
               : "Não foi possível exportar o projeto. Tente novamente.",
         );
+      }
       url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
       link.href = url;
@@ -42,7 +46,9 @@ export default function ExportWorkButtons({ workId, disabled, projectType }) {
           "Não foi possível baixar o arquivo. Tente novamente.",
       );
     } finally {
-      if (url) setTimeout(() => URL.revokeObjectURL(url), 1000);
+      if (url) {
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
       setBusy("");
     }
   }
@@ -61,20 +67,7 @@ export default function ExportWorkButtons({ workId, disabled, projectType }) {
             aria-busy={busy === format}
             onClick={() => download(format)}
           >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              style={{ verticalAlign: "-3px", marginRight: "8px" }}
-            >
-              <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" />
-            </svg>
+            <DownloadIcon />
             {busy === format
               ? "Gerando arquivo…"
               : `Exportar ${format.toUpperCase()}`}

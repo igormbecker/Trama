@@ -38,7 +38,9 @@ export default function ParticipantsPanel({
   );
 
   async function perform(operation, successMessage) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setIsBusy(true);
     setError("");
     setMessage("");
@@ -48,7 +50,9 @@ export default function ParticipantsPanel({
       setMessage(successMessage);
     } catch (error) {
       setError(error.message);
-      if (error.status === 401) await router.push("/login");
+      if (error.status === 401) {
+        await router.push("/login");
+      }
     } finally {
       setIsBusy(false);
     }

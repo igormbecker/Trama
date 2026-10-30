@@ -8,9 +8,12 @@ async function loadStatus() {
     credentials: "same-origin",
     cache: "no-store",
   });
-  if (response.status === 401) return { active: false };
-  if (!response.ok)
+  if (response.status === 401) {
+    return { active: false };
+  }
+  if (!response.ok) {
     throw new Error("Não foi possível conferir a personificação.");
+  }
   return response.json();
 }
 
@@ -26,7 +29,9 @@ export default function ImpersonationBanner() {
   const active = Boolean(data?.active);
   useEffect(() => {
     const banner = bannerRef.current;
-    if (!active || !banner) return;
+    if (!active || !banner) {
+      return;
+    }
     const style = document.documentElement.style;
     function updateHeight() {
       style.setProperty(
@@ -43,7 +48,9 @@ export default function ImpersonationBanner() {
     };
   }, [active]);
   async function stop() {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -52,10 +59,11 @@ export default function ImpersonationBanner() {
         credentials: "same-origin",
         cache: "no-store",
       });
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           "Não foi possível retornar. Se sua sessão terminou ou seu perfil mudou, saia e entre novamente.",
         );
+      }
       // Reload to discard React and SWR state from the previous identity.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign("/users");
@@ -64,7 +72,9 @@ export default function ImpersonationBanner() {
       setBusy(false);
     }
   }
-  if (!data?.active) return null;
+  if (!data?.active) {
+    return null;
+  }
   const expired = data.expired || new Date(data.expires_at) <= new Date();
   return (
     <aside

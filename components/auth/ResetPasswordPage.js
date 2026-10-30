@@ -8,7 +8,9 @@ import { resetPassword } from "./passwordRecoveryClient";
 import styles from "./auth.module.css";
 
 function getTokenFromHash() {
-  if (typeof window === "undefined") return "";
+  if (typeof window === "undefined") {
+    return "";
+  }
   const value =
     new URLSearchParams(window.location.hash.slice(1)).get("token") || "";
   return /^[a-f0-9]{96}$/.test(value) ? value : "";
@@ -25,7 +27,9 @@ export default function ResetPasswordPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (pendingRef.current || !token) return;
+    if (pendingRef.current || !token) {
+      return;
+    }
     setError("");
     if (password !== confirmation) {
       setError("As senhas precisam ser iguais.");

@@ -2,14 +2,17 @@ import SuccessIcon from "components/shared/SuccessIcon";
 import styles from "./works.module.css";
 
 export default function ChapterEditorialStatus({ request }) {
-  if (!request) return null;
+  if (!request) {
+    return null;
+  }
   const isReview = request.kind === "review";
   const approved =
     request.status === "approved" &&
     (!isReview || request.review_verdict === "approved");
   let label;
-  if (request.status === "canceled") label = "Pedido cancelado";
-  else if (isReview)
+  if (request.status === "canceled") {
+    label = "Pedido cancelado";
+  } else if (isReview) {
     label =
       request.review_verdict === "changes_requested"
         ? "Correções solicitadas"
@@ -18,7 +21,7 @@ export default function ChapterEditorialStatus({ request }) {
           : request.status === "approved"
             ? "Revisão concluída"
             : "Em revisão";
-  else
+  } else {
     label =
       request.status === "waiting"
         ? "Aguardando aprovação"
@@ -27,6 +30,7 @@ export default function ChapterEditorialStatus({ request }) {
           : request.adjustments_requested
             ? "Ajustes solicitados"
             : "Em contribuição";
+  }
   return (
     <p className={styles.editorialProgress}>
       <span

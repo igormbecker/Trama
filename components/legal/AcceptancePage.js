@@ -13,7 +13,9 @@ export default function AcceptancePage({ user, legalStatus, impersonating }) {
   const [error, setError] = useState("");
   async function submit(event) {
     event.preventDefault();
-    if (!accepted || pendingRef.current || impersonating) return;
+    if (!accepted || pendingRef.current || impersonating) {
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -27,12 +29,13 @@ export default function AcceptancePage({ user, legalStatus, impersonating }) {
           release_id: legalStatus.release_id,
         }),
       });
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           response.status === 401
             ? "Sua sessão expirou. Entre novamente."
             : "Não foi possível registrar o aceite. Recarregue a página para conferir a versão atual e tente novamente.",
         );
+      }
       await router.replace("/home");
     } catch (failure) {
       setError(failure.message);

@@ -3,7 +3,9 @@ export default function observeSidebarHeight(sidebar, viewport = window) {
   function updateHeight() {
     const top = Math.max(0, sidebar.getBoundingClientRect().top);
     const height = Math.max(0, viewport.innerHeight - top - 12);
-    if (height === previousHeight) return;
+    if (height === previousHeight) {
+      return;
+    }
     previousHeight = height;
     sidebar.style.setProperty("--sidebar-available-height", `${height}px`);
   }

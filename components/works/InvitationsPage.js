@@ -34,7 +34,9 @@ export default function InvitationsPage({
   const [message, setMessage] = useState("");
 
   async function respond(invitation, action) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setBusyId(invitation.id);
     setError("");
     setMessage("");
@@ -44,13 +46,18 @@ export default function InvitationsPage({
         (current = []) => current.filter((entry) => entry.id !== invitation.id),
         { revalidate: false },
       );
-      if (action === "accept")
+      if (action === "accept") {
         await router.push(`/works/${invitation.work_id}`);
-      else setMessage("Convite recusado. Você não recebeu acesso ao projeto.");
+      } else {
+        setMessage("Convite recusado. Você não recebeu acesso ao projeto.");
+      }
     } catch (error) {
       setError(error.message);
-      if (error.status === 401) await router.push("/login");
-      else if (error.status === 404) await mutate();
+      if (error.status === 401) {
+        await router.push("/login");
+      } else if (error.status === 404) {
+        await mutate();
+      }
     } finally {
       setBusyId(null);
     }

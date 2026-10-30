@@ -68,3 +68,27 @@ test("Readers keep the chapter reading link without management actions", () => {
   expect(html).not.toContain("Escrever capítulo");
   expect(html).not.toContain("Editar descrição");
 });
+
+test("Owners have named mobile options beside each part and chapter title", () => {
+  const html = renderToStaticMarkup(
+    <StructurePanel workId="work" parts={parts} canManage />,
+  );
+  expect(html).toContain('aria-label="Opções da parte: Part one"');
+  expect(html).toContain('aria-label="Opções do capítulo: Chapter one"');
+  expect(html).toContain('aria-haspopup="dialog"');
+  expect(html).toContain("Mover para cima");
+  expect(html).toContain("Mover para baixo");
+});
+
+test("Group assignments label their mobile options as sections", () => {
+  const html = renderToStaticMarkup(
+    <StructurePanel
+      workId="work"
+      parts={parts}
+      canManage
+      projectType="group_assignment"
+    />,
+  );
+  expect(html).toContain('aria-label="Opções da seção: Chapter one"');
+  expect(html).toContain("Escrever seção");
+});

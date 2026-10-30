@@ -37,3 +37,20 @@ test("Offers impersonation only for other regular accounts", () => {
   expect(html).not.toContain('aria-label="Personificar Admin"');
   expect(html).not.toContain('aria-label="Personificar Other admin"');
 });
+
+test("Groups user actions behind an options button", () => {
+  const user = {
+    id: "admin",
+    name: "Admin",
+    username: "admin",
+    email: "admin@example.test",
+    is_admin: true,
+  };
+  const html = renderToStaticMarkup(
+    <UsersPage user={user} initialUsers={[user]} />,
+  );
+  expect(html).toContain('aria-label="Opções de Admin"');
+  expect(html).toContain('aria-haspopup="dialog"');
+  expect(html).toMatch(/<dialog[^>]*aria-labelledby=/);
+  expect(html).toContain('aria-label="Remover Admin" disabled=""');
+});

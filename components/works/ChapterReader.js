@@ -1,13 +1,16 @@
 function inline(node, key) {
   let text = node.text;
   for (const mark of node.marks || []) {
-    if (mark.type === "bold")
+    if (mark.type === "bold") {
       text = <strong key={`${key}-bold`}>{text}</strong>;
-    if (mark.type === "italic") text = <em key={`${key}-italic`}>{text}</em>;
+    }
+    if (mark.type === "italic") {
+      text = <em key={`${key}-italic`}>{text}</em>;
+    }
     if (
       mark.type === "link" &&
       /^(https?:\/\/|mailto:)/i.test(mark.attrs?.href || "")
-    )
+    ) {
       text = (
         <a
           key={`${key}-link`}
@@ -18,6 +21,7 @@ function inline(node, key) {
           {text}
         </a>
       );
+    }
   }
   return <span key={key}>{text}</span>;
 }
@@ -28,7 +32,9 @@ function renderNode(node, key, context) {
     const comments = context.annotations.filter(
       (comment) => comment.start < context.offset && comment.end > start,
     );
-    if (!comments.length) return inline(node, key);
+    if (!comments.length) {
+      return inline(node, key);
+    }
     const boundaries = [
       ...new Set([
         start,
@@ -77,7 +83,9 @@ function renderNode(node, key, context) {
       );
     });
   }
-  if (node.type === "hardBreak") return <br key={key} />;
+  if (node.type === "hardBreak") {
+    return <br key={key} />;
+  }
   const tags = {
     paragraph: "p",
     heading: `h${(node.attrs?.level || 1) + 1}`,

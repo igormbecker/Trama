@@ -19,15 +19,19 @@ export default function InvitationPage({ user, invitation }) {
   const [error, setError] = useState("");
   const [declined, setDeclined] = useState(false);
   async function respond(action) {
-    if (pendingRef.current) return;
+    if (pendingRef.current) {
+      return;
+    }
     setIsBusy(true);
     setError("");
     try {
       await respondToInvitation(router.query.token, action);
       await refreshInvitations();
-      if (action === "accept")
+      if (action === "accept") {
         await router.replace(`/works/${invitation.work_id}`);
-      else setDeclined(true);
+      } else {
+        setDeclined(true);
+      }
     } catch (error) {
       setError(error.message);
     } finally {

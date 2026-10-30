@@ -87,7 +87,9 @@ export default function ChapterEditor({
   );
 
   const flush = useCallback(async () => {
-    if (running.current || stopped.current || !writer.pending()) return;
+    if (running.current || stopped.current || !writer.pending()) {
+      return;
+    }
     running.current = true;
     setSaving(true);
     setStatus("Salvando…");
@@ -146,7 +148,9 @@ export default function ChapterEditor({
     let cancelled = false;
     localDraft("read", key)
       .then((draft) => {
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
         if (
           draft?.document &&
           JSON.stringify(draft.document) !== JSON.stringify(content.document)
@@ -159,7 +163,9 @@ export default function ChapterEditor({
         }
       })
       .catch(() => {
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
         setLocalError(
           "A recuperação local está indisponível neste navegador. Mantenha a aba aberta até salvar no servidor.",
         );
@@ -173,7 +179,9 @@ export default function ChapterEditor({
 
   useEffect(() => {
     const heartbeat = setInterval(async () => {
-      if (stopped.current) return;
+      if (stopped.current) {
+        return;
+      }
       try {
         await chapterRequest(`${path}/lease`, "POST", { token });
       } catch (failure) {
@@ -188,7 +196,9 @@ export default function ChapterEditor({
     }, 25000);
     const periodicSave = setInterval(flush, 15000);
     function beforeUnload(event) {
-      if (!writer.pending()) return;
+      if (!writer.pending()) {
+        return;
+      }
       event.preventDefault();
       event.returnValue = "";
     }
@@ -234,8 +244,9 @@ export default function ChapterEditor({
       !window.confirm(
         "O texto ainda não foi salvo no Trama. Voltar à leitura mantendo a recuperação local?",
       )
-    )
+    ) {
       return;
+    }
     await queue.current;
     await onClose({ pending: writer.pending() });
   }
@@ -244,22 +255,26 @@ export default function ChapterEditor({
       "Endereço do link (https:// ou mailto:)",
       editor.getAttributes("link").href || "https://",
     );
-    if (href === null) return;
-    if (!href)
+    if (href === null) {
+      return;
+    }
+    if (!href) {
       editor
         .chain()
         .focus(undefined, { scrollIntoView: false })
         .extendMarkRange("link")
         .unsetLink()
         .run();
-    else if (/^(https?:\/\/|mailto:)/i.test(href.trim()))
+    } else if (/^(https?:\/\/|mailto:)/i.test(href.trim())) {
       editor
         .chain()
         .focus(undefined, { scrollIntoView: false })
         .extendMarkRange("link")
         .setLink({ href: href.trim() })
         .run();
-    else setError("Use um endereço iniciado por https://, http:// ou mailto:.");
+    } else {
+      setError("Use um endereço iniciado por https://, http:// ou mailto:.");
+    }
   }
   return (
     <section aria-label={`Editor: ${labels.chapter}`}>

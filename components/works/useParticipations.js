@@ -8,8 +8,9 @@ export function needsParticipationAction(request) {
 }
 async function listParticipations([url]) {
   const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok)
+  if (!response.ok) {
     throw new Error("Não foi possível atualizar suas participações.");
+  }
   return response.json();
 }
 export default function useParticipations(userId, initialParticipations) {

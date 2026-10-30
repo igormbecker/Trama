@@ -12,7 +12,9 @@ export default function LegalAcceptanceGuard() {
         credentials: "same-origin",
         cache: "no-store",
       });
-      if (!response.ok) return null;
+      if (!response.ok) {
+        return null;
+      }
       return response.json();
     },
     {
@@ -34,8 +36,9 @@ export default function LegalAcceptanceGuard() {
       "/forgot-password",
       "/reset-password",
     ];
-    if (data?.required && !publicPages.includes(router.pathname))
+    if (data?.required && !publicPages.includes(router.pathname)) {
       router.replace("/legal/accept");
+    }
   }, [data, router]);
   return null;
 }
