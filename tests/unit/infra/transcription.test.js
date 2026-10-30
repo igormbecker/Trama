@@ -1,12 +1,10 @@
 import { createServer } from "node:http";
 import { transcribeAudio } from "infra/transcription";
 test("Sends multipart audio to Groq with a server-only key and returns text", async () => {
-  const fetcher = jest
-    .fn()
-    .mockResolvedValue({
-      ok: true,
-      json: async () => ({ text: "Uma ideia.", duration: 8 }),
-    });
+  const fetcher = jest.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ text: "Uma ideia.", duration: 8 }),
+  });
   const result = await transcribeAudio(Buffer.from("audio"), "audio/webm", {
     apiKey: "test-key",
     fetcher,
