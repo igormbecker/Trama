@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import SuccessMessage from "components/shared/SuccessMessage";
@@ -77,6 +78,7 @@ export default function ForgotPasswordPage() {
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >
+              <ButtonActionIcon action="send" />
               {isSubmitting ? "Solicitando..." : "Enviar link de recuperação"}
             </button>
           </form>

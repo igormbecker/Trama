@@ -30,6 +30,6 @@ test("Keeps the creation label and puts cancellation inside the form", () => {
   expect(html).not.toContain("Fechar criação");
   expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>/);
   expect(html).toMatch(
-    /<form[\s\S]*<button[^>]*type="button"[^>]*>Cancelar<\/button>[\s\S]*<\/form>/,
+    /<form[\s\S]*<button[^>]*type="button"[^>]*><svg[\s\S]*?<\/svg>Cancelar<\/button>[\s\S]*<\/form>/,
   );
 });

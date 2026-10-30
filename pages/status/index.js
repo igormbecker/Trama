@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useSWR from "swr";
 import styles from "./status.module.css";
 import HomeLayout from "components/home/HomeLayout";
@@ -81,7 +82,8 @@ export default function StatusPage() {
           type="button"
           onClick={handleBack}
         >
-          <span aria-hidden="true">← </span>Back
+          <ButtonActionIcon action="back" iconOnly />
+          Back
         </button>
       }
     >

@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import TrashActionIcon from "components/icons/TrashActionIcon";
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/router";
@@ -91,6 +92,7 @@ export default function MoveToTrashButton({
               disabled={busy}
               aria-busy={busy}
             >
+              <ButtonActionIcon action="trash" />
               {busy ? "Movendo…" : "Mover para lixeira"}
             </button>
             <button
@@ -101,6 +103,7 @@ export default function MoveToTrashButton({
                 setOpen(false);
               }}
             >
+              <ButtonActionIcon action="cancel" />
               Cancelar
             </button>
           </div>

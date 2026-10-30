@@ -61,7 +61,10 @@ test("Mobile formatting starts collapsed and its toggle preserves the text selec
     (node) => node.props?.className === "mobileFormatToggle",
   );
   expect(toggle).not.toBeNull();
-  expect(toggle.props.children).toBe("Formatar texto");
+  expect(toggle.props.children).toEqual(
+    expect.arrayContaining(["Formatar texto"]),
+  );
+  expect(toggle.props.children[0].props.action).toBe("format");
   expect(toggle.props["aria-expanded"]).toBe(false);
   const panel = find(tree, (node) => node.props?.role === "group");
   expect(toggle.props["aria-controls"]).toBe(panel.props.id);

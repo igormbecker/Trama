@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import MoreOptionsIcon from "components/icons/MoreOptionsIcon";
 import { useEffect, useId, useRef, useState } from "react";
 import styles from "./works.module.css";
@@ -66,7 +67,7 @@ export default function MobileStructureMenu({
         <div className={styles.structureMenuHeading}>
           <h3 id={headingId}>{label}</h3>
           <button type="button" aria-label="Fechar opções" onClick={close}>
-            ×
+            <ButtonActionIcon action="close" iconOnly />
           </button>
         </div>
         <p className={styles.structureMenuTitle}>{title}</p>

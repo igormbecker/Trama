@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import EditIcon from "components/icons/EditIcon";
 import useActionState from "components/shared/useActionState";
 import { useEffect, useRef, useState } from "react";
@@ -97,6 +98,7 @@ export default function WorkDetails({ work, canManage }) {
             {error && <p role="alert">{error}</p>}
             <div className={styles.actions}>
               <button type="submit" disabled={busy} aria-busy={busy}>
+                <ButtonActionIcon action="save" />
                 {busy ? "Salvando…" : "Salvar"}
               </button>
               <button
@@ -109,6 +111,7 @@ export default function WorkDetails({ work, canManage }) {
                   requestAnimationFrame(() => editButton.current?.focus());
                 }}
               >
+                <ButtonActionIcon action="cancel" />
                 Cancelar
               </button>
             </div>

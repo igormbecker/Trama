@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
@@ -248,6 +249,7 @@ export default function UsersPage({ user, initialUsers }) {
                 onClick={() => setRepresentingUser(null)}
                 disabled={isBusy}
               >
+                <ButtonActionIcon action="cancel" />
                 Cancelar
               </button>
               <button
@@ -256,6 +258,7 @@ export default function UsersPage({ user, initialUsers }) {
                 onClick={startImpersonation}
                 disabled={isBusy}
               >
+                <ButtonActionIcon action="userSwitch" />
                 {isBusy ? "Iniciando…" : "Iniciar personificação"}
               </button>
             </div>
@@ -408,6 +411,7 @@ export default function UsersPage({ user, initialUsers }) {
                   disabled={isBusy}
                   aria-busy={isBusy}
                 >
+                  <ButtonActionIcon action="save" />
                   {isBusy ? "Salvando..." : "Salvar usuário"}
                 </button>
                 <button
@@ -416,6 +420,7 @@ export default function UsersPage({ user, initialUsers }) {
                   onClick={closeForm}
                   disabled={isBusy}
                 >
+                  <ButtonActionIcon action="cancel" />
                   Cancelar
                 </button>
               </div>
@@ -569,6 +574,7 @@ export default function UsersPage({ user, initialUsers }) {
               disabled={isBusy}
               autoFocus
             >
+              <ButtonActionIcon action="cancel" />
               Cancelar
             </button>
             <button
@@ -577,6 +583,7 @@ export default function UsersPage({ user, initialUsers }) {
               onClick={confirmRemoval}
               disabled={isBusy}
             >
+              <ButtonActionIcon action="trash" />
               {isBusy ? "Removendo..." : "Remover usuário"}
             </button>
           </div>

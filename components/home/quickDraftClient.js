@@ -6,8 +6,11 @@ export function createQuickDraftStarter({
   fetcher,
   navigate,
   timeZone,
+  initialDocument,
 }) {
-  const storageKey = `trama:quick-draft:${userId}`;
+  const storageKey = initialDocument
+    ? `trama:voice-draft:${userId}`
+    : `trama:quick-draft:${userId}`;
   let attempt;
   let destination;
   let running;
@@ -58,7 +61,10 @@ export function createQuickDraftStarter({
           credentials: "same-origin",
           cache: "no-store",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(getAttempt()),
+          body: JSON.stringify({
+            ...getAttempt(),
+            ...(initialDocument ? { initial_document: initialDocument } : {}),
+          }),
           signal: controller.signal,
         });
         if (response.ok) {

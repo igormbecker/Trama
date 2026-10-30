@@ -1,5 +1,6 @@
 import { v5 as uuidv5 } from "uuid";
 import database from "infra/database.js";
+import { validateDocument } from "models/chapterDocument.js";
 import { ConflictError, ValidationError } from "infra/errors.js";
 
 function validateInput(input) {
@@ -7,7 +8,7 @@ function validateInput(input) {
     throw new ValidationError({ message: "Invalid quick draft data." });
   }
 
-  const allowedFields = ["request_id", "time_zone"];
+  const allowedFields = ["request_id", "time_zone", "initial_document"];
   const inputFields = Object.keys(input);
   const hasUnknownField = inputFields.some(
     (field) => !allowedFields.includes(field),
@@ -56,6 +57,9 @@ function createDateFormatter(timeZone) {
 async function create(ownerId, input) {
   validateInput(input);
   const dateFormatter = createDateFormatter(input.time_zone);
+  if (input.initial_document !== undefined) {
+    validateDocument(input.initial_document);
+  }
 
   // Stable UUIDs make retries account-specific without adding draft-only schema.
   const workId = uuidv5(input.request_id.toLowerCase(), ownerId);
@@ -184,6 +188,21 @@ async function create(ownerId, input) {
       `,
       values: [chapterId, partId],
     });
+
+    if (input.initial_document !== undefined) {
+      await client.query({
+        text: `
+          INSERT INTO
+            chapter_drafts (
+              chapter_id,
+              document
+            )
+          VALUES
+            ($1, $2)
+        `,
+        values: [chapterId, JSON.stringify(input.initial_document)],
+      });
+    }
 
     await client.query("COMMIT");
 

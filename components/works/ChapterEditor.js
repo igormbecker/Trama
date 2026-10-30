@@ -1,5 +1,7 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import useConfirmation from "components/shared/useConfirmation";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { createDraftWriter } from "./draftWriter";
@@ -8,6 +10,8 @@ import { localDraft } from "./localDraft";
 import { chapterRequest } from "./chapterClient";
 import { preserveWordHeadings } from "./wordHeadings";
 import ChapterReader from "./ChapterReader";
+import VoiceCapture from "components/voice/VoiceCapture";
+import { textToParagraphs } from "components/voice/voiceRecorder";
 import EditorToolbar from "./EditorToolbar";
 import SuccessIcon from "components/shared/SuccessIcon";
 import styles from "./chapter.module.css";
@@ -41,6 +45,8 @@ export default function ChapterEditor({
   projectType,
 }) {
   const labels = getProjectLabels(projectType);
+  const { confirm, confirmationDialog } = useConfirmation();
+  const allowNavigationRef = useRef(false);
   const router = useRouter();
   const key = draftKey || `${userId}:${content.chapter.id}`;
   const [status, setStatus] = useState("Carregando recuperação local…");
@@ -53,6 +59,7 @@ export default function ChapterEditor({
   const [saving, setSaving] = useState(false);
   const [manualSaving, setManualSaving] = useState(false);
   const timer = useRef(null);
+  const voiceCloseGuard = useRef(null);
   const queue = useRef(Promise.resolve());
   const running = useRef(false);
   const stopped = useRef(false);
@@ -202,16 +209,44 @@ export default function ChapterEditor({
       event.preventDefault();
       event.returnValue = "";
     }
-    function beforeRoute() {
-      if (
-        writer.pending() &&
-        !window.confirm("Há texto ainda não salvo no Trama. Sair desta página?")
-      ) {
-        router.events.emit("routeChangeError");
-        const cancelled = new Error("Navigation cancelled");
-        cancelled.cancelled = true;
-        throw cancelled;
+    function beforeRoute(url) {
+      if (allowNavigationRef.current) {
+        allowNavigationRef.current = false;
+        return;
       }
+      const voiceDecision = voiceCloseGuard.current
+        ? voiceCloseGuard.current()
+        : true;
+      if (!writer.pending() && voiceDecision === true) {
+        return;
+      }
+      async function requestNavigation() {
+        if (!(await voiceDecision)) {
+          return;
+        }
+        if (
+          writer.pending() &&
+          !(await confirm({
+            title: "Sair com alterações pendentes?",
+            message:
+              "Há texto ainda não salvo no Trama. A recuperação local será mantida.",
+            confirmLabel: "Sair da página",
+            icon: "logout",
+          }))
+        ) {
+          return;
+        }
+        allowNavigationRef.current = true;
+        router.push(url).catch(() => {
+          allowNavigationRef.current = false;
+        });
+      }
+      // The voice guard is asynchronous; run both checks before retrying navigation.
+      requestNavigation();
+      router.events.emit("routeChangeError");
+      const cancelled = new Error("Navigation cancelled");
+      cancelled.cancelled = true;
+      throw cancelled;
     }
     window.addEventListener("beforeunload", beforeUnload);
     router.events.on("routeChangeStart", beforeRoute);
@@ -230,7 +265,7 @@ export default function ChapterEditor({
         body: JSON.stringify({ token }),
       }).catch(() => {});
     };
-  }, [path, token, flush, writer, router.events]);
+  }, [path, token, flush, writer, router, confirm]);
 
   function recover() {
     editor.commands.setContent(recovery.document, { emitUpdate: true });
@@ -238,12 +273,19 @@ export default function ChapterEditor({
     setReady(true);
   }
   async function finish() {
+    if (voiceCloseGuard.current && !(await voiceCloseGuard.current())) {
+      return;
+    }
     await flush();
     if (
       writer.pending() &&
-      !window.confirm(
-        "O texto ainda não foi salvo no Trama. Voltar à leitura mantendo a recuperação local?",
-      )
+      !(await confirm({
+        title: "Voltar à leitura?",
+        message:
+          "O texto ainda não foi salvo no Trama. A recuperação local será mantida.",
+        confirmLabel: "Voltar à leitura",
+        icon: "read",
+      }))
     ) {
       return;
     }
@@ -278,6 +320,7 @@ export default function ChapterEditor({
   }
   return (
     <section aria-label={`Editor: ${labels.chapter}`}>
+      {confirmationDialog}
       {recovery && (
         <section
           className={styles.recovery}
@@ -293,6 +336,7 @@ export default function ChapterEditor({
             <ChapterReader document={recovery.document} />
           </div>
           <button type="button" disabled={!editor} onClick={recover}>
+            <ButtonActionIcon action="restore" />
             Recuperar rascunho
           </button>{" "}
           <button
@@ -305,6 +349,7 @@ export default function ChapterEditor({
               setStatus("Sem alterações pendentes");
             }}
           >
+            <ButtonActionIcon action="trash" />
             Descartar rascunho local
           </button>
         </section>
@@ -345,14 +390,55 @@ export default function ChapterEditor({
         <button
           type="button"
           onClick={async () => {
+            if (voiceCloseGuard.current && !(await voiceCloseGuard.current())) {
+              return;
+            }
             await queue.current;
             await onRestart();
           }}
         >
+          <ButtonActionIcon action="restore" />
           Reabrir e recuperar rascunho
         </button>
       )}
       {localError && <p role="alert">{localError}</p>}
+      <VoiceCapture
+        storageKey={`voice:chapter:${key}`}
+        guardCloseRef={voiceCloseGuard}
+        disabled={!ready || blocked || !editor}
+        onApply={async (text) => {
+          if (!editor?.isEditable || stopped.current) {
+            throw new Error(
+              "Reabra a edição antes de inserir. Sua prévia foi preservada.",
+            );
+          }
+          const paragraphs = textToParagraphs(text);
+          const document = editor.getJSON();
+          const nextDocument = {
+            ...document,
+            content: [...document.content, ...paragraphs],
+          };
+          if (
+            new TextEncoder().encode(JSON.stringify(nextDocument)).length >
+            1024 * 1024
+          ) {
+            throw new Error(
+              "O texto ultrapassaria o limite de 1 MB. A prévia foi preservada.",
+            );
+          }
+          const inserted = editor
+            .chain()
+            .focus("end", { scrollIntoView: false })
+            .insertContentAt(editor.state.doc.content.size, paragraphs)
+            .run();
+          if (!inserted) {
+            throw new Error(
+              "Não foi possível inserir. A prévia foi preservada.",
+            );
+          }
+          await queue.current;
+        }}
+      />
       <div className={styles.editorSurface}>
         <EditorToolbar
           editor={editor}
@@ -380,6 +466,7 @@ export default function ChapterEditor({
             }, setManualSaving)
           }
         >
+          <ButtonActionIcon action="save" />
           {saving || manualSaving ? (
             <>
               <span className={styles.spinner} aria-hidden="true" /> Salvando…
@@ -389,6 +476,7 @@ export default function ChapterEditor({
           )}
         </button>
         <button type="button" onClick={finish}>
+          <ButtonActionIcon action="back" />
           Voltar à leitura
         </button>
       </div>

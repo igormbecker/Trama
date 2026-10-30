@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import Link from "next/link";
 import { useState } from "react";
@@ -105,6 +106,7 @@ export default function ResetPasswordPage() {
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >
+              <ButtonActionIcon action="lock" />
               {isSubmitting ? "Salvando..." : "Salvar nova senha"}
             </button>
           </form>

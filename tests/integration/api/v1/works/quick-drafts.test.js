@@ -215,3 +215,62 @@ test("Retries never reopen a draft moved to the trash", async () => {
   expect(removed.status).toBe(204);
   expect((await createDraft(cookie, input)).status).toBe(409);
 });
+
+test("A voice draft saves its initial text atomically and retries never overwrite later edits", async () => {
+  const { user, cookie } = await createAccount();
+  const input = {
+    request_id: randomUUID(),
+    time_zone: "UTC",
+    initial_document: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Minha ideia." }],
+        },
+      ],
+    },
+  };
+  const response = await createDraft(cookie, input);
+  expect(response.status).toBe(201);
+  const draft = await response.json();
+  const first = await database.query({
+    text: `
+      SELECT
+        document
+      FROM
+        chapter_drafts
+      WHERE
+        chapter_id = $1
+    `,
+    values: [draft.chapter_id],
+  });
+  expect(first.rows[0].document).toEqual(input.initial_document);
+  const changed = {
+    ...input,
+    initial_document: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Outro texto." }],
+        },
+      ],
+    },
+  };
+  const repeat = await createDraft(cookie, changed);
+  expect(repeat.status).toBe(200);
+  const stored = await database.query({
+    text: `
+      SELECT
+        document
+      FROM
+        chapter_drafts
+      WHERE
+        chapter_id = $1
+    `,
+    values: [draft.chapter_id],
+  });
+  expect(stored.rows[0].document).toEqual(input.initial_document);
+  expect(user.id).toBeDefined();
+});

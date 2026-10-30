@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import LinkIcon from "components/icons/LinkIcon";
 import { useId, useState } from "react";
 import styles from "./chapter.module.css";
@@ -41,6 +42,7 @@ export default function EditorToolbar({ editor, disabled, onLink }) {
         onMouseDown={preserveSelection}
         onClick={() => setMobileOpen(!mobileOpen)}
       >
+        <ButtonActionIcon action="format" />
         Formatar texto
       </button>
       <div
@@ -73,6 +75,7 @@ export default function EditorToolbar({ editor, disabled, onLink }) {
           onMouseDown={preserveSelection}
           onClick={() => setExpanded(!expanded)}
         >
+          <ButtonActionIcon action={expanded ? "collapse" : "expand"} />
           {expanded ? "Menos" : "Mais"}
         </button>
         <div

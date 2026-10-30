@@ -1,0 +1,74 @@
+.voice {
+  margin: 16px 0;
+}
+.voice button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  font: inherit;
+  color: inherit;
+  background: var(--preview-paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.voice > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.voice svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.panel {
+  margin-top: 12px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--preview-paper);
+  overflow-wrap: anywhere;
+}
+.panel > button + p {
+  margin-top: 16px;
+}
+.panel p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+.panel audio {
+  display: block;
+  max-width: 100%;
+  margin: 12px 0;
+}
+.panel label {
+  display: block;
+  margin: 16px 0 8px;
+}
+.panel textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 180px;
+  padding: 12px;
+  margin-bottom: 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  resize: vertical;
+}
+.voice .danger {
+  background: var(--danger-button-bg);
+  color: var(--danger-button-text);
+}

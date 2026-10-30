@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import { useRouter } from "next/router";
 import { useAuth } from "./AuthProvider";
@@ -39,6 +40,7 @@ export default function LogoutButton() {
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >
+        <ButtonActionIcon action="logout" />
         {isSubmitting ? "Saindo..." : "Sair"}
       </button>
       {error ? (

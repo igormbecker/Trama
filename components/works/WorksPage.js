@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import AddIcon from "components/icons/AddIcon";
 import useActionState from "components/shared/useActionState";
 import { useEffect, useRef, useState } from "react";
@@ -153,6 +154,7 @@ export default function WorksPage({ user, works }) {
                 disabled={isSubmitting}
                 aria-busy={isSubmitting}
               >
+                <ButtonActionIcon action="add" />
                 {isSubmitting ? "Criando…" : `Criar ${labels.name}`}
               </button>
               <button
@@ -164,6 +166,7 @@ export default function WorksPage({ user, works }) {
                   createTrigger.current?.focus();
                 }}
               >
+                <ButtonActionIcon action="cancel" />
                 Cancelar
               </button>
             </div>

@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
@@ -115,6 +116,7 @@ export default function InvitationsPage({
                     disabled={Boolean(busyId)}
                     onClick={() => respond(invitation, "accept")}
                   >
+                    <ButtonActionIcon action="check" />
                     {busyId === invitation.id ? "Aguarde…" : "Aceitar convite"}
                   </button>
                   <button
@@ -123,6 +125,7 @@ export default function InvitationsPage({
                     disabled={Boolean(busyId)}
                     onClick={() => respond(invitation, "decline")}
                   >
+                    <ButtonActionIcon action="cancel" />
                     Recusar convite
                   </button>
                 </div>

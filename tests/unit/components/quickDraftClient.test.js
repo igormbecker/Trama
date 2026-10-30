@@ -120,3 +120,23 @@ test("A stalled response body times out and preserves its attempt for retry", as
     jest.useRealTimers();
   }
 });
+
+test("Voice drafts send the initial document without persisting its text in sessionStorage", async () => {
+  const { options, fetcher, navigate, values } = setup();
+  navigate.mockResolvedValueOnce(false);
+  const initialDocument = {
+    type: "doc",
+    content: [
+      { type: "paragraph", content: [{ type: "text", text: "Private idea" }] },
+    ],
+  };
+  const starter = createQuickDraftStarter({ ...options, initialDocument });
+  await expect(starter.start()).rejects.toThrow();
+  expect(JSON.parse(fetcher.mock.calls[0][1].body).initial_document).toEqual(
+    initialDocument,
+  );
+  expect([...values.values()].join("")).not.toContain("Private idea");
+  expect([...values.keys()]).toEqual(["trama:voice-draft:owner"]);
+  await starter.start();
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});

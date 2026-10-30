@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
@@ -94,6 +95,7 @@ export default function InvitationPage({ user, invitation }) {
                 disabled={isBusy}
                 onClick={() => respond("accept")}
               >
+                <ButtonActionIcon action="check" />
                 {isBusy ? "Aguarde…" : "Aceitar convite"}
               </button>
               <button
@@ -102,6 +104,7 @@ export default function InvitationPage({ user, invitation }) {
                 className={styles.dangerButton}
                 onClick={() => respond("decline")}
               >
+                <ButtonActionIcon action="cancel" />
                 Recusar convite
               </button>
             </div>
