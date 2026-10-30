@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import SuccessMessage from "components/shared/SuccessMessage";
 import Link from "next/link";
@@ -157,6 +158,7 @@ export default function LoginPage() {
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >
+              <ButtonActionIcon action="login" />
               {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
           </form>

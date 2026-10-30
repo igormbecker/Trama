@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import SuccessMessage from "components/shared/SuccessMessage";
@@ -114,6 +115,7 @@ export default function WorkCreditsPanel({ workId, initialData, projectType }) {
                       )
                     }
                   >
+                    <ButtonActionIcon action="add" />
                     Adicionar: {suggestion}
                   </button>
                 ))}
@@ -122,6 +124,7 @@ export default function WorkCreditsPanel({ workId, initialData, projectType }) {
           </div>
         ))}
         <button type="submit" disabled={busy} aria-busy={busy}>
+          <ButtonActionIcon action="save" />
           {busy ? "Salvando…" : "Salvar créditos"}
         </button>
         {error && <p role="alert">{error}</p>}

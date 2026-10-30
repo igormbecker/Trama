@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import { useState } from "react";
 import Link from "next/link";
 import HomeLayout from "./HomeLayout";
@@ -108,6 +109,7 @@ export default function HomePage() {
           </p>
           <div className={styles.heroActions}>
             <Link className={styles.primaryLink} href="/login" data-button>
+              <ButtonActionIcon action="login" />
               Entrar no Trama
             </Link>
             <a href="#como-funciona">Conhecer o fluxo</a>
@@ -158,7 +160,9 @@ export default function HomePage() {
               >
                 <span className={styles.chapterNumber}>{chapter.number}</span>
                 <span className={styles.chapterInfo}>
-                  <strong>{chapter.title}</strong>
+                  <strong>
+                    <ButtonActionIcon action="read" /> {chapter.title}
+                  </strong>
                   <span>{chapter.participant}</span>
                 </span>
                 <span className={styles[chapter.stage]}>{chapter.status}</span>

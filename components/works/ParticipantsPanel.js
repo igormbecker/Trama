@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import LoadingMessage from "components/shared/LoadingMessage";
 import SuccessMessage from "components/shared/SuccessMessage";
@@ -99,6 +100,7 @@ export default function ParticipantsPanel({
           disabled={isBusy}
         />
         <button type="submit" disabled={isBusy} aria-busy={isBusy}>
+          <ButtonActionIcon action="send" />
           {isBusy ? "Aguarde…" : "Enviar convite"}
         </button>
       </form>
@@ -120,6 +122,7 @@ export default function ParticipantsPanel({
                 aria-label={`Remover ${participant.name}`}
                 onClick={() => setRemovalTarget(participant)}
               >
+                <ButtonActionIcon action="trash" />
                 Remover
               </button>
             </li>
@@ -143,6 +146,7 @@ export default function ParticipantsPanel({
               disabled={isBusy}
               onClick={handleRemoval}
             >
+              <ButtonActionIcon action="trash" />
               Confirmar remoção
             </button>
             <button
@@ -150,6 +154,7 @@ export default function ParticipantsPanel({
               disabled={isBusy}
               onClick={() => setRemovalTarget(null)}
             >
+              <ButtonActionIcon action="back" />
               Voltar
             </button>
           </div>
@@ -185,6 +190,7 @@ export default function ParticipantsPanel({
                     }, "Convite cancelado.")
                   }
                 >
+                  <ButtonActionIcon action="cancel" />
                   Cancelar convite para {invitation.email}
                 </button>
               )}

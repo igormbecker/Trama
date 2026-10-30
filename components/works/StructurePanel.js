@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import ActionIcon from "components/icons/StructureActionIcon";
 import useActionState from "components/shared/useActionState";
 import LoadingMessage from "components/shared/LoadingMessage";
@@ -57,6 +58,7 @@ function StructureForm({ initialValues, isChapter, isBusy, onSave, onCancel }) {
       )}
       <div className={styles.actions}>
         <button type="submit" disabled={isBusy} aria-busy={isBusy}>
+          <ButtonActionIcon action="save" />
           {isBusy ? "Salvando…" : "Salvar"}
         </button>
         <button
@@ -65,6 +67,7 @@ function StructureForm({ initialValues, isChapter, isBusy, onSave, onCancel }) {
           disabled={isBusy}
           onClick={onCancel}
         >
+          <ButtonActionIcon action="cancel" />
           Cancelar
         </button>
       </div>
@@ -154,7 +157,7 @@ export default function StructurePanel({
           aria-label={`Mover ${items[index].title} para cima`}
           onClick={() => move(items, index, -1, path)}
         >
-          <span aria-hidden="true">↑</span>
+          <ButtonActionIcon action="up" iconOnly />
           <span className={styles.orderLabel}>Mover para cima</span>
         </button>
         <button
@@ -163,7 +166,7 @@ export default function StructurePanel({
           aria-label={`Mover ${items[index].title} para baixo`}
           onClick={() => move(items, index, 1, path)}
         >
-          <span aria-hidden="true">↓</span>
+          <ButtonActionIcon action="down" iconOnly />
           <span className={styles.orderLabel}>Mover para baixo</span>
         </button>
       </span>

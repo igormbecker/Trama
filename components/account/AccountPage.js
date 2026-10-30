@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import SuccessMessage from "components/shared/SuccessMessage";
 import { useState } from "react";
@@ -184,6 +185,7 @@ export default function AccountPage({ user }) {
                 disabled={isSaving}
                 aria-busy={isSaving}
               >
+                <ButtonActionIcon action="save" />
                 {isSaving ? "Salvando..." : "Salvar alterações"}
               </button>
             </div>

@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -136,6 +137,7 @@ export default function InvitationRegistrationPage({ invitation }) {
               disabled={busy}
               aria-busy={busy}
             >
+              <ButtonActionIcon action="userAdd" />
               {busy ? "Criando conta…" : "Criar conta"}
             </button>
           </form>

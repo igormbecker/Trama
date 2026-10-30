@@ -167,6 +167,7 @@
   gap: 10px;
   min-height: 44px;
   max-width: 100%;
+  padding: 12px 22px;
   border: 0;
   font: inherit;
   cursor: pointer;
@@ -192,4 +193,20 @@
   background: transparent;
   color: var(--accent);
   border: 1px solid var(--accent);
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+  max-width: 100%;
+}
+.quickActions .quickWrite button {
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .quickActions {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

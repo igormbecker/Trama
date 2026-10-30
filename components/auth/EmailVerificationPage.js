@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
@@ -107,6 +108,7 @@ export default function EmailVerificationPage() {
                 disabled={busy}
                 aria-busy={busy}
               >
+                <ButtonActionIcon action={token ? "check" : "send"} />
                 {busy
                   ? "Aguarde…"
                   : token
@@ -125,6 +127,7 @@ export default function EmailVerificationPage() {
                   setError("");
                 }}
               >
+                <ButtonActionIcon action="send" />
                 Solicitar outro link
               </button>
             </p>

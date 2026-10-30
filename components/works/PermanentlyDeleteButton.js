@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import useActionState from "components/shared/useActionState";
@@ -57,6 +58,7 @@ export default function PermanentlyDeleteButton({ item, disabled, onDeleted }) {
           setOpen(true);
         }}
       >
+        <ButtonActionIcon action="trash" />
         Excluir para sempre
       </button>
       {open && (
@@ -102,6 +104,7 @@ export default function PermanentlyDeleteButton({ item, disabled, onDeleted }) {
                 disabled={busy || confirmation !== item.title}
                 aria-busy={busy}
               >
+                <ButtonActionIcon action="trash" />
                 {busy ? "Excluindo…" : "Excluir para sempre"}
               </button>
               <button
@@ -112,6 +115,7 @@ export default function PermanentlyDeleteButton({ item, disabled, onDeleted }) {
                   setOpen(false);
                 }}
               >
+                <ButtonActionIcon action="cancel" />
                 Cancelar
               </button>
             </div>

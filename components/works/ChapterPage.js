@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
@@ -143,6 +144,7 @@ export default function ChapterPage({
                       disabled={busy}
                       aria-busy={busy}
                     >
+                      <ButtonActionIcon action="edit" />
                       {busy ? "Abrindo editor…" : `Escrever ${labels.chapter}`}
                     </button>
                   )}

@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
@@ -91,6 +92,7 @@ export default function ImpersonationBanner() {
           : "Limite de 15 minutos. A sessão é compartilhada entre as abas deste navegador."}
       </p>
       <button type="button" onClick={stop} disabled={busy} aria-busy={busy}>
+        <ButtonActionIcon action="userSwitch" />
         {busy ? "Retornando…" : "Encerrar personificação"}
       </button>
       {error || statusError ? (

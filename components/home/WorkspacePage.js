@@ -1,5 +1,7 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import { useEffect, useState } from "react";
 import QuickWriteButton from "./QuickWriteButton";
+import VoiceIdea from "./VoiceIdea";
 import Link from "next/link";
 import AppLayout from "components/app/AppLayout";
 import useInvitations from "components/works/useInvitations";
@@ -90,14 +92,27 @@ export default function WorkspacePage({
       initialParticipations={initialParticipations}
     >
       <section className={styles.workspace} aria-labelledby="workspace-title">
-        <header className={styles.heading}>
-          <div>
-            <p>Olá, {user.name}.</p>
-            <h1 id="workspace-title">Seu espaço</h1>
-            <p>Continue suas ideias de onde você parou.</p>
-          </div>
-          <QuickWriteButton userId={user.id} />
-        </header>
+        <VoiceIdea
+          userId={user.id}
+          renderTrigger={(voiceButton) => (
+            <header className={styles.heading}>
+              <div>
+                <p>Olá, {user.name}.</p>
+                <h1 id="workspace-title">Seu espaço</h1>
+                <p>Continue suas ideias de onde você parou.</p>
+              </div>
+              <div className={styles.quickActions}>
+                <QuickWriteButton userId={user.id} />
+                <div className={styles.quickWrite}>
+                  {voiceButton}
+                  <p className={styles.quickWriteHint}>
+                    Fale sua ideia e transforme em um rascunho.
+                  </p>
+                </div>
+              </div>
+            </header>
+          )}
+        />
         {invitations?.length > 0 && (
           <aside className={styles.invitation}>
             <Link href="/invitations">
@@ -164,6 +179,9 @@ export default function WorkspacePage({
                   data-button
                   href={`/works/${chapter.work.id}/chapters/${chapter.id}${chapter.work.owner_id === user.id ? "?write=1" : ""}`}
                 >
+                  <ButtonActionIcon
+                    action={chapter.work.owner_id === user.id ? "edit" : "read"}
+                  />
                   {chapter.work.owner_id === user.id
                     ? "Continuar escrevendo"
                     : "Continuar lendo"}
@@ -185,6 +203,7 @@ export default function WorkspacePage({
                 data-button
                 href={works.length ? "/works" : "/works#create-work-title"}
               >
+                <ButtonActionIcon action={works.length ? "read" : "add"} />
                 {works.length
                   ? "Explorar meus projetos"
                   : "Criar meu primeiro projeto"}

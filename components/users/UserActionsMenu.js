@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import MoreOptionsIcon from "components/icons/MoreOptionsIcon";
 import { useId, useRef, useState } from "react";
 import styles from "./users.module.css";
@@ -36,7 +37,7 @@ export default function UserActionsMenu({ name, disabled, children }) {
         <div className={styles.userOptionsHeading}>
           <h2 id={headingId}>Opções do usuário</h2>
           <button type="button" aria-label="Fechar opções" onClick={close}>
-            ×
+            <ButtonActionIcon action="close" iconOnly />
           </button>
         </div>
         <p>{name}</p>

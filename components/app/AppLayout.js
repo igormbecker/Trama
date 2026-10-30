@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import NavigationToggleIcon from "components/icons/NavigationToggleIcon";
 import HomeIcon from "components/icons/HomeIcon";
 import ProjectsIcon from "components/icons/ProjectsIcon";
@@ -105,7 +106,7 @@ export default function AppLayout({
           aria-label={backLabel}
           title={backLabel}
         >
-          <span aria-hidden="true">←</span>
+          <ButtonActionIcon action="back" iconOnly />
           <span>Voltar</span>
         </Link>
       )}

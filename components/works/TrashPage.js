@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -92,6 +93,7 @@ export default function TrashPage({ user, items }) {
                       aria-busy={busyId === item.id}
                       onClick={() => restore(item)}
                     >
+                      <ButtonActionIcon action="restore" />
                       {busyId === item.id ? "Restaurando…" : "Restaurar"}
                     </button>
                     <PermanentlyDeleteButton

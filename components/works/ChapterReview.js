@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import {
   useCallback,
   useEffect,
@@ -158,9 +159,11 @@ export default function ChapterReview({
         {isMobile && (
           <div className={styles.editorialActions}>
             <button type="button" onClick={() => setExpanded(!expanded)}>
+              <ButtonActionIcon action={expanded ? "collapse" : "expand"} />
               {expanded ? "Reduzir painel" : "Expandir painel"}
             </button>
             <button type="button" onClick={closePanel}>
+              <ButtonActionIcon action="close" />
               Fechar comentários
             </button>
           </div>
@@ -194,6 +197,7 @@ export default function ChapterReview({
               disabled={busy}
             />
             <button type="submit" disabled={busy} aria-busy={busy}>
+              <ButtonActionIcon action="save" />
               Salvar comentário
             </button>
           </form>
@@ -225,6 +229,7 @@ export default function ChapterReview({
             <p>{comment.message}</p>
             <div className={styles.editorialActions}>
               <button type="button" onClick={() => viewPassage(comment.id)}>
+                <ButtonActionIcon action="inspect" />
                 Ver trecho
               </button>
               {canResolve && (
@@ -241,6 +246,9 @@ export default function ChapterReview({
                     })
                   }
                 >
+                  <ButtonActionIcon
+                    action={comment.resolved_at ? "restore" : "check"}
+                  />
                   {comment.resolved_at
                     ? "Reabrir comentário"
                     : "Marcar como resolvido"}
@@ -258,6 +266,7 @@ export default function ChapterReview({
                     })
                   }
                 >
+                  <ButtonActionIcon action="trash" />
                   Remover comentário
                 </button>
               )}
@@ -316,6 +325,7 @@ export default function ChapterReview({
             }
           }}
         >
+          <ButtonActionIcon action="comment" />
           Comentar trecho
         </button>
       )}
@@ -337,6 +347,7 @@ export default function ChapterReview({
             setPanelOpen(true);
           }}
         >
+          <ButtonActionIcon action="comment" />
           Comentários · {pendingCount} pendentes
         </button>
       )}
@@ -390,6 +401,7 @@ export default function ChapterReview({
               onAction({ action: "conclude_review", verdict: "approved" })
             }
           >
+            <ButtonActionIcon action="check" />
             Concluir: aprovado
           </button>
           <button
@@ -403,6 +415,7 @@ export default function ChapterReview({
               })
             }
           >
+            <ButtonActionIcon action="corrections" />
             Concluir: correções solicitadas
           </button>
           {message.trim() && <p>Salve o comentário antes de concluir.</p>}

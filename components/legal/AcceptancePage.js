@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import Link from "next/link";
 import { useState } from "react";
@@ -100,6 +101,7 @@ export default function AcceptancePage({ user, legalStatus, impersonating }) {
               <Link href="/legal/support">Contato e solicitações</Link>
             </p>
             <button type="button" onClick={() => setRefused(false)}>
+              <ButtonActionIcon action="back" />
               Voltar à revisão
             </button>
           </>
@@ -120,6 +122,7 @@ export default function AcceptancePage({ user, legalStatus, impersonating }) {
             </label>
             <div className={styles.actions}>
               <button type="submit" disabled={!accepted || busy}>
+                <ButtonActionIcon action="check" />
                 {busy ? "Registrando…" : "Aceitar e continuar"}
               </button>
               <button
@@ -127,6 +130,7 @@ export default function AcceptancePage({ user, legalStatus, impersonating }) {
                 onClick={() => setRefused(true)}
                 disabled={busy}
               >
+                <ButtonActionIcon action="cancel" />
                 Não aceitar agora
               </button>
             </div>

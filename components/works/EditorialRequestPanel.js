@@ -1,3 +1,4 @@
+import ButtonActionIcon from "components/icons/ButtonActionIcon";
 import useActionState from "components/shared/useActionState";
 import LoadingMessage from "components/shared/LoadingMessage";
 import { useState } from "react";
@@ -333,9 +334,11 @@ export default function EditorialRequestPanel({
               ) : (
                 <div className={styles.editorialActions}>
                   <button type="button" disabled={busy} onClick={start}>
+                    <ButtonActionIcon action="edit" />
                     Trabalhar na cópia
                   </button>
                   <button type="button" disabled={busy} onClick={submit}>
+                    <ButtonActionIcon action="send" />
                     Enviar entrega
                   </button>
                 </div>
@@ -384,6 +387,7 @@ export default function EditorialRequestPanel({
                       onClick={() => approve()}
                       className={styles.approveButton}
                     >
+                      <ButtonActionIcon action="check" />
                       Aprovar e incorporar
                     </button>
                   </div>
@@ -406,6 +410,7 @@ export default function EditorialRequestPanel({
                         onClick={() => approve(true)}
                         className={styles.approveButton}
                       >
+                        <ButtonActionIcon action="replace" />
                         Confirmar substituição
                       </button>
                     </div>
@@ -428,6 +433,7 @@ export default function EditorialRequestPanel({
                       disabled={busy}
                       aria-busy={busy}
                     >
+                      <ButtonActionIcon action="corrections" />
                       Pedir ajustes
                     </button>
                   </form>
@@ -447,6 +453,7 @@ export default function EditorialRequestPanel({
                   }
                 }}
               >
+                <ButtonActionIcon action="cancel" />
                 Cancelar pedido
               </button>
             )}
@@ -486,6 +493,7 @@ export default function EditorialRequestPanel({
                         <ChapterReader document={content.document} />
                       </div>
                       <button type="button" disabled={busy} onClick={restore}>
+                        <ButtonActionIcon action="restore" />
                         Restaurar texto anterior
                       </button>
                     </>
@@ -548,6 +556,7 @@ export default function EditorialRequestPanel({
               disabled={busy}
             />
             <button type="submit" disabled={busy} aria-busy={busy}>
+              <ButtonActionIcon action="add" />
               Criar pedido
             </button>
           </form>
@@ -566,6 +575,7 @@ export default function EditorialRequestPanel({
                     {kindLabels[entry.kind]} · {requestStatus(entry)} ·{" "}
                     {new Date(entry.created_at).toLocaleDateString("pt-BR")}{" "}
                     <button type="button" onClick={() => viewHistory(entry.id)}>
+                      <ButtonActionIcon action="read" />
                       Ver pedido
                     </button>
                   </li>
