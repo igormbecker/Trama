@@ -10,6 +10,7 @@ jest.mock(
     },
 );
 jest.mock("components/works/useInvitations", () => jest.fn());
+jest.mock("next/router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
 
 test("Introduces the workspace without inventing recent works or pending invitations", () => {
   useInvitations.mockReturnValue({ data: [] });
@@ -17,6 +18,7 @@ test("Introduces the workspace without inventing recent works or pending invitat
     <WorkspacePage user={{ id: "user", name: "Alice" }} works={[]} />,
   );
   expect(html).toContain("Seu espaço");
+  expect(html).toContain("Começar a escrever");
   expect(html).toContain("Continue de onde parou");
   expect(html).toContain("Carregando seus últimos acessos");
   expect(html).toContain("Ver todos os projetos");

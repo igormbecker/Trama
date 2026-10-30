@@ -188,6 +188,8 @@ Atualize os entendimentos deste documento quando mudanças efetivas do projeto o
 
 - Padrão visual de sucesso do sistema: círculo com visto em SVG de traço fino, verde dos tokens approved e texto com peso normal (400). Use components/shared/SuccessMessage para confirmações e SuccessIcon para status embutidos, sem emojis. Não aplicar esse visual a erros, avisos, carregamento ou contadores.
 
+- O botão “Começar a escrever” em Seu espaço usa POST `/api/v1/works/quick-drafts` e `models/quickDraft.js`: cria obra literária, Parte 1 e Capítulo sem título numa transação e abre o editor existente com `?write=1`. Somente a obra recebe data/hora no título, com instante do servidor e fuso do navegador. UUIDs estáveis por conta/tentativa e trava transacional protegem repetições enquanto a obra existir; nunca recriar filhos ausentes nem restaurar itens na lixeira por uma repetição. `quickDraftClient.js` mantém tentativa em sessionStorage por conta/aba, sem conteúdo ou autenticação, e reaproveita o destino após falha de navegação. Preservar a recuperação e as reservas existentes.
+
 ## Personificação administrativa
 
 - Administradores podem personificar somente contas comuns por até 15 minutos, limitados pela sessão original de 24 horas, pela ação Personificar em Usuários e GET/POST/DELETE `/api/v1/impersonation`. A sessão conserva o administrador em `user_id` e registra a conta representada separadamente, sem emitir token para essa conta. O modo afeta todas as abas da mesma sessão; outros logins permanecem independentes.
