@@ -28,7 +28,11 @@ async function create(userId, audio, contentType) {
           count(*) FILTER (
             WHERE created_at > timezone('utc', now()) - interval '1 hour'
           ) AS hourly_attempts,
-          count(*) AS daily_attempts
+          count(*) AS daily_attempts,
+          coalesce(sum(accounted_seconds) FILTER (
+            WHERE created_at > timezone('utc', now()) - interval '1 hour'
+          ), 0) AS hourly_seconds,
+          coalesce(sum(accounted_seconds), 0) AS daily_seconds
         FROM
           voice_transcription_attempts
         WHERE
@@ -39,14 +43,16 @@ async function create(userId, audio, contentType) {
     const usage = usageResult.rows[0];
     // Reserve the longest allowed recording while requests are in flight.
     if (
-      Number(usage.account_seconds) + 120 > 1800 ||
+      Number(usage.account_seconds) + 240 > 1800 ||
       Number(usage.minute_attempts) >= 15 ||
+      Number(usage.hourly_seconds || 0) + 240 > 6000 ||
+      Number(usage.daily_seconds || 0) + 240 > 24000 ||
       Number(usage.hourly_attempts) >= 50 ||
       Number(usage.daily_attempts) >= 200
     ) {
       const error = new ValidationError({
         message:
-          "O limite de transcrição foi atingido ou não há saldo para reservar até 2 minutos. Preserve seu áudio e tente mais tarde.",
+          "O limite de transcrição foi atingido ou não há saldo para reservar até 4 minutos. Preserve seu áudio e tente mais tarde.",
       });
       error.statusCode = 429;
       throw error;
@@ -56,9 +62,9 @@ async function create(userId, audio, contentType) {
         INSERT INTO
           voice_transcription_attempts (id, user_id, accounted_seconds)
         VALUES
-          ($1, $2, 120)
+          ($1, $2, $3)
       `,
-      values: [attemptId, userId],
+      values: [attemptId, userId, 240],
     });
     await client.query("COMMIT");
   } catch (error) {
@@ -73,8 +79,8 @@ async function create(userId, audio, contentType) {
   const hasDuration = Number.isFinite(result.duration) && result.duration > 0;
   // Groq has a minimum billed duration of ten seconds per request.
   const accountedSeconds = hasDuration
-    ? Math.max(10, Math.min(120, Math.ceil(result.duration)))
-    : 120;
+    ? Math.max(10, Math.min(240, Math.ceil(result.duration)))
+    : 240;
   await database.query({
     text: `
       UPDATE

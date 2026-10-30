@@ -57,7 +57,7 @@ test("Concurrent reservations cannot exceed thirty minutes per account", async (
         120,
         timezone('utc', now()) - interval '2 hours'
       FROM
-        generate_series(1, 14)
+        generate_series(1, 13)
     `,
     values: [account.id],
   });
@@ -67,7 +67,7 @@ test("Concurrent reservations cannot exceed thirty minutes per account", async (
   });
   transcribeAudio.mockImplementation(async () => {
     await waiting;
-    return { text: "Ideia.", duration: 120 };
+    return { text: "Ideia.", duration: 240 };
   });
   const first = voiceTranscription.create(
     account.id,
@@ -136,4 +136,33 @@ test("Recent shared usage blocks another account before the provider call", asyn
     ),
   ).rejects.toMatchObject({ statusCode: 429 });
   expect(transcribeAudio).not.toHaveBeenCalled();
+});
+
+test("Stores the duration of a recording longer than two minutes", async () => {
+  const account = await orchestrator.createUser({});
+  // Earlier test exhausted the shared per-minute limit; move those fixtures out of that window.
+  await database.query(`
+    UPDATE
+      voice_transcription_attempts
+    SET
+      created_at = timezone('utc', now()) - interval '2 hours'
+  `);
+  transcribeAudio.mockResolvedValue({ text: "Ideia longa.", duration: 180 });
+  await voiceTranscription.create(
+    account.id,
+    Buffer.from("synthetic"),
+    "audio/mp4",
+  );
+  const result = await database.query({
+    text: `
+      SELECT
+        accounted_seconds
+      FROM
+        voice_transcription_attempts
+      WHERE
+        user_id = $1
+    `,
+    values: [account.id],
+  });
+  expect(result.rows[0].accounted_seconds).toBe(180);
 });

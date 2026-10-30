@@ -327,7 +327,7 @@ export default function VoiceCapture({
       {open && (
         <div id={id} className={styles.panel}>
           <p>
-            Grave até 2 minutos, sem contar pausas. A gravação ocorre com esta
+            Grave até 4 minutos, sem contar pausas. A gravação ocorre com esta
             página aberta; evite bloquear a tela.
           </p>
           <p>
@@ -336,7 +336,7 @@ export default function VoiceCapture({
             servidor.
           </p>
           <p>
-            Até 30 minutos por conta a cada 24 horas. Cada envio reserva até 2
+            Até 30 minutos por conta a cada 24 horas. Cada envio reserva até 4
             minutos durante o processamento; após o sucesso, desconta a duração
             reconhecida, com mínimo de 10 segundos. Falhas sem duração
             confirmada mantêm a reserva.
@@ -354,7 +354,7 @@ export default function VoiceCapture({
                       ? "Gravação pronta"
                       : "Pronto para gravar"}{" "}
             · {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}{" "}
-            / 2:00
+            / 4:00
           </p>
           <div className={styles.actions}>
             {status === "idle" && !audio && !text && (

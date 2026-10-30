@@ -86,3 +86,32 @@ test("Exercises actual multipart HTTP and handles an upstream outage without lea
     await new Promise((resolve) => server.close(resolve));
   }
 });
+
+test.each([240, 242])(
+  "Accepts four-minute recordings with container tolerance: %s seconds",
+  async (duration) => {
+    const fetcher = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ text: "Uma ideia longa.", duration }),
+    });
+    await expect(
+      transcribeAudio(Buffer.from("audio"), "audio/mp4", {
+        apiKey: "test",
+        fetcher,
+        includeDuration: true,
+      }),
+    ).resolves.toEqual({ text: "Uma ideia longa.", duration });
+  },
+);
+test("Rejects recordings beyond four minutes and the container tolerance", async () => {
+  const fetcher = jest.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ text: "Texto.", duration: 243 }),
+  });
+  await expect(
+    transcribeAudio(Buffer.from("audio"), "audio/mp4", {
+      apiKey: "test",
+      fetcher,
+    }),
+  ).rejects.toThrow("4 minutos");
+});
