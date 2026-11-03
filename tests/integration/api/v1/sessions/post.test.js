@@ -230,3 +230,58 @@ test("Session creation and update timestamps default to the project's UTC expres
     expect(column.column_default).toContain("timezone('utc'::text, now())");
   }
 });
+
+describe("Login rate limit", () => {
+  test("Limits concurrent attempts for the same normalized email", async () => {
+    const responses = await Promise.all(
+      Array.from({ length: 6 }, (_, index) =>
+        fetch("http://127.0.0.1:3002/api/v1/sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email:
+              index % 2 ? " RATE-LIMIT@example.com " : "rate-limit@example.com",
+            password: "incorrect-password",
+          }),
+        }),
+      ),
+    );
+
+    expect(responses.map(({ status }) => status).sort()).toEqual([
+      401, 401, 401, 401, 401, 429,
+    ]);
+    expect(
+      responses.every((response) => !response.headers.has("set-cookie")),
+    ).toBe(true);
+  });
+});
+
+test("Limits one IP across different emails and allows login attempts after expiration", async () => {
+  await database.query("DELETE FROM login_attempt_limits;");
+
+  async function attempt(index) {
+    return fetch("http://127.0.0.1:3002/api/v1/sessions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Forwarded-For": `192.0.2.${index + 1}`,
+      },
+      body: JSON.stringify({
+        email: `login-ip-${index}@example.com`,
+        password: "incorrect-password",
+      }),
+    });
+  }
+
+  const responses = await Promise.all(
+    Array.from({ length: 31 }, (_, index) => attempt(index)),
+  );
+  expect(responses.filter(({ status }) => status === 401)).toHaveLength(30);
+  expect(responses.filter(({ status }) => status === 429)).toHaveLength(1);
+
+  await database.query(`
+    UPDATE login_attempt_limits
+    SET expires_at = statement_timestamp() - interval '1 second';
+  `);
+  expect((await attempt(31)).status).toBe(401);
+});
