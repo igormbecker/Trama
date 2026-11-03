@@ -1,6 +1,7 @@
 ﻿import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import authentication from "models/authentication.js";
+import loginAttemptLimit from "models/loginAttemptLimit.js";
 import session from "models/session.js";
 
 const router = createRouter();
@@ -16,6 +17,20 @@ async function postHandler(request, response) {
   response.setHeader("Cache-Control", "private, no-store");
 
   const userInputValues = request.body || {};
+  const attemptAllowed = await loginAttemptLimit.reserve(
+    request,
+    userInputValues.email,
+  );
+
+  if (!attemptAllowed) {
+    return response.status(429).json({
+      name: "TooManyRequestsError",
+      message:
+        "Muitas tentativas. Aguarde alguns minutos ou recupere sua senha.",
+      status_code: 429,
+    });
+  }
+
   const authenticatedUser = await authentication.authenticate(
     userInputValues.email,
     userInputValues.password,
