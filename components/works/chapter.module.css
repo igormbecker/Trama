@@ -59,6 +59,21 @@
   border-radius: 8px;
   overflow-wrap: anywhere;
 }
+.editorialCard:has(.reviewLayout),
+.editorialDisclosure:has(.reviewLayout) {
+  container-type: inline-size;
+}
+
+@container (max-width: 640px) {
+  .editorialDisclosure .reviewLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .editorialDisclosure .reviewComments {
+    position: static;
+  }
+}
+
 .reviewLayout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
@@ -141,6 +156,7 @@
   white-space: normal;
 }
 .reviewCommentsDialog {
+  box-sizing: border-box;
   box-shadow: var(--panel-shadow);
   position: fixed;
   inset: auto 0 0;
@@ -190,7 +206,7 @@
   border-left: 2px solid var(--accent);
   color: var(--muted);
 }
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
   .reviewLayout {
     grid-template-columns: 1fr;
   }
@@ -391,6 +407,11 @@
   overflow-y: auto;
   margin-bottom: 20px;
 }
+.workspace .reviewNeutralButton {
+  background: var(--paper);
+  color: var(--ink);
+}
+
 .workspace .dangerButton {
   background: var(--danger-button-bg);
   color: var(--danger-button-text);
@@ -465,7 +486,7 @@
   }
 }
 
-@media (min-width: 801px) {
+@media (width > 1024px) {
   .writingFocus {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 280px;
@@ -539,7 +560,7 @@
 .detailsToggle {
   display: none;
 }
-@media (min-width: 801px) {
+@media (width > 1024px) {
   .writingFocus .detailsToggle {
     position: sticky;
     top: calc(var(--impersonation-banner-height, 0px) + 12px);
@@ -652,4 +673,296 @@
   .editor :global(.tiptap) {
     border-radius: 10px;
   }
+}
+
+.workspace .narrationVoice {
+  padding: 4px 8px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.narrationControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-block: 8px;
+}
+
+.workspace .narrationButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+}
+
+.narrationButton svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.narrationMessage {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.narrationShimmer {
+  font-size: 0.875rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .narrationShimmer {
+    background: linear-gradient(
+      100deg,
+      var(--muted) 35%,
+      var(--ink) 50%,
+      var(--muted) 65%
+    );
+    background-size: 220% 100%;
+    background-clip: text;
+    color: transparent;
+    animation: narrationShimmer 2s linear infinite;
+  }
+}
+
+@keyframes narrationShimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+
+.reading *::highlight(trama-narration) {
+  background-color: var(--selected);
+  color: var(--ink);
+}
+
+.reading :global(.trama-saved-reading-marker) {
+  background: var(--selected);
+}
+
+.readingMarkerControls {
+  position: sticky;
+  top: 12px;
+  z-index: 3;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 8px 0 8px auto;
+}
+
+.readingMarkerControls .detailsToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.readingMarkerControls .detailsToggle:hover {
+  background: var(--surface);
+}
+
+.readingMarkerControls .detailsToggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.readingTools {
+  box-sizing: border-box;
+  width: min(280px, calc(100vw - 48px));
+}
+
+.readingTools p {
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.readingTools audio {
+  max-width: 100%;
+}
+
+.readingNarration {
+  display: grid;
+  gap: 8px;
+}
+
+.readingTools > div + .readingNarration {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.readingNarration h2,
+.readingNarration p {
+  margin: 0;
+}
+
+.readingNarration h2 {
+  font-size: 1rem;
+}
+
+.readingNarration label {
+  display: grid;
+  font-size: 0.875rem;
+  gap: 4px;
+  min-width: 0;
+}
+
+.readingNarration select {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 1600px) {
+  .readingMarkerControls {
+    position: fixed;
+    top: var(--reading-panel-top, 24px);
+    right: 24px;
+    margin: 0;
+  }
+
+  .readingTools {
+    width: min(280px, calc((100vw - 1240px) / 2 - 40px));
+  }
+}
+
+.reading [data-chapter-id] :is(p, h2, h3, h4, h5, h6, li) {
+  position: relative;
+}
+
+.reading [data-chapter-id] :has(> .readingMarkerAction) {
+  background: var(--selected);
+}
+
+@media (hover: hover) {
+  .reading [data-chapter-id] :is(p, h2, h3, h4, h5, h6):hover {
+    background: var(--selected);
+  }
+}
+
+.readingMarkerAction {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+  right: 0;
+  bottom: 100%;
+  z-index: 2;
+}
+
+.readingTools[data-open="false"],
+.workspace .readingDrawerToggle,
+.workspace .readingDrawerBackdrop {
+  display: none;
+}
+
+@media (max-width: 1599px) {
+  .readingMarkerControls {
+    --reading-drawer-top: calc(
+      var(--visual-viewport-top, 0px) +
+        var(--impersonation-banner-height, 0px) +
+        max(12px, env(safe-area-inset-top))
+    );
+    position: fixed;
+    top: var(--reading-drawer-top);
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 33;
+    margin: 0;
+  }
+
+  .readingMarkerControls .detailsToggle {
+    display: none;
+  }
+
+  .workspace .readingDrawerToggle {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .readingDrawerToggle svg {
+    display: block;
+    margin: 0;
+    vertical-align: initial;
+  }
+
+  .workspace .readingDrawerBackdrop {
+    position: fixed;
+    inset: 0;
+    display: block;
+    border: 0;
+    border-radius: 0;
+    background: rgb(0 0 0 / 25%);
+  }
+
+  .readingTools,
+  .readingTools[data-open="false"] {
+    position: fixed;
+    inset: 0 0 0 auto;
+    display: block;
+    width: min(320px, calc(100vw - 56px));
+    padding: calc(var(--reading-drawer-top) + 56px) 16px 16px;
+    overflow-y: auto;
+    background: var(--paper);
+    transform: translateX(100%);
+    visibility: hidden;
+  }
+
+  .readingTools[data-open="true"] {
+    transform: none;
+    visibility: visible;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .readingTools {
+      transition:
+        transform 200ms ease,
+        visibility 200ms;
+    }
+  }
+}
+
+.reading [data-chapter-id] :has(> .savedReadingBadge) {
+  background: var(--selected);
+}
+
+.savedReadingBadge {
+  position: absolute;
+  right: 4px;
+  bottom: 100%;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 20px;
+  background: var(--selected);
+  color: var(--ink);
+  border-radius: 4px 4px 0 0;
+  font-size: 0.75rem;
+}
+
+.savedReadingBadge[data-kind="reading"]:has(~ .savedReadingBadge) {
+  right: 30px;
+}
+
+.readingMarkerAction {
+  z-index: 3;
 }

@@ -15,11 +15,11 @@ import styles from "./chapter.module.css";
 import { getProjectLabels } from "./projectLabels";
 
 function subscribeViewport(onChange) {
-  const viewport = window.matchMedia("(max-width: 800px)");
+  const viewport = window.matchMedia("(max-width: 1024px)");
   viewport.addEventListener("change", onChange);
   return () => viewport.removeEventListener("change", onChange);
 }
-const mobileViewport = () => window.matchMedia("(max-width: 800px)").matches;
+const mobileViewport = () => window.matchMedia("(max-width: 1024px)").matches;
 const serverViewport = () => false;
 
 export default function ChapterReview({
@@ -158,11 +158,19 @@ export default function ChapterReview({
         {success && <SuccessMessage>{success}</SuccessMessage>}
         {isMobile && (
           <div className={styles.editorialActions}>
-            <button type="button" onClick={() => setExpanded(!expanded)}>
+            <button
+              type="button"
+              className={styles.reviewNeutralButton}
+              onClick={() => setExpanded(!expanded)}
+            >
               <ButtonActionIcon action={expanded ? "collapse" : "expand"} />
               {expanded ? "Reduzir painel" : "Expandir painel"}
             </button>
-            <button type="button" onClick={closePanel}>
+            <button
+              type="button"
+              className={styles.dangerButton}
+              onClick={closePanel}
+            >
               <ButtonActionIcon action="close" />
               Fechar comentários
             </button>
@@ -228,13 +236,22 @@ export default function ChapterReview({
             <blockquote>{comment.quote}</blockquote>
             <p>{comment.message}</p>
             <div className={styles.editorialActions}>
-              <button type="button" onClick={() => viewPassage(comment.id)}>
+              <button
+                type="button"
+                className={styles.reviewNeutralButton}
+                onClick={() => viewPassage(comment.id)}
+              >
                 <ButtonActionIcon action="inspect" />
                 Ver trecho
               </button>
               {canResolve && (
                 <button
                   type="button"
+                  className={
+                    comment.resolved_at
+                      ? styles.reviewNeutralButton
+                      : styles.approveButton
+                  }
                   disabled={busy}
                   onClick={() =>
                     onAction({
