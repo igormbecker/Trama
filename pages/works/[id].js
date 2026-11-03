@@ -19,7 +19,9 @@ export async function getServerSideProps({ req, res, params }) {
     const currentUser = await authentication.authenticateSession(
       req.cookies?.trama_session_id,
     );
-    const ownedWork = await work.findOneById(params.id, currentUser.id);
+    const ownedWork = await work.findOneById(params.id, currentUser.id, {
+      includeOwnerName: true,
+    });
     const isOwner = ownedWork.owner_id === currentUser.id;
     const participants = isOwner
       ? await workParticipant.findAll(params.id, currentUser.id)

@@ -50,6 +50,7 @@ export default function WorkPage({
               : "Você participa como organizador"}
           </p>
           <h1 id="work-title">{work.title}</h1>
+          <p>Responsável pelo projeto · {work.owner_name}</p>
           <Link
             className={styles.readWorkButton}
             data-button
