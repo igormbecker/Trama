@@ -72,53 +72,58 @@ export default function WorkReadingPage({
 
   const [savedTargets, setSavedTargets] = useState({});
   useEffect(() => {
-    const targets = {};
-    if (marker) {
-      const container = document.getElementById(
-        `narration-text-${marker.chapterId}`,
-      );
-      const paragraphs = Array.from(
-        container?.querySelectorAll(markerTag) ?? [],
-      );
-      const paragraph = paragraphs[marker.index];
-      targets.reading =
-        markerAnchor(paragraph) === marker.anchor
-          ? paragraph
-          : paragraphs.find((entry) => markerAnchor(entry) === marker.anchor);
-    }
+    const frame = window.requestAnimationFrame(() => {
+      const targets = {};
+      if (marker) {
+        const container = document.getElementById(
+          `narration-text-${marker.chapterId}`,
+        );
+        const paragraphs = Array.from(
+          container?.querySelectorAll(markerTag) ?? [],
+        );
+        const paragraph = paragraphs[marker.index];
+        targets.reading =
+          markerAnchor(paragraph) === marker.anchor
+            ? paragraph
+            : paragraphs.find((entry) => markerAnchor(entry) === marker.anchor);
+      }
 
-    const slot = `audio:${chapterId}:${voice}`;
-    const position =
-      listeningMarker?.slot === slot
-        ? listeningMarker.position
-        : progress[slot];
-    const metadata = narration[chapterId];
-    if (position && metadata && position.revision === metadata.revision) {
-      const container = document.getElementById(`narration-text-${chapterId}`);
-      const chapter = parts
-        .flatMap((part) => part.chapters)
-        .find((entry) => String(entry.id) === chapterId);
-      const compactLength = (text) => text.replace(/\s/g, "").length;
-      let offset = compactLength(
-        metadata.blocks.slice(0, position.block).join(""),
-      );
-      if (position.block > 0) {
-        offset -= compactLength(chapter.title);
-      }
-      const paragraphs =
-        container?.querySelectorAll("p, h2, h3, h4, h5, h6, li") ?? [];
-      for (const paragraph of paragraphs) {
-        if (paragraph.querySelector(markerTag)) {
-          continue;
+      const slot = `audio:${chapterId}:${voice}`;
+      const position =
+        listeningMarker?.slot === slot
+          ? listeningMarker.position
+          : progress[slot];
+      const metadata = narration[chapterId];
+      if (position && metadata && position.revision === metadata.revision) {
+        const container = document.getElementById(
+          `narration-text-${chapterId}`,
+        );
+        const chapter = parts
+          .flatMap((part) => part.chapters)
+          .find((entry) => String(entry.id) === chapterId);
+        const compactLength = (text) => text.replace(/\s/g, "").length;
+        let offset = compactLength(
+          metadata.blocks.slice(0, position.block).join(""),
+        );
+        if (position.block > 0) {
+          offset -= compactLength(chapter.title);
         }
-        offset -= compactLength(paragraph.textContent);
-        if (offset < 0) {
-          targets.listening = paragraph;
-          break;
+        const paragraphs =
+          container?.querySelectorAll("p, h2, h3, h4, h5, h6, li") ?? [];
+        for (const paragraph of paragraphs) {
+          if (paragraph.querySelector(markerTag)) {
+            continue;
+          }
+          offset -= compactLength(paragraph.textContent);
+          if (offset < 0) {
+            targets.listening = paragraph;
+            break;
+          }
         }
       }
-    }
-    setSavedTargets(targets);
+      setSavedTargets(targets);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [marker, chapterId, voice, listeningMarker, narration, parts, progress]);
 
   function selectMarker(event) {

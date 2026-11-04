@@ -85,23 +85,28 @@ export default function ChapterNarration({
   useEffect(() => releaseGeneration, []);
 
   useEffect(() => {
-    try {
-      const position =
-        initialPosition ?? JSON.parse(localStorage.getItem(storageKey));
-      if (
-        position?.revision === narration.revision &&
-        Number.isInteger(position.block) &&
-        position.block >= 0 &&
-        position.block < narration.blocks.length &&
-        Number.isFinite(position.seconds) &&
-        position.seconds >= 0
-      ) {
-        setSaved(position);
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const position =
+          initialPosition ?? JSON.parse(localStorage.getItem(storageKey));
+        if (
+          position?.revision === narration.revision &&
+          Number.isInteger(position.block) &&
+          position.block >= 0 &&
+          position.block < narration.blocks.length &&
+          Number.isFinite(position.seconds) &&
+          position.seconds >= 0
+        ) {
+          setSaved(position);
+        }
+      } catch {
+        // Playback still works when local storage is unavailable.
       }
-    } catch {
-      // Playback still works when local storage is unavailable.
-    }
-    return () => globalThis.CSS?.highlights?.delete("trama-narration");
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      globalThis.CSS?.highlights?.delete("trama-narration");
+    };
   }, [storageKey, narration, initialPosition]);
 
   function syncPosition(position) {
