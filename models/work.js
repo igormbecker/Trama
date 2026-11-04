@@ -183,14 +183,25 @@ function validateId(id) {
     throw new NotFoundError({ message: "Work not found." });
   }
 }
-async function findOneById(id, userId) {
+async function findOneById(id, userId, { includeOwnerName = false } = {}) {
   validateId(id);
   const result = await database.query({
     text: `
       SELECT
-        w.*
+        w.*${
+          includeOwnerName
+            ? `,
+        owner.name AS owner_name`
+            : ""
+        }
       FROM
-        works w
+        works w${
+          includeOwnerName
+            ? `
+      JOIN
+        users owner ON owner.id = w.owner_id`
+            : ""
+        }
       WHERE
         w.id = $1
         AND w.deleted_at IS NULL

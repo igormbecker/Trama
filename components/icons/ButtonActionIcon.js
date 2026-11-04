@@ -15,6 +15,7 @@ export default function ButtonActionIcon({ action, iconOnly = false }) {
     userSwitch:
       "M12 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM2 21v-3a4 4 0 0 1 4-4h4m5-9h7m-3-3 3 3-3 3m3 10h-7m3-3-3 3 3 3",
     restore: "M3 10a9 9 0 1 1 1 9M3 4v6h6m3-3v5l3 2",
+    resume: "m8 4 12 8-12 8V4Z",
     read: "M12 5C9 3 5 3 2 4v16c3-1 7-1 10 1m0-16c3-2 7-2 10-1v16c-3-1-7-1-10 1V5Z",
     comment: "M21 4H3v13h5v4l5-4h8V4ZM7 8h10M7 12h7",
     edit: "m15 4 5 5M4 20l5-1L21 7l-5-5L4 14v6Z",
