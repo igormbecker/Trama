@@ -1,4 +1,6 @@
-import { narrationRevision } from "models/chapterNarration";
+import { narrationRevision, isNarrationEnabled } from "models/chapterNarration";
+import { synthesizeNarration } from "infra/narration";
+jest.mock("infra/narration", () => ({ synthesizeNarration: jest.fn() }));
 import { spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import {
@@ -95,4 +97,59 @@ test("invalidates saved progress when the chapter or block layout changes", () =
   expect(narrationRevision(["Uma frase.", "Outra."])).not.toBe(
     narrationRevision(["Uma frase. Outra."]),
   );
+});
+
+test("bounds very long sentences so remote audio fits function responses", () => {
+  const document = {
+    content: [
+      {
+        type: "paragraph",
+        content: [{ type: "text", text: "a".repeat(11000) }],
+      },
+    ],
+  };
+  const blocks = narrationBlocks("Title", document);
+  expect(Math.max(...blocks.map((text) => text.length))).toBeLessThanOrEqual(
+    1000,
+  );
+  expect(blocks.join("").replace("Title", "").replaceAll("\n", "")).toBe(
+    "a".repeat(11000),
+  );
+});
+
+test("uses the remote generator only inside a configured Vercel deployment", async () => {
+  const previous = { ...process.env };
+  try {
+    process.env.VERCEL = "1";
+    process.env.VERCEL_URL = "trama-preview.vercel.app";
+    process.env.TRAMA_NARRATION_SECRET =
+      "test-secret-with-at-least-32-characters";
+    expect(isNarrationEnabled()).toBe(true);
+    synthesizeNarration.mockResolvedValueOnce(Buffer.from("remote"));
+    await expect(narrate("Remoto.", "pf_dora")).resolves.toEqual(
+      Buffer.from("remote"),
+    );
+    expect(synthesizeNarration).toHaveBeenCalledWith(
+      "Remoto.",
+      "pf_dora",
+      expect.any(AbortSignal),
+    );
+  } finally {
+    process.env = previous;
+  }
+});
+
+test("splits long sentences without cutting ordinary words", () => {
+  const document = {
+    content: [
+      {
+        type: "paragraph",
+        content: [{ type: "text", text: "palavra ".repeat(300) }],
+      },
+    ],
+  };
+  const blocks = narrationBlocks("Title", document);
+  const words = blocks.join(" ").replace("Title", "").trim().split(/\s+/u);
+  expect(words).toHaveLength(300);
+  expect(words.every((word) => word === "palavra")).toBe(true);
 });

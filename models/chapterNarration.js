@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
+import { synthesizeNarration } from "infra/narration.js";
 
 const voices = ["pf_dora", "pm_alex", "pm_santa"];
 export const defaultNarrationVoice = voices[0];
@@ -31,13 +32,17 @@ export function narrationBlocks(title, document) {
   const blocks = [];
   let current = title;
   for (const paragraph of paragraphs) {
-    const segments =
+    const sentencesInParagraph =
       paragraph.length > targetLength
         ? Array.from(sentences.segment(paragraph), ({ segment }) =>
             segment.trim(),
           )
         : [paragraph];
 
+    const segments = sentencesInParagraph.flatMap(
+      (sentence) =>
+        sentence.match(/[\s\S]{1,499}(?:\s|$)|[\s\S]{1,500}/gu) ?? [],
+    );
     for (const [index, segment] of segments.entries()) {
       const separator = index === 0 ? "\n" : " ";
       const combined = `${current}${separator}${segment}`;
@@ -60,6 +65,12 @@ export function narrationRevision(blocks) {
 let activeNarration;
 
 export function isNarrationEnabled() {
+  if (process.env.VERCEL === "1") {
+    return Boolean(
+      process.env.VERCEL_URL &&
+      process.env.TRAMA_NARRATION_SECRET?.length >= 32,
+    );
+  }
   return Boolean(process.env.TRAMA_KOKORO_PYTHON);
 }
 
@@ -103,6 +114,20 @@ export async function narrate(text, voice, signal) {
 }
 
 function startNarration(text, voice) {
+  if (process.env.VERCEL === "1") {
+    const controller = new AbortController();
+    return {
+      text,
+      voice,
+      listeners: 0,
+      stopping: false,
+      stop() {
+        this.stopping = true;
+        controller.abort();
+      },
+      audio: synthesizeNarration(text, voice, controller.signal),
+    };
+  }
   const child = spawn(
     process.env.TRAMA_KOKORO_PYTHON,
     ["infra/scripts/narrate-chapter.py", voice],

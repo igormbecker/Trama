@@ -3,6 +3,7 @@ import controller from "infra/controller.js";
 import { NotFoundError, ValidationError } from "infra/errors.js";
 import authentication from "models/authentication.js";
 import workReading from "models/workReading.js";
+import { cachedNarration } from "models/narrationAudio.js";
 import {
   defaultNarrationVoice,
   isNarrationEnabled,
@@ -68,13 +69,15 @@ router.post(async (request, response) => {
   }
 
   try {
-    const audio = await narrate(
+    const text =
       request.body?.resumeIntro === true
         ? "Continuando leitura..."
-        : blocks[block],
-      voice,
-      generation.signal,
+        : blocks[block];
+    const audio = await cachedNarration(
+      { workId: request.query.id, chapterId, voice, text },
+      () => narrate(text, voice, generation.signal),
     );
+    generation.signal.throwIfAborted();
     if (!audio) {
       return response.status(503).json({
         message: "Outro áudio está sendo gerado. Tente novamente em instantes.",
@@ -93,6 +96,7 @@ router.post(async (request, response) => {
 });
 
 export const config = {
+  maxDuration: 180,
   api: { responseLimit: false, bodyParser: { sizeLimit: "1kb" } },
 };
 export default controller.withImpersonationAudit(

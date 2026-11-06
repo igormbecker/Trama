@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run migrations:deploy && npm run build"
+  "buildCommand": "npm run migrations:deploy && npm run build",
+  "functions": {
+    "api/internal/narration.py": {
+      "maxDuration": 120,
+      "excludeFiles": "{node_modules/**,.next/**,.next-test/**,tests/**,docs/**,.git/**,.vercel/**,infra/fonts/**,.env*}"
+    }
+  }
 }
